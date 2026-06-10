@@ -34,6 +34,7 @@ export default function usePlayers() {
       team: p.team || '',
       teamLogo: p.team_logo || '',
       isZaragoza: p.is_zaragoza || false,
+      isCantera: p.is_cantera || false,
     }))
 
     setPlayers(mapped)
@@ -50,6 +51,7 @@ export default function usePlayers() {
       team: playerData.team || '',
       teamLogo: playerData.teamLogo || '',
       isZaragoza: false,
+      isCantera: false,
     }
     setPlayers(prev => [...prev, newPlayer].sort((a, b) => a.name.localeCompare(b.name)))
     return newPlayer

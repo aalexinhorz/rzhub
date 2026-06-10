@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import emailjs from '@emailjs/browser'
-import { formationsList } from '../App'
+import { formationsList } from '../pages/Lineup'
 
 const DEFAULT_PHOTO = 'https://assets.laliga.com/squad/2025/t190/default/512x512/default_t190_2025_1_003_000.png'
 

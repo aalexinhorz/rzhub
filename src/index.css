@@ -1,6 +1,42 @@
 @import '@fontsource/bebas-neue';
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&display=swap');
 
+@font-face {
+  font-family: 'Humane';
+  src: url('/fonts/Humane-Thin.ttf') format('truetype');
+  font-weight: 100;
+}
+@font-face {
+  font-family: 'Humane';
+  src: url('/fonts/Humane-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+}
+@font-face {
+  font-family: 'Humane';
+  src: url('/fonts/Humane-Light.ttf') format('truetype');
+  font-weight: 300;
+}
+@font-face {
+  font-family: 'Humane';
+  src: url('/fonts/Humane-Regular.ttf') format('truetype');
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'Humane';
+  src: url('/fonts/Humane-Medium.ttf') format('truetype');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'Humane';
+  src: url('/fonts/Humane-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+}
+@font-face {
+  font-family: 'Humane';
+  src: url('/fonts/Humane-Bold.ttf') format('truetype');
+  font-weight: 700;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
