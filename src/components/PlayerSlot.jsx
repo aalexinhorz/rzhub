@@ -17,7 +17,7 @@ function SubRow({ player, onClick }) {
   const imgSize = 'clamp(14px, 3.5vw, 22px)'
   const fontSize = 'clamp(6px, 1.5vw, 8px)'
   return (
-    <div onClick={onClick} title="Clic para quitar" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px', padding: '2px 4px', background: bgColor }}>
+    <div onClick={onClick} title="Clic para quitar" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 3px', background: bgColor, width: '100%', boxSizing: 'border-box' }}>
       <div style={{ width: imgSize, height: imgSize, flexShrink: 0, overflow: 'hidden', background: 'rgba(0,0,0,0.2)' }}>
         <img crossOrigin="anonymous" src={player.photo || DEFAULT_PHOTO} alt={player.name}
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%', display: 'block' }}
@@ -181,25 +181,25 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
     <>
       <div ref={setNodeRef} style={{ position: 'absolute', left: `${slot.x}%`, top: `${slot.y}%`, transform: 'translate(-50%, -50%)', width: slotW, display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
         {player ? (
-          <div style={{ width: cardW, borderRadius: '8px', border: `3px solid ${borderColor}`, overflow: 'hidden', background: 'white', cursor: 'pointer', boxShadow: 'none' }}>
+          <div style={{ width: cardW, borderRadius: '8px', border: `3px solid ${borderColor}`, overflow: 'hidden', background: 'white', cursor: 'pointer', boxShadow: 'none', boxSizing: 'border-box' }}>
             <div onClick={openModal} style={{ width: '100%', height: cardH, background: '#f5f5f5', position: 'relative', overflow: 'hidden' }}>
               <PlayerPhoto src={player.photo} alt={player.name} />
               {player.teamLogo && (
                 <img crossOrigin="anonymous" src={player.teamLogo} alt="" style={{ position: 'absolute', top: '4px', left: '4px', width: '16px', height: '16px', objectFit: 'contain', zIndex: 3, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }} />
               )}
             </div>
-            <div onClick={openModal} style={{ background: borderColor, padding: '3px', textAlign: 'center' }}>
+            <div onClick={openModal} style={{ background: borderColor, padding: '3px', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
               <span style={{ color: '#FFFFFF', fontSize: fontSize, fontFamily: 'Archivo, sans-serif', fontWeight: 'bold', letterSpacing: '-0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
                 {player.shortName || player.name}
               </span>
             </div>
             {sub1 ? <SubRow player={sub1} onClick={() => onRemoveSub(slot.id, 0)} /> : (
-              <div onClick={openModal} style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)' }}>
+              <div onClick={openModal} style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box' }}>
                 <span style={{ fontSize: subFontSize, color: 'rgba(0,0,0,0.3)', fontFamily: 'sans-serif' }}>+ suplente</span>
               </div>
             )}
             {sub2 ? <SubRow player={sub2} onClick={() => onRemoveSub(slot.id, 1)} /> : (
-              <div onClick={openModal} style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)' }}>
+              <div onClick={openModal} style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box' }}>
                 <span style={{ fontSize: subFontSize, color: 'rgba(0,0,0,0.3)', fontFamily: 'sans-serif' }}>+ suplente</span>
               </div>
             )}
