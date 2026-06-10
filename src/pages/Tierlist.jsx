@@ -15,22 +15,26 @@ const TIERS_INICIALES = [
   { id: 'venta',       label: 'Venta segura',    color: '#1a1a1a' },
 ]
 
-function TierCard({ player, isDragging }) {
+function TierCard({ player, isDragging, small }) {
   const borderColor = player.isZaragoza ? '#0B4390' : '#f5c400'
   const footerColor = player.isZaragoza ? '#0B4390' : '#f5c400'
+  const cardW = small ? '52px' : '72px'
+  const cardH = small ? '48px' : '68px'
+  const fontSize = small ? '8px' : '9px'
+
   return (
-    <div style={{ width: '72px', borderRadius: '8px', border: `3px solid ${borderColor}`, overflow: 'hidden', background: 'white', opacity: isDragging ? 0.4 : 1, cursor: 'grab', userSelect: 'none', boxSizing: 'border-box', flexShrink: 0 }}>
-      <div style={{ width: '100%', height: '68px', background: '#f5f5f5', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ width: cardW, borderRadius: '6px', border: `2px solid ${borderColor}`, overflow: 'hidden', background: 'white', opacity: isDragging ? 0.4 : 1, cursor: 'grab', userSelect: 'none', boxSizing: 'border-box', flexShrink: 0 }}>
+      <div style={{ width: '100%', height: cardH, background: '#f5f5f5', position: 'relative', overflow: 'hidden' }}>
         <img crossOrigin="anonymous" src={player.photo || DEFAULT_PHOTO} alt={player.name}
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 15%', display: 'block' }}
           onError={e => { e.target.src = DEFAULT_PHOTO }} />
         {player.teamLogo && (
           <img crossOrigin="anonymous" src={player.teamLogo} alt=""
-            style={{ position: 'absolute', top: '3px', left: '3px', width: '14px', height: '14px', objectFit: 'contain', zIndex: 3, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }} />
+            style={{ position: 'absolute', top: '2px', left: '2px', width: '12px', height: '12px', objectFit: 'contain', zIndex: 3 }} />
         )}
       </div>
-      <div style={{ background: footerColor, padding: '3px 4px', textAlign: 'center' }}>
-        <span style={{ color: '#ffffff', fontSize: '9px', fontFamily: 'Archivo, sans-serif', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+      <div style={{ background: footerColor, padding: '2px 3px', textAlign: 'center' }}>
+        <span style={{ color: '#ffffff', fontSize: fontSize, fontFamily: 'Archivo, sans-serif', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
           {player.shortName || player.name}
         </span>
       </div>
@@ -38,55 +42,59 @@ function TierCard({ player, isDragging }) {
   )
 }
 
-function DraggableTierCard({ player }) {
+function DraggableTierCard({ player, small }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: player.id })
   return (
     <div ref={setNodeRef} {...listeners} {...attributes} style={{ touchAction: 'none' }}>
-      <TierCard player={player} isDragging={isDragging} />
+      <TierCard player={player} isDragging={isDragging} small={small} />
     </div>
   )
 }
 
-function TierRow({ tier, players, onLabelChange }) {
+function TierRow({ tier, players, onLabelChange, small }) {
   const { setNodeRef, isOver } = useDroppable({ id: tier.id })
   const [editing, setEditing] = useState(false)
   const [label, setLabel] = useState(tier.label)
+  const labelW = small ? '90px' : '140px'
+  const labelFontSize = small ? '12px' : '14px'
+  const minH = small ? '70px' : '100px'
+
   return (
-    <div style={{ display: 'flex', marginBottom: '4px', minHeight: '100px', background: 'white', borderRadius: '4px', overflow: 'hidden', border: '1px solid #e0e0e0' }}>
-      <div style={{ width: '140px', minWidth: '140px', background: tier.color, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', cursor: 'pointer' }} onClick={() => setEditing(true)}>
+    <div style={{ display: 'flex', marginBottom: '4px', minHeight: minH, background: 'white', borderRadius: '4px', overflow: 'hidden', border: '1px solid #e0e0e0' }}>
+      <div style={{ width: labelW, minWidth: labelW, background: tier.color, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', cursor: 'pointer' }} onClick={() => setEditing(true)}>
         {editing ? (
           <input autoFocus value={label} onChange={e => setLabel(e.target.value)}
             onBlur={() => { setEditing(false); onLabelChange(tier.id, label) }}
             onKeyDown={e => e.key === 'Enter' && setEditing(false)}
-            style={{ background: 'transparent', border: 'none', borderBottom: '2px solid white', color: 'white', fontFamily: 'sans-serif', fontWeight: '700', fontSize: '14px', textAlign: 'center', width: '100%', outline: 'none' }} />
+            style={{ background: 'transparent', border: 'none', borderBottom: '2px solid white', color: 'white', fontFamily: 'sans-serif', fontWeight: '700', fontSize: labelFontSize, textAlign: 'center', width: '100%', outline: 'none' }} />
         ) : (
-          <span style={{ color: 'white', fontFamily: 'sans-serif', fontWeight: '700', fontSize: '14px', textAlign: 'center', lineHeight: '1.3' }}>{label}</span>
+          <span style={{ color: 'white', fontFamily: 'sans-serif', fontWeight: '700', fontSize: labelFontSize, textAlign: 'center', lineHeight: '1.3' }}>{label}</span>
         )}
       </div>
-      <div ref={setNodeRef} style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '10px 12px', alignItems: 'center', background: isOver ? '#f0f4ff' : 'white', transition: 'background 0.15s', minHeight: '100px' }}>
-        {players.map(p => <DraggableTierCard key={p.id} player={p} />)}
+      <div ref={setNodeRef} style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '8px', alignItems: 'center', background: isOver ? '#f0f4ff' : 'white', transition: 'background 0.15s', minHeight: minH }}>
+        {players.map(p => <DraggableTierCard key={p.id} player={p} small={small} />)}
       </div>
     </div>
   )
 }
 
-function PoolZone({ primerEquipo, cantera }) {
+function PoolZone({ primerEquipo, cantera, small }) {
   const { setNodeRef, isOver } = useDroppable({ id: 'pool' })
   return (
-    <div ref={setNodeRef} style={{ background: isOver ? '#f0f4ff' : '#f5f5f5', borderRadius: '8px', padding: '16px', transition: 'background 0.15s' }}>
+    <div ref={setNodeRef} style={{ background: isOver ? '#f0f4ff' : '#f5f5f5', borderRadius: '8px', padding: '12px', transition: 'background 0.15s' }}>
       {primerEquipo.length > 0 && (
-        <div style={{ marginBottom: '20px' }}>
-          <p style={{ fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', color: '#999', marginBottom: '12px', letterSpacing: '1px' }}>PRIMER EQUIPO</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-            {primerEquipo.map(p => <DraggableTierCard key={p.id} player={p} />)}
+        <div style={{ marginBottom: '16px' }}>
+          <p style={{ fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', color: '#999', marginBottom: '10px', letterSpacing: '1px' }}>PRIMER EQUIPO</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: small ? '6px' : '10px' }}>
+            {primerEquipo.map(p => <DraggableTierCard key={p.id} player={p} small={small} />)}
           </div>
         </div>
       )}
       {cantera.length > 0 && (
         <div>
-          <p style={{ fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', color: '#999', marginBottom: '12px', letterSpacing: '1px' }}>CANTERA</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-            {cantera.map(p => <DraggableTierCard key={p.id} player={p} />)}
+          <p style={{ fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', color: '#999', marginBottom: '10px', letterSpacing: '1px' }}>CANTERA</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: small ? '6px' : '10px' }}>
+            {cantera.map(p => <DraggableTierCard key={p.id} player={p} small={small} />)}
           </div>
         </div>
       )}
@@ -105,6 +113,8 @@ export default function Tierlist() {
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
   const tierlistRef = useRef(null)
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
 
   const zaragozaPlayers = players.filter(p => p.isZaragoza)
   const assignedIds = new Set(Object.values(tierPlayers).flat().map(p => p.id))
@@ -208,51 +218,51 @@ export default function Tierlist() {
   )
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5', padding: '24px' }}>
+    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5', padding: isMobile ? '16px 12px' : '24px' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: '72px', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px', flexWrap: 'wrap' }}>
+          <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: isMobile ? '52px' : '72px', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: 0 }}>
             Tier List
           </h1>
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: '12px' }}>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {guardado ? (
-              <div style={{ display: 'flex', alignItems: 'center', padding: '10px 20px', borderRadius: '24px', background: '#e8f5e9', color: '#2e7d32', fontWeight: 'bold', fontSize: '14px', fontFamily: 'sans-serif' }}>
-                ✅ ¡Guardado en la comunidad!
+              <div style={{ display: 'flex', alignItems: 'center', padding: '8px 14px', borderRadius: '24px', background: '#e8f5e9', color: '#2e7d32', fontWeight: 'bold', fontSize: '13px', fontFamily: 'sans-serif' }}>
+                ✅ ¡Guardado!
               </div>
             ) : (
-              <button onClick={abrirModal} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '24px', border: '2px solid #27ae60', background: 'white', color: '#27ae60', fontWeight: 'bold', fontSize: '14px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
-                💾 Guardar en comunidad
+              <button onClick={abrirModal} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '24px', border: '2px solid #27ae60', background: 'white', color: '#27ae60', fontWeight: 'bold', fontSize: '13px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
+                💾 {isMobile ? 'Guardar' : 'Guardar en comunidad'}
               </button>
             )}
-            <button onClick={handleDownload} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '24px', border: '2px solid #0B4390', background: 'white', color: '#0B4390', fontWeight: 'bold', fontSize: '14px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
-              ⬇ Descargar
+            <button onClick={handleDownload} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '24px', border: '2px solid #0B4390', background: 'white', color: '#0B4390', fontWeight: 'bold', fontSize: '13px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
+              ⬇ {isMobile ? '' : 'Descargar'}
             </button>
-            <button onClick={handleReset} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '24px', border: '2px solid #ccc', background: 'white', color: '#666', fontWeight: 'bold', fontSize: '14px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
-              ↺ Restablecer
+            <button onClick={handleReset} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '24px', border: '2px solid #ccc', background: 'white', color: '#666', fontWeight: 'bold', fontSize: '13px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
+              ↺ {isMobile ? '' : 'Restablecer'}
             </button>
           </div>
         </div>
 
         <DndContext collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div ref={tierlistRef} style={{ padding: '16px', background: '#f5f5f5', borderRadius: '8px' }}>
+          <div ref={tierlistRef} style={{ padding: isMobile ? '8px' : '16px', background: '#f5f5f5', borderRadius: '8px' }}>
             {tiers.map(tier => (
-              <TierRow key={tier.id} tier={tier} players={tierPlayers[tier.id] || []} onLabelChange={handleLabelChange} />
+              <TierRow key={tier.id} tier={tier} players={tierPlayers[tier.id] || []} onLabelChange={handleLabelChange} small={isMobile} />
             ))}
-            <button onClick={handleAddRow} style={{ width: '100%', padding: '10px', marginBottom: '16px', marginTop: '4px', border: '2px dashed #ccc', borderRadius: '4px', background: 'transparent', color: '#999', fontFamily: 'sans-serif', fontSize: '14px', cursor: 'pointer' }}>
+            <button onClick={handleAddRow} style={{ width: '100%', padding: '8px', marginBottom: '12px', marginTop: '4px', border: '2px dashed #ccc', borderRadius: '4px', background: 'transparent', color: '#999', fontFamily: 'sans-serif', fontSize: '13px', cursor: 'pointer' }}>
               + Añadir fila
             </button>
-            <PoolZone primerEquipo={primerEquipo} cantera={cantera} />
+            <PoolZone primerEquipo={primerEquipo} cantera={cantera} small={isMobile} />
           </div>
           <DragOverlay>
-            {activePlayer ? <TierCard player={activePlayer} /> : null}
+            {activePlayer ? <TierCard player={activePlayer} small={isMobile} /> : null}
           </DragOverlay>
         </DndContext>
       </div>
 
       {showModal && (
-        <div onClick={() => setShowModal(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '16px', width: '90%', maxWidth: '420px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
+        <div onClick={() => setShowModal(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '16px', width: '100%', maxWidth: '420px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
             <div style={{ background: '#0B4390', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px', fontFamily: 'sans-serif' }}>Guardar Tier List</span>
               <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '20px', cursor: 'pointer' }}>✕</button>
