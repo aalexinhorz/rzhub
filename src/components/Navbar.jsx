@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 
 export default function Navbar() {
   const location = useLocation()
   const { user, signInWithGoogle, signOut } = useAuth()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const links = [
     { to: '/', label: 'Inicio' },
@@ -16,89 +18,140 @@ export default function Navbar() {
   const iniciales = nombre.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 
   return (
-    <div style={{
-      background: '#0B4390',
-      padding: '0 24px',
-      display: 'flex',
-      alignItems: 'center',
-      height: '60px',
-      gap: '32px',
-    }}>
-      <img
-        src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png"
-        alt="Palmadas al Viento"
-        style={{ height: '36px' }}
-      />
-      <nav style={{ display: 'flex', gap: '8px', marginLeft: '16px' }}>
-        {links.map(link => (
-          <Link
-            key={link.to}
-            to={link.to}
-            style={{
-              color: location.pathname === link.to ? '#f5c400' : 'rgba(255,255,255,0.75)',
-              textDecoration: 'none',
-              fontWeight: location.pathname === link.to ? '700' : '400',
-              fontSize: '15px',
-              padding: '6px 12px',
-              borderRadius: '6px',
-              borderBottom: location.pathname === link.to ? '2px solid #f5c400' : '2px solid transparent',
-              transition: 'all 0.15s',
-            }}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </nav>
+    <>
+      <div style={{
+        background: '#0B4390',
+        padding: '0 20px',
+        display: 'flex',
+        alignItems: 'center',
+        height: '60px',
+        position: 'relative',
+        zIndex: 100,
+      }}>
+        {/* Logo */}
+        <img
+          src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png"
+          alt="Palmadas al Viento"
+          style={{ height: '32px', flexShrink: 0 }}
+        />
 
-      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {user ? (
-          <>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                width: '36px', height: '36px', borderRadius: '50%',
-                border: '2px solid #f5c400', background: '#f5c400',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0,
-              }}>
-                <span style={{ color: '#0B4390', fontFamily: 'sans-serif', fontWeight: '700', fontSize: '13px' }}>
-                  {iniciales}
-                </span>
-              </div>
-              <span style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '14px', fontWeight: '600' }}>
-                {nombre.split(' ')[0]}
-              </span>
-            </div>
-            <button
-              onClick={signOut}
+        {/* Links desktop */}
+        <nav style={{ display: 'flex', gap: '4px', marginLeft: '20px', flex: 1 }} className="desktop-nav">
+          {links.map(link => (
+            <Link
+              key={link.to}
+              to={link.to}
               style={{
-                background: 'transparent', border: '1px solid rgba(255,255,255,0.4)',
-                color: 'rgba(255,255,255,0.75)', borderRadius: '6px', padding: '6px 14px',
-                fontSize: '13px', fontFamily: 'sans-serif', cursor: 'pointer',
+                color: location.pathname === link.to ? '#f5c400' : 'rgba(255,255,255,0.75)',
+                textDecoration: 'none',
+                fontWeight: location.pathname === link.to ? '700' : '400',
+                fontSize: '14px',
+                padding: '6px 10px',
+                borderRadius: '6px',
+                borderBottom: location.pathname === link.to ? '2px solid #f5c400' : '2px solid transparent',
+                whiteSpace: 'nowrap',
               }}
             >
-              Cerrar sesión
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Auth desktop */}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }} className="desktop-auth">
+          {user ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #f5c400', background: '#f5c400', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ color: '#0B4390', fontFamily: 'sans-serif', fontWeight: '700', fontSize: '11px' }}>{iniciales}</span>
+                </div>
+                <span style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                  {nombre.split(' ')[0]}
+                </span>
+              </div>
+              <button onClick={signOut} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.4)', color: 'rgba(255,255,255,0.75)', borderRadius: '6px', padding: '5px 12px', fontSize: '12px', fontFamily: 'sans-serif', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                Cerrar sesión
+              </button>
+            </>
+          ) : (
+            <button onClick={signInWithGoogle} style={{ background: '#f5c400', border: 'none', color: '#0B4390', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              Entrar con Google
             </button>
-          </>
-        ) : (
-          <button
-            onClick={signInWithGoogle}
-            style={{
-              background: '#f5c400', border: 'none', color: '#0B4390',
-              borderRadius: '6px', padding: '8px 18px',
-              fontSize: '14px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: '8px',
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24">
-              <path fill="#0B4390" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#0B4390" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#0B4390" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#0B4390" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Entrar con Google
-          </button>
-        )}
+          )}
+        </div>
+
+        {/* Hamburguesa móvil */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="hamburger"
+          style={{ background: 'none', border: 'none', color: 'white', fontSize: '24px', cursor: 'pointer', marginLeft: 'auto', padding: '4px', display: 'none' }}
+        >
+          {menuOpen ? '✕' : '☰'}
+        </button>
       </div>
-    </div>
+
+      {/* Menú móvil desplegable */}
+      {menuOpen && (
+        <div style={{
+          background: '#0B4390',
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          padding: '12px 20px 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px',
+          zIndex: 99,
+          position: 'relative',
+        }} className="mobile-menu">
+          {links.map(link => (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                color: location.pathname === link.to ? '#f5c400' : 'rgba(255,255,255,0.85)',
+                textDecoration: 'none',
+                fontWeight: location.pathname === link.to ? '700' : '400',
+                fontSize: '16px',
+                padding: '10px 8px',
+                borderBottom: '1px solid rgba(255,255,255,0.08)',
+                fontFamily: 'sans-serif',
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <div style={{ marginTop: '12px' }}>
+            {user ? (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#f5c400', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: '#0B4390', fontWeight: '700', fontSize: '11px' }}>{iniciales}</span>
+                  </div>
+                  <span style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '14px' }}>{nombre.split(' ')[0]}</span>
+                </div>
+                <button onClick={() => { signOut(); setMenuOpen(false) }} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.4)', color: 'white', borderRadius: '6px', padding: '6px 14px', fontSize: '13px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
+                  Cerrar sesión
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => { signInWithGoogle(); setMenuOpen(false) }} style={{ width: '100%', background: '#f5c400', border: 'none', color: '#0B4390', borderRadius: '8px', padding: '12px', fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer' }}>
+                Entrar con Google
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @media (max-width: 640px) {
+          .desktop-nav { display: none !important; }
+          .desktop-auth { display: none !important; }
+          .hamburger { display: flex !important; }
+        }
+        @media (min-width: 641px) {
+          .mobile-menu { display: none !important; }
+        }
+      `}</style>
+    </>
   )
 }
