@@ -4,7 +4,7 @@ import useAuth from '../hooks/useAuth'
 
 export default function Navbar() {
   const location = useLocation()
-  const { user, signInWithGoogle, signOut } = useAuth()
+  const { user, signInWithGoogle, signInWithTwitter, signOut } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const links = [
@@ -14,7 +14,7 @@ export default function Navbar() {
     { to: '/comunidad', label: 'Comunidad' },
   ]
 
-  const nombre = user?.user_metadata?.name || user?.email || ''
+  const nombre = user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email || ''
   const iniciales = nombre.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 
   return (
@@ -28,14 +28,12 @@ export default function Navbar() {
         position: 'relative',
         zIndex: 100,
       }}>
-        {/* Logo */}
         <img
           src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png"
           alt="Palmadas al Viento"
           style={{ height: '32px', flexShrink: 0 }}
         />
 
-        {/* Links desktop */}
         <nav style={{ display: 'flex', gap: '4px', marginLeft: '20px', flex: 1 }} className="desktop-nav">
           {links.map(link => (
             <Link
@@ -57,8 +55,7 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* Auth desktop */}
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }} className="desktop-auth">
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }} className="desktop-auth">
           {user ? (
             <>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -74,13 +71,18 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <button onClick={signInWithGoogle} style={{ background: '#f5c400', border: 'none', color: '#0B4390', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-              Entrar con Google
-            </button>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button onClick={signInWithGoogle} style={{ background: '#f5c400', border: 'none', color: '#0B4390', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                Entrar con Google
+              </button>
+              <button onClick={signInWithTwitter} style={{ background: 'black', border: 'none', color: 'white', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                Entrar con X
+              </button>
+            </div>
           )}
         </div>
 
-        {/* Hamburguesa móvil */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="hamburger"
@@ -90,7 +92,6 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Menú móvil desplegable */}
       {menuOpen && (
         <div style={{
           background: '#0B4390',
@@ -120,7 +121,7 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <div style={{ marginTop: '12px' }}>
+          <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {user ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -134,9 +135,15 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <button onClick={() => { signInWithGoogle(); setMenuOpen(false) }} style={{ width: '100%', background: '#f5c400', border: 'none', color: '#0B4390', borderRadius: '8px', padding: '12px', fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer' }}>
-                Entrar con Google
-              </button>
+              <>
+                <button onClick={() => { signInWithGoogle(); setMenuOpen(false) }} style={{ width: '100%', background: '#f5c400', border: 'none', color: '#0B4390', borderRadius: '8px', padding: '12px', fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer' }}>
+                  Entrar con Google
+                </button>
+                <button onClick={() => { signInWithTwitter(); setMenuOpen(false) }} style={{ width: '100%', background: 'black', border: 'none', color: 'white', borderRadius: '8px', padding: '12px', fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  Entrar con X
+                </button>
+              </>
             )}
           </div>
         </div>
