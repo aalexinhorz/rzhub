@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 
 const TEAM_ID = 2815
 const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY
+const API_HOST = 'sportapi7.p.rapidapi.com'
 
 function useProximoPartido() {
   const [partido, setPartido] = useState(null)
@@ -12,10 +13,10 @@ function useProximoPartido() {
     async function fetchPartidos() {
       try {
         const res = await fetch(
-          `https://sportapi7.p.rapidapi.com/api/v1/team/${TEAM_ID}/events/next/0`,
+          `https://${API_HOST}/api/v1/team/${TEAM_ID}/events/next/0`,
           {
             headers: {
-              'x-rapidapi-host': 'sportapi7.p.rapidapi.com',
+              'x-rapidapi-host': API_HOST,
               'x-rapidapi-key': API_KEY,
             }
           }
@@ -42,14 +43,15 @@ function usePartidoEnVivo() {
     async function fetchLive() {
       try {
         const res = await fetch(
-          `https://sportapi7.p.rapidapi.com/api/v1/team/${TEAM_ID}/events/live`,
+          `https://${API_HOST}/api/v1/team/${TEAM_ID}/events/live`,
           {
             headers: {
-              'x-rapidapi-host': 'sportapi7.p.rapidapi.com',
+              'x-rapidapi-host': API_HOST,
               'x-rapidapi-key': API_KEY,
             }
           }
         )
+        if (!res.ok) return
         const data = await res.json()
         const events = data?.events || []
         if (events.length > 0) setPartido(events[0])
@@ -93,7 +95,7 @@ function PartidoWidget() {
   const partido = enVivo || proximo
 
   if (loading) return (
-    <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+    <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '16px', textAlign: 'center', maxWidth: '420px', width: '100%' }}>
       <p style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif', fontSize: '13px' }}>Cargando partido...</p>
     </div>
   )
@@ -121,7 +123,7 @@ function PartidoWidget() {
         <span style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>
           {esEnVivo ? '🔴 En directo' : 'Próximo partido'}
         </span>
-        {!esEnVivo && (
+        {!esEnVivo && partido.startTimestamp && (
           <span style={{ color: '#f5c400', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '700' }}>
             <Countdown timestamp={partido.startTimestamp} />
           </span>
@@ -208,27 +210,21 @@ export default function Home() {
       <PartidoWidget />
 
       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '400px' }}>
-        <button
-          onClick={() => navigate('/lineup')}
-          style={{
-            background: '#f5c400', color: '#0B4390', border: 'none',
-            borderRadius: '8px', padding: '14px 28px',
-            fontSize: 'clamp(14px, 4vw, 16px)', fontWeight: '700',
-            cursor: 'pointer', flex: 1, minWidth: '140px',
-          }}
-        >
+        <button onClick={() => navigate('/lineup')} style={{
+          background: '#f5c400', color: '#0B4390', border: 'none',
+          borderRadius: '8px', padding: '14px 28px',
+          fontSize: 'clamp(14px, 4vw, 16px)', fontWeight: '700',
+          cursor: 'pointer', flex: 1, minWidth: '140px',
+        }}>
           Crear alineación
         </button>
-        <button
-          onClick={() => navigate('/tierlist')}
-          style={{
-            background: 'transparent', color: '#ffffff',
-            border: '2px solid rgba(255,255,255,0.4)',
-            borderRadius: '8px', padding: '14px 28px',
-            fontSize: 'clamp(14px, 4vw, 16px)', fontWeight: '600',
-            cursor: 'pointer', flex: 1, minWidth: '140px',
-          }}
-        >
+        <button onClick={() => navigate('/tierlist')} style={{
+          background: 'transparent', color: '#ffffff',
+          border: '2px solid rgba(255,255,255,0.4)',
+          borderRadius: '8px', padding: '14px 28px',
+          fontSize: 'clamp(14px, 4vw, 16px)', fontWeight: '600',
+          cursor: 'pointer', flex: 1, minWidth: '140px',
+        }}>
           Tier List
         </button>
       </div>
