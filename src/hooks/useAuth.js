@@ -35,7 +35,10 @@ export default function useAuth() {
   async function signInWithTwitter() {
     await supabase.auth.signInWithOAuth({
       provider: 'twitter',
-      options: { redirectTo: window.location.origin }
+      options: {
+        redirectTo: window.location.origin,
+        scopes: 'tweet.read users.read'
+      }
     })
   }
 
