@@ -10,20 +10,38 @@ export { supabase }
 
 export default function useAuth() {
   const [user, setUser] = useState(null)
+  const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      setLoading(false)
+      if (session?.user) fetchProfile(session.user.id)
+      else setLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      if (session?.user) fetchProfile(session.user.id)
+      else { setProfile(null); setLoading(false) }
     })
 
     return () => subscription.unsubscribe()
   }, [])
+
+  async function fetchProfile(userId) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('username, avatar_url, name')
+      .eq('id', userId)
+      .single()
+    setProfile(data || null)
+    setLoading(false)
+  }
+
+  async function refreshProfile(userId) {
+    await fetchProfile(userId)
+  }
 
   async function signInWithGoogle() {
     await supabase.auth.signInWithOAuth({
@@ -32,19 +50,10 @@ export default function useAuth() {
     })
   }
 
-  async function signInWithTwitter() {
-    await supabase.auth.signInWithOAuth({
-      provider: 'twitter',
-      options: {
-        redirectTo: window.location.origin,
-        scopes: 'tweet.read users.read'
-      }
-    })
-  }
-
   async function signOut() {
     await supabase.auth.signOut()
+    setProfile(null)
   }
 
-  return { user, loading, signInWithGoogle, signInWithTwitter, signOut }
+  return { user, profile, loading, signInWithGoogle, signOut, refreshProfile }
 }

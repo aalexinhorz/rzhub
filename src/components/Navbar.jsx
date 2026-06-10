@@ -5,7 +5,7 @@ import useAuth from '../hooks/useAuth'
 export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
-  const { user, signInWithGoogle, signOut } = useAuth()
+  const { user, profile, signInWithGoogle, signOut } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
 
   const links = [
@@ -15,7 +15,8 @@ export default function Navbar() {
     { to: '/comunidad', label: 'Comunidad' },
   ]
 
-  const nombre = user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email || ''
+  const nombre = profile?.username || profile?.name || user?.user_metadata?.name || user?.email || ''
+  const avatarUrl = profile?.avatar_url || null
   const iniciales = nombre.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 
   return (
@@ -42,7 +43,11 @@ export default function Navbar() {
             <>
               <div onClick={() => navigate('/perfil')} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
                 <div style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #f5c400', background: '#f5c400', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
-                  <span style={{ color: '#0B4390', fontFamily: 'sans-serif', fontWeight: '700', fontSize: '11px' }}>{iniciales}</span>
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <span style={{ color: '#0B4390', fontFamily: 'sans-serif', fontWeight: '700', fontSize: '11px' }}>{iniciales}</span>
+                  )}
                 </div>
                 <span style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap' }}>
                   {nombre.split(' ')[0]}
