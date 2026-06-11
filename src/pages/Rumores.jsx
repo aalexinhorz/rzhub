@@ -13,11 +13,6 @@ function extraerImagen(description) {
   return match ? match[1] : null
 }
 
-function esRetweet(item) {
-  const titulo = item.title || ''
-  return titulo.startsWith('RT by @') || titulo.startsWith('R to @')
-}
-
 async function fetchCuenta(cuenta) {
   try {
     const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(`https://nitter.net/${cuenta.usuario}/rss`)}&api_key=${RSS2JSON_KEY}&count=20`
@@ -25,8 +20,7 @@ async function fetchCuenta(cuenta) {
     const data = await res.json()
     if (data.status !== 'ok') return []
     return (data.items || [])
-      .filter(item => !esRetweet(item))
-      .slice(0, 10)
+      .slice(0, 20)
       .map(item => ({
         titulo: item.title,
         link: item.link?.replace('https://nitter.net', 'https://x.com'),
