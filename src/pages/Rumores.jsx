@@ -101,7 +101,7 @@ function RumorCard({ noticia, analisis }) {
           <img
             src={noticia.imagen}
             alt=""
-            style={{ width: '100%', maxHeight: '300px', objectFit: 'cover', display: 'block' }}
+            style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', background: '#f0f0f0', display: 'block' }}
             onError={e => { e.target.style.display = 'none' }}
           />
         )}
