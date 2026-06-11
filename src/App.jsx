@@ -17,7 +17,7 @@ export default function App() {
         <Route path="/tierlist" element={<Tierlist />} />
         <Route path="/comunidad" element={<Comunidad />} />
         <Route path="/perfil" element={<Perfil />} />
-        <Route path="/rumores" element={<Rumores />} />
+        <Route path="/noticias" element={<Rumores />} />
       </Routes>
     </div>
   )
