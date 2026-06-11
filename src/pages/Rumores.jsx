@@ -45,7 +45,7 @@ async function fetchCuenta(cuenta) {
 async function analizarNoticias(noticias) {
   if (noticias.length === 0) return []
   const titulos = noticias.map((n, i) => `${i}. ${n.titulo}`).join('\n')
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('/api/analyze', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
