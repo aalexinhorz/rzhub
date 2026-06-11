@@ -5,6 +5,7 @@ import Lineup from './pages/Lineup'
 import Tierlist from './pages/Tierlist'
 import Comunidad from './pages/Comunidad'
 import Perfil from './pages/Perfil'
+import Rumores from './pages/Rumores'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/tierlist" element={<Tierlist />} />
         <Route path="/comunidad" element={<Comunidad />} />
         <Route path="/perfil" element={<Perfil />} />
+        <Route path="/rumores" element={<Rumores />} />
       </Routes>
     </div>
   )
