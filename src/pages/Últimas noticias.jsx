@@ -13,6 +13,11 @@ function extraerImagen(description) {
   return match ? match[1] : null
 }
 
+function esImportante(titulo) {
+  const t = titulo?.toLowerCase() || ''
+  return t.includes('informa') || t.includes('oficial') || t.includes('🚨') || t.includes('❗')
+}
+
 async function fetchCuenta(cuenta) {
   try {
     const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(`https://nitter.net/${cuenta.usuario}/rss`)}&api_key=${RSS2JSON_KEY}&count=20`
@@ -86,51 +91,53 @@ function RumorCard({ noticia, analisis }) {
   const jugador = analisis?.jugador
   const color = TIPO_COLORS[tipo]
   const fecha = new Date(noticia.fecha).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+  const importante = esImportante(noticia.titulo)
+  const textoCorto = !importante && noticia.titulo?.length > 170
+  const textoMostrado = textoCorto ? noticia.titulo.slice(0, 170) + '...' : noticia.titulo
 
   return (
-    <a href={noticia.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-      <div style={{
-        background: 'white', borderRadius: '8px', overflow: 'hidden',
-        border: '1px solid #e0e0e0', marginBottom: '8px',
-        transition: 'box-shadow 0.15s', cursor: 'pointer',
-      }}
-        onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)'}
-        onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
-      >
-        {noticia.imagen && (
+    <div style={{
+      background: 'white', borderRadius: '8px', overflow: 'hidden',
+      border: '1px solid #e0e0e0', marginBottom: '8px',
+    }}>
+      {noticia.imagen && (
+        <a href={noticia.link} target="_blank" rel="noopener noreferrer">
           <img
             src={noticia.imagen}
             alt=""
             style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', background: '#f0f0f0', display: 'block' }}
             onError={e => { e.target.style.display = 'none' }}
           />
-        )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ width: '6px', minWidth: '6px', alignSelf: 'stretch', background: color }} />
-          <div style={{ flex: 1, padding: '14px 8px' }}>
-            {jugador && (
-              <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '22px', fontWeight: '700', color: '#0B4390', textTransform: 'uppercase', lineHeight: 1, marginBottom: '4px' }}>
-                {jugador}
-              </div>
-            )}
-            <div style={{ fontFamily: 'sans-serif', fontSize: '14px', fontWeight: '600', color: '#222', marginBottom: '6px', lineHeight: '1.4' }}>
-              {noticia.titulo}
+        </a>
+      )}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+        <div style={{ width: '6px', minWidth: '6px', alignSelf: 'stretch', background: color }} />
+        <div style={{ flex: 1, padding: '14px 8px' }}>
+          {jugador && (
+            <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '22px', fontWeight: '700', color: '#0B4390', textTransform: 'uppercase', lineHeight: 1, marginBottom: '4px' }}>
+              {jugador}
             </div>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <span style={{ background: noticia.medioColor, color: 'white', borderRadius: '4px', padding: '2px 6px', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '700' }}>
-                {noticia.medio}
-              </span>
-              <span style={{ fontFamily: 'sans-serif', fontSize: '11px', color: '#999' }}>{fecha}</span>
-            </div>
+          )}
+          <div style={{ fontFamily: 'sans-serif', fontSize: '14px', fontWeight: '600', color: '#222', marginBottom: '6px', lineHeight: '1.4' }}>
+            {textoMostrado}
           </div>
-          <div style={{ padding: '0 16px', flexShrink: 0 }}>
-            <div style={{ background: color, color: 'white', borderRadius: '6px', padding: '4px 10px', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px' }}>
-              {TIPO_LABELS[tipo]}
-            </div>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <span style={{ background: noticia.medioColor, color: 'white', borderRadius: '4px', padding: '2px 6px', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '700' }}>
+              {noticia.medio}
+            </span>
+            <span style={{ fontFamily: 'sans-serif', fontSize: '11px', color: '#999' }}>{fecha}</span>
+            <a href={noticia.link} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'sans-serif', fontSize: '11px', color: '#1da1f2', fontWeight: '600', textDecoration: 'none' }}>
+              Ver tweet completo →
+            </a>
+          </div>
+        </div>
+        <div style={{ padding: '14px 16px 0 0', flexShrink: 0 }}>
+          <div style={{ background: color, color: 'white', borderRadius: '6px', padding: '4px 10px', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px' }}>
+            {TIPO_LABELS[tipo]}
           </div>
         </div>
       </div>
-    </a>
+    </div>
   )
 }
 
@@ -189,7 +196,7 @@ export default function Rumores() {
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
 
         <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: '72px', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: '0 0 8px 0' }}>
-          Rumores
+          Últimas Noticias
         </h1>
         <p style={{ fontFamily: 'sans-serif', fontSize: '13px', color: '#999', marginBottom: '24px' }}>
           Vía @MBlanquillo1932 · {analizando ? '🤖 Analizando con IA...' : `${noticias.length} tweets`} {horaActualizacion && `· Actualizado a las ${horaActualizacion}`}
