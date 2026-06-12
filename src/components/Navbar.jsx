@@ -13,7 +13,8 @@ export default function Navbar() {
     { to: '/lineup', label: 'Alineación' },
     { to: '/tierlist', label: 'Tier List' },
     { to: '/comunidad', label: 'Comunidad' },
-    { to: '/noticias', label: 'Últimas Noticias' },
+    { to: '/noticias', label: 'Noticias' },
+    { to: '/contenidos', label: 'Contenidos' },
   ]
 
   const nombre = profile?.username || profile?.name || user?.user_metadata?.name || user?.email || ''
