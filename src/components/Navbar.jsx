@@ -43,6 +43,14 @@ export default function Navbar() {
         </nav>
 
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }} className="desktop-auth">
+          <a href="https://x.com/rzhub_" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', color: 'white', textDecoration: 'none', flexShrink: 0 }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
           {user ? (
             <>
               <div onClick={() => navigate('/perfil')} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
@@ -85,8 +93,14 @@ export default function Navbar() {
             </Link>
           ))}
           <div style={{ marginTop: '12px' }}>
+            <a href="https://x.com/rzhub_" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 8px', borderBottom: '1px solid rgba(255,255,255,0.08)', textDecoration: 'none' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+              <span style={{ color: 'rgba(255,255,255,0.85)', fontFamily: 'sans-serif', fontSize: '16px' }}>Síguenos en X</span>
+            </a>
             {user ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
                 <button onClick={() => { navigate('/perfil'); setMenuOpen(false) }} style={{ width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.3)', color: 'white', borderRadius: '8px', padding: '12px', fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '600', cursor: 'pointer' }}>
                   Mi perfil
                 </button>
@@ -95,7 +109,7 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <button onClick={() => { signInWithGoogle(); setMenuOpen(false) }} style={{ width: '100%', background: '#f5c400', border: 'none', color: '#0B4390', borderRadius: '8px', padding: '12px', fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer' }}>
+              <button onClick={() => { signInWithGoogle(); setMenuOpen(false) }} style={{ width: '100%', background: '#f5c400', border: 'none', color: '#0B4390', borderRadius: '8px', padding: '12px', fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer', marginTop: '8px' }}>
                 Entrar con Google
               </button>
             )}
