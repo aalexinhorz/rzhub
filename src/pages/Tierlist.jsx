@@ -15,6 +15,8 @@ const TIERS_INICIALES = [
   { id: 'venta',       label: 'Venta segura',    color: '#1a1a1a' },
 ]
 
+const TIER_IDS_INICIALES = new Set(TIERS_INICIALES.map(t => t.id))
+
 function TierCard({ player, isDragging, small }) {
   const borderColor = player.isZaragoza ? '#0B4390' : '#f5c400'
   const footerColor = player.isZaragoza ? '#0B4390' : '#f5c400'
@@ -51,7 +53,7 @@ function DraggableTierCard({ player, small }) {
   )
 }
 
-function TierRow({ tier, players, onLabelChange, small }) {
+function TierRow({ tier, players, onLabelChange, onDelete, small, isDeletable }) {
   const { setNodeRef, isOver } = useDroppable({ id: tier.id })
   const [editing, setEditing] = useState(false)
   const [label, setLabel] = useState(tier.label)
@@ -60,8 +62,8 @@ function TierRow({ tier, players, onLabelChange, small }) {
   const minH = small ? '70px' : '100px'
 
   return (
-    <div style={{ display: 'flex', marginBottom: '4px', minHeight: minH, background: 'white', borderRadius: '4px', overflow: 'hidden', border: '1px solid #e0e0e0' }}>
-      <div style={{ width: labelW, minWidth: labelW, background: tier.color, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', cursor: 'pointer' }} onClick={() => setEditing(true)}>
+    <div style={{ display: 'flex', marginBottom: '4px', minHeight: minH, background: 'white', borderRadius: '4px', overflow: 'hidden', border: '1px solid #e0e0e0', position: 'relative' }}>
+      <div style={{ width: labelW, minWidth: labelW, background: tier.color, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', cursor: 'pointer', position: 'relative' }} onClick={() => setEditing(true)}>
         {editing ? (
           <input autoFocus value={label} onChange={e => setLabel(e.target.value)}
             onBlur={() => { setEditing(false); onLabelChange(tier.id, label) }}
@@ -74,6 +76,14 @@ function TierRow({ tier, players, onLabelChange, small }) {
       <div ref={setNodeRef} style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '8px', alignItems: 'center', background: isOver ? '#f0f4ff' : 'white', transition: 'background 0.15s', minHeight: minH }}>
         {players.map(p => <DraggableTierCard key={p.id} player={p} small={small} />)}
       </div>
+      {isDeletable && (
+        <button
+          onClick={() => onDelete(tier.id)}
+          style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', borderRadius: '50%', width: '20px', height: '20px', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1, zIndex: 10 }}
+        >
+          ✕
+        </button>
+      )}
     </div>
   )
 }
@@ -164,6 +174,15 @@ export default function Tierlist() {
     setTiers(prev => [...prev, { id: newId, label: 'Nueva fila', color: '#888888' }])
   }
 
+  function handleDeleteRow(tierId) {
+    setTiers(prev => prev.filter(t => t.id !== tierId))
+    setTierPlayers(prev => {
+      const next = { ...prev }
+      delete next[tierId]
+      return next
+    })
+  }
+
   async function handleDownload() {
     if (!tierlistRef.current) return
     try {
@@ -247,7 +266,15 @@ export default function Tierlist() {
         <DndContext collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <div ref={tierlistRef} style={{ padding: isMobile ? '8px' : '16px', background: '#f5f5f5', borderRadius: '8px' }}>
             {tiers.map(tier => (
-              <TierRow key={tier.id} tier={tier} players={tierPlayers[tier.id] || []} onLabelChange={handleLabelChange} small={isMobile} />
+              <TierRow
+                key={tier.id}
+                tier={tier}
+                players={tierPlayers[tier.id] || []}
+                onLabelChange={handleLabelChange}
+                onDelete={handleDeleteRow}
+                isDeletable={!TIER_IDS_INICIALES.has(tier.id)}
+                small={isMobile}
+              />
             ))}
             <button onClick={handleAddRow} style={{ width: '100%', padding: '8px', marginBottom: '12px', marginTop: '4px', border: '2px dashed #ccc', borderRadius: '4px', background: 'transparent', color: '#999', fontFamily: 'sans-serif', fontSize: '13px', cursor: 'pointer' }}>
               + Añadir fila
