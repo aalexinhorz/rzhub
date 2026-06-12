@@ -210,40 +210,40 @@ export default function Home() {
       <PartidoWidget />
 
       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '500px' }}>
-        <button
-          onClick={() => navigate('/lineup')}
-          style={{
-            background: '#f5c400', color: '#0B4390', border: 'none',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '700',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}
-        >
+        <button onClick={() => navigate('/lineup')} style={{
+          background: '#f5c400', color: '#0B4390', border: 'none',
+          borderRadius: '8px', padding: '14px 20px',
+          fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '700',
+          cursor: 'pointer', flex: 1, minWidth: '130px',
+        }}>
           Crear alineación
         </button>
-        <button
-          onClick={() => navigate('/tierlist')}
-          style={{
-            background: 'transparent', color: '#ffffff',
-            border: '2px solid rgba(255,255,255,0.4)',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}
-        >
+        <button onClick={() => navigate('/tierlist')} style={{
+          background: 'transparent', color: '#ffffff',
+          border: '2px solid rgba(255,255,255,0.4)',
+          borderRadius: '8px', padding: '14px 20px',
+          fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
+          cursor: 'pointer', flex: 1, minWidth: '130px',
+        }}>
           Tier List
         </button>
-        <button
-          onClick={() => navigate('/noticias')}
-          style={{
-            background: 'transparent', color: '#ffffff',
-            border: '2px solid rgba(255,255,255,0.4)',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}
-        >
+        <button onClick={() => navigate('/noticias')} style={{
+          background: 'transparent', color: '#ffffff',
+          border: '2px solid rgba(255,255,255,0.4)',
+          borderRadius: '8px', padding: '14px 20px',
+          fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
+          cursor: 'pointer', flex: 1, minWidth: '130px',
+        }}>
           Últimas Noticias
+        </button>
+        <button onClick={() => navigate('/contenidos')} style={{
+          background: 'transparent', color: '#ffffff',
+          border: '2px solid rgba(255,255,255,0.4)',
+          borderRadius: '8px', padding: '14px 20px',
+          fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
+          cursor: 'pointer', flex: 1, minWidth: '130px',
+        }}>
+          Contenidos
         </button>
       </div>
     </div>
