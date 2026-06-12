@@ -204,7 +204,7 @@ export default function Home() {
         fontFamily: 'sans-serif',
         lineHeight: '1.5',
       }}>
-        La web del Real Zaragoza. Crea tu alineación, valora jugadores y mucho más.
+        La web para todos los zaragocistas. Crea tu alineación, valora jugadores y mucho más y entérate de toda la actualidad
       </p>
 
       <PartidoWidget />
