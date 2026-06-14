@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
+import useLiveStream from '../hooks/useLiveStream'
 
 export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, profile, signInWithGoogle, signOut } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
+  const live = useLiveStream()
 
   const links = [
     { to: '/', label: 'Inicio' },
@@ -28,7 +30,7 @@ export default function Navbar() {
           <img src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png" alt="Palmadas al Viento" style={{ height: '32px', flexShrink: 0, display: 'block' }} />
         </Link>
 
-        <nav style={{ display: 'flex', gap: '4px', marginLeft: '20px', flex: 1 }} className="desktop-nav">
+        <nav style={{ display: 'flex', gap: '4px', marginLeft: '20px', flex: 1, alignItems: 'center' }} className="desktop-nav">
           {links.map(link => (
             <Link key={link.to} to={link.to} style={{
               color: location.pathname === link.to ? '#f5c400' : 'rgba(255,255,255,0.75)',
@@ -40,6 +42,12 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          {live && (
+            <a href={`https://www.youtube.com/watch?v=${live.id}`} target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#ff0000', color: 'white', padding: '5px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', fontFamily: 'sans-serif', textDecoration: 'none', whiteSpace: 'nowrap', animation: 'pulse-live 2s infinite' }}>
+              🔴 EN DIRECTO
+            </a>
+          )}
         </nav>
 
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }} className="desktop-auth">
@@ -83,6 +91,12 @@ export default function Navbar() {
 
       {menuOpen && (
         <div style={{ background: '#0B4390', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '12px 20px 20px', display: 'flex', flexDirection: 'column', gap: '4px', zIndex: 99, position: 'relative' }} className="mobile-menu">
+          {live && (
+            <a href={`https://www.youtube.com/watch?v=${live.id}`} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: '#ff0000', color: 'white', padding: '10px', borderRadius: '8px', fontSize: '14px', fontWeight: '700', fontFamily: 'sans-serif', textDecoration: 'none', marginBottom: '8px' }}>
+              🔴 EN DIRECTO AHORA
+            </a>
+          )}
           {links.map(link => (
             <Link key={link.to} to={link.to} onClick={() => setMenuOpen(false)} style={{
               color: location.pathname === link.to ? '#f5c400' : 'rgba(255,255,255,0.85)',
@@ -118,6 +132,10 @@ export default function Navbar() {
       )}
 
       <style>{`
+        @keyframes pulse-live {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
         @media (max-width: 640px) {
           .desktop-nav { display: none !important; }
           .desktop-auth { display: none !important; }

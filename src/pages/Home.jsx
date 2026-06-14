@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import useLiveStream from '../hooks/useLiveStream'
 
 const TEAM_ID = 2815
 const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY
@@ -175,8 +176,39 @@ function PartidoWidget() {
   )
 }
 
+function LiveBanner({ live }) {
+  if (!live) return null
+  return (
+    <a href={`https://www.youtube.com/watch?v=${live.id}`} target="_blank" rel="noopener noreferrer"
+      style={{
+        display: 'flex', alignItems: 'center', gap: '12px',
+        background: 'rgba(255,0,0,0.12)', border: '1px solid rgba(255,0,0,0.4)',
+        borderRadius: '12px', padding: '12px 18px', maxWidth: '420px', width: '100%',
+        textDecoration: 'none', backdropFilter: 'blur(10px)',
+      }}
+    >
+      <span style={{ fontSize: '20px', animation: 'pulse-live 2s infinite' }}>🔴</span>
+      <div style={{ minWidth: 0 }}>
+        <div style={{ color: '#ff5555', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          Palmadas al Viento en directo
+        </div>
+        <div style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {live.titulo}
+        </div>
+      </div>
+      <style>{`
+        @keyframes pulse-live {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+      `}</style>
+    </a>
+  )
+}
+
 export default function Home() {
   const navigate = useNavigate()
+  const live = useLiveStream()
 
   return (
     <div style={{
@@ -204,8 +236,10 @@ export default function Home() {
         fontFamily: 'sans-serif',
         lineHeight: '1.5',
       }}>
-        La web para todos los zaragocistas. Crea tu alineación, valora jugadores y mucho más y entérate de toda la actualidad
+        La web del Real Zaragoza. Crea tu alineación, valora jugadores y mucho más.
       </p>
+
+      <LiveBanner live={live} />
 
       <PartidoWidget />
 
