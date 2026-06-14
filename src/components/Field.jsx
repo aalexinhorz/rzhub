@@ -75,7 +75,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
               {teamName}
             </h2>
           )}
-          <div style={{ display: 'inline-block', background: '#0B4390', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '2px 10px', borderRadius: '4px', marginTop: '-2px', fontFamily: 'sans-serif' }}>
+          <div style={{ display: 'inline-block', background: '#0B4390', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '2px 10px', borderRadius: '4px', marginTop: '6px', fontFamily: 'sans-serif' }}>
             {formation}
           </div>
         </div>
