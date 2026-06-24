@@ -7,6 +7,7 @@ import Comunidad from './pages/Comunidad'
 import Perfil from './pages/Perfil'
 import Rumores from './pages/Rumores'
 import Contenidos from './pages/Contenidos'
+import OnTour from './pages/OnTour'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/noticias" element={<Rumores />} />
         <Route path="/contenidos" element={<Contenidos />} />
+        <Route path="/on-tour" element={<OnTour />} />
       </Routes>
     </div>
   )

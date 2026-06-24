@@ -17,6 +17,7 @@ export default function Navbar() {
     { to: '/comunidad', label: 'Comunidad' },
     { to: '/noticias', label: 'Noticias' },
     { to: '/contenidos', label: 'Contenidos' },
+    { to: '/on-tour', label: 'On Tour' },
   ]
 
   const nombre = profile?.username || profile?.name || user?.user_metadata?.name || user?.email || ''
@@ -51,7 +52,8 @@ export default function Navbar() {
         </nav>
 
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }} className="desktop-auth">
-          <a href="https://x.com/rzhub_" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', color: 'white', textDecoration: 'none', flexShrink: 0 }}
+          <a href="https://x.com/rzhub_" target="_blank" rel="noopener noreferrer"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', color: 'white', textDecoration: 'none', flexShrink: 0 }}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
             onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
           >
