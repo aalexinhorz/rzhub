@@ -13,15 +13,21 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
   async function handleDownload() {
     if (!fieldRef.current) return
     try {
+      const img = fieldRef.current.querySelector('img')
+      img.src = '/CAMPO_PARA_WEB.png'
+      await new Promise(r => setTimeout(r, 300))
       const canvas = await html2canvas(fieldRef.current, {
         scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false,
       })
+      img.src = '/CAMPO_PARA_WEB.svg'
       const link = document.createElement('a')
       link.download = `${teamName || 'alineacion'}.png`
       link.href = canvas.toDataURL('image/png')
       link.click()
     } catch (error) {
       console.error('Error al descargar:', error)
+      const img = fieldRef.current?.querySelector('img')
+      if (img) img.src = '/CAMPO_PARA_WEB.svg'
     }
   }
 
@@ -55,9 +61,11 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
             💾 Guardar en comunidad
           </button>
         )}
-        <button onClick={handleDownload} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '24px', border: '2px solid #0B4390', background: 'white', color: '#0B4390', fontWeight: 'bold', fontSize: '14px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
-          ⬇ Descargar
-        </button>
+        {window.innerWidth > 640 && (
+          <button onClick={handleDownload} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '24px', border: '2px solid #0B4390', background: 'white', color: '#0B4390', fontWeight: 'bold', fontSize: '14px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
+            ⬇ Descargar
+          </button>
+        )}
       </div>
 
       <div ref={fieldRef} style={{ width: '100%', aspectRatio: '540 / 675', position: 'relative', borderRadius: '12px', overflow: 'hidden' }}>
@@ -75,7 +83,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
               {teamName}
             </h2>
           )}
-          <div style={{ display: 'inline-block', background: '#0B4390', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '2px 10px', borderRadius: '4px', marginTop: '-2px', fontFamily: 'sans-serif' }}>
+          <div style={{ display: 'inline-block', background: '#0B4390', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '2px 10px', borderRadius: '4px', marginTop: '6px', fontFamily: 'sans-serif' }}>
             {formation}
           </div>
         </div>
@@ -99,7 +107,6 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
         </div>
       </div>
 
-      {/* Modal guardar */}
       {showModal && (
         <div onClick={() => setShowModal(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: 'white', borderRadius: '16px', width: '90%', maxWidth: '420px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.4)' }}>
