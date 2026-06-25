@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import { supabase } from '../hooks/useAuth'
@@ -16,6 +16,7 @@ function generarSlug(titulo) {
 export default function Redaccion() {
   const { user, profile, loading } = useAuth()
   const navigate = useNavigate()
+  const fileInputRef = useRef(null)
   const [noticias, setNoticias] = useState([])
   const [vista, setVista] = useState('lista')
   const [editando, setEditando] = useState(null)
@@ -23,6 +24,9 @@ export default function Redaccion() {
   const [excerpt, setExcerpt] = useState('')
   const [contenido, setContenido] = useState('')
   const [imagenUrl, setImagenUrl] = useState('')
+  const [imagenFile, setImagenFile] = useState(null)
+  const [imagenPreview, setImagenPreview] = useState('')
+  const [subiendoImagen, setSubiendoImagen] = useState(false)
   const [categoria, setCategoria] = useState('Real Zaragoza')
   const [publicada, setPublicada] = useState(false)
   const [guardando, setGuardando] = useState(false)
@@ -53,6 +57,8 @@ export default function Redaccion() {
     setExcerpt('')
     setContenido('')
     setImagenUrl('')
+    setImagenFile(null)
+    setImagenPreview('')
     setCategoria('Real Zaragoza')
     setPublicada(false)
     setVista('editor')
@@ -64,22 +70,57 @@ export default function Redaccion() {
     setExcerpt(noticia.excerpt || '')
     setContenido(noticia.contenido || '')
     setImagenUrl(noticia.imagen_url || '')
+    setImagenFile(null)
+    setImagenPreview(noticia.imagen_url || '')
     setCategoria(noticia.categoria || 'Real Zaragoza')
     setPublicada(noticia.publicada || false)
     setVista('editor')
+  }
+
+  function handleImagenFile(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    setImagenFile(file)
+    setImagenPreview(URL.createObjectURL(file))
+    setImagenUrl('')
+  }
+
+  async function subirImagen() {
+    if (!imagenFile) return imagenUrl
+    setSubiendoImagen(true)
+    const ext = imagenFile.name.split('.').pop()
+    const path = `${user.id}/${Date.now()}.${ext}`
+    const { error } = await supabase.storage
+      .from('noticias-imagenes')
+      .upload(path, imagenFile, { upsert: true })
+    if (error) {
+      setMensaje('Error al subir imagen: ' + error.message)
+      setSubiendoImagen(false)
+      return null
+    }
+    const { data: urlData } = supabase.storage.from('noticias-imagenes').getPublicUrl(path)
+    setSubiendoImagen(false)
+    return urlData.publicUrl
   }
 
   async function guardar(pub) {
     if (!titulo.trim()) { setMensaje('El título es obligatorio'); return }
     setGuardando(true)
     setMensaje('')
+
+    let urlFinal = imagenUrl
+    if (imagenFile) {
+      urlFinal = await subirImagen()
+      if (!urlFinal) { setGuardando(false); return }
+    }
+
     const slug = editando?.slug || generarSlug(titulo) + '-' + Date.now()
     const datos = {
       titulo: titulo.trim(),
       slug,
       excerpt: excerpt.trim(),
       contenido: contenido.trim(),
-      imagen_url: imagenUrl.trim(),
+      imagen_url: urlFinal,
       categoria: categoria.trim(),
       autor: profile?.username || profile?.name || user.email,
       autor_id: user.id,
@@ -188,24 +229,47 @@ export default function Redaccion() {
               <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Titular de la noticia" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '2px solid #ddd', fontSize: '16px', fontFamily: 'sans-serif', fontWeight: '700', boxSizing: 'border-box', outline: 'none' }} />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-              <div>
-                <label style={{ fontSize: '11px', color: '#888', fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Categoría</label>
-                <select value={categoria} onChange={e => setCategoria(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '2px solid #ddd', fontSize: '14px', fontFamily: 'sans-serif', boxSizing: 'border-box', outline: 'none', background: 'white' }}>
-                  {categorias.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={{ fontSize: '11px', color: '#888', fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>URL imagen destacada</label>
-                <input value={imagenUrl} onChange={e => setImagenUrl(e.target.value)} placeholder="https://..." style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '2px solid #ddd', fontSize: '14px', fontFamily: 'sans-serif', boxSizing: 'border-box', outline: 'none' }} />
-              </div>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ fontSize: '11px', color: '#888', fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Categoría</label>
+              <select value={categoria} onChange={e => setCategoria(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '2px solid #ddd', fontSize: '14px', fontFamily: 'sans-serif', boxSizing: 'border-box', outline: 'none', background: 'white' }}>
+                {categorias.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
             </div>
 
-            {imagenUrl && (
-              <div style={{ marginBottom: '20px', borderRadius: '8px', overflow: 'hidden', maxHeight: '200px' }}>
-                <img src={imagenUrl} alt="preview" style={{ width: '100%', objectFit: 'cover', maxHeight: '200px', display: 'block' }} onError={e => e.target.style.display = 'none'} />
+            {/* Imagen */}
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ fontSize: '11px', color: '#888', fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Imagen destacada</label>
+
+              <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => fileInputRef.current.click()}
+                  style={{ background: '#0B4390', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 20px', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }}
+                >
+                  📁 Subir desde dispositivo
+                </button>
+                <span style={{ fontFamily: 'sans-serif', fontSize: '13px', color: '#aaa', alignSelf: 'center' }}>o pega una URL:</span>
+                <input
+                  value={imagenUrl}
+                  onChange={e => { setImagenUrl(e.target.value); setImagenFile(null); setImagenPreview(e.target.value) }}
+                  placeholder="https://..."
+                  style={{ flex: 1, minWidth: '200px', padding: '10px 12px', borderRadius: '8px', border: '2px solid #ddd', fontSize: '14px', fontFamily: 'sans-serif', boxSizing: 'border-box', outline: 'none' }}
+                />
               </div>
-            )}
+
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImagenFile} style={{ display: 'none' }} />
+
+              {imagenPreview && (
+                <div style={{ borderRadius: '8px', overflow: 'hidden', maxHeight: '220px', position: 'relative' }}>
+                  <img src={imagenPreview} alt="preview" style={{ width: '100%', objectFit: 'cover', maxHeight: '220px', display: 'block' }} onError={e => e.target.style.display = 'none'} />
+                  <button
+                    onClick={() => { setImagenFile(null); setImagenUrl(''); setImagenPreview('') }}
+                    style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', borderRadius: '50%', width: '28px', height: '28px', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+            </div>
 
             <div style={{ marginBottom: '20px' }}>
               <label style={{ fontSize: '11px', color: '#888', fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Entradilla (resumen corto)</label>
@@ -218,11 +282,11 @@ export default function Redaccion() {
             </div>
 
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <button onClick={() => guardar(false)} disabled={guardando} style={{ flex: 1, minWidth: '140px', padding: '14px', borderRadius: '8px', border: '2px solid #0B4390', background: 'white', color: '#0B4390', fontSize: '14px', fontFamily: 'sans-serif', fontWeight: '700', cursor: guardando ? 'default' : 'pointer', opacity: guardando ? 0.7 : 1 }}>
+              <button onClick={() => guardar(false)} disabled={guardando || subiendoImagen} style={{ flex: 1, minWidth: '140px', padding: '14px', borderRadius: '8px', border: '2px solid #0B4390', background: 'white', color: '#0B4390', fontSize: '14px', fontFamily: 'sans-serif', fontWeight: '700', cursor: guardando ? 'default' : 'pointer', opacity: guardando ? 0.7 : 1 }}>
                 Guardar borrador
               </button>
-              <button onClick={() => guardar(true)} disabled={guardando} style={{ flex: 2, minWidth: '160px', padding: '14px', borderRadius: '8px', border: 'none', background: '#0B4390', color: 'white', fontSize: '14px', fontFamily: 'sans-serif', fontWeight: '700', cursor: guardando ? 'default' : 'pointer', opacity: guardando ? 0.7 : 1 }}>
-                {guardando ? 'Guardando...' : '🚀 Publicar noticia'}
+              <button onClick={() => guardar(true)} disabled={guardando || subiendoImagen} style={{ flex: 2, minWidth: '160px', padding: '14px', borderRadius: '8px', border: 'none', background: '#0B4390', color: 'white', fontSize: '14px', fontFamily: 'sans-serif', fontWeight: '700', cursor: guardando ? 'default' : 'pointer', opacity: guardando ? 0.7 : 1 }}>
+                {guardando || subiendoImagen ? 'Subiendo...' : '🚀 Publicar noticia'}
               </button>
             </div>
 
