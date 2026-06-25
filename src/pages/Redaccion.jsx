@@ -23,7 +23,7 @@ export default function Redaccion() {
   const [excerpt, setExcerpt] = useState('')
   const [contenido, setContenido] = useState('')
   const [imagenUrl, setImagenUrl] = useState('')
-  const [categoria, setCategoria] = useState('Noticias')
+  const [categoria, setCategoria] = useState('Real Zaragoza')
   const [publicada, setPublicada] = useState(false)
   const [guardando, setGuardando] = useState(false)
   const [mensaje, setMensaje] = useState('')
@@ -53,7 +53,7 @@ export default function Redaccion() {
     setExcerpt('')
     setContenido('')
     setImagenUrl('')
-    setCategoria('Noticias')
+    setCategoria('Real Zaragoza')
     setPublicada(false)
     setVista('editor')
   }
@@ -64,7 +64,7 @@ export default function Redaccion() {
     setExcerpt(noticia.excerpt || '')
     setContenido(noticia.contenido || '')
     setImagenUrl(noticia.imagen_url || '')
-    setCategoria(noticia.categoria || 'Noticias')
+    setCategoria(noticia.categoria || 'Real Zaragoza')
     setPublicada(noticia.publicada || false)
     setVista('editor')
   }
