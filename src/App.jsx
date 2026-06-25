@@ -8,7 +8,9 @@ import Perfil from './pages/Perfil'
 import Rumores from './pages/Rumores'
 import Contenidos from './pages/Contenidos'
 import OnTour from './pages/OnTour'
+import Noticias from './pages/Noticias'
 import NoticiaDetalle from './pages/NoticiaDetalle'
+import Redaccion from './pages/Redaccion'
 
 export default function App() {
   return (
@@ -20,8 +22,9 @@ export default function App() {
         <Route path="/tierlist" element={<Tierlist />} />
         <Route path="/comunidad" element={<Comunidad />} />
         <Route path="/perfil" element={<Perfil />} />
-        <Route path="/noticias" element={<Rumores />} />
+        <Route path="/noticias" element={<Noticias />} />
         <Route path="/noticias/:slug" element={<NoticiaDetalle />} />
+        <Route path="/redaccion" element={<Redaccion />} />
         <Route path="/contenidos" element={<Contenidos />} />
         <Route path="/on-tour" element={<OnTour />} />
       </Routes>

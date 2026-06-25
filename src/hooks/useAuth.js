@@ -32,7 +32,7 @@ export default function useAuth() {
   async function fetchProfile(userId) {
     const { data } = await supabase
       .from('profiles')
-      .select('username, avatar_url, name')
+      .select('username, avatar_url, name, es_redactor')
       .eq('id', userId)
       .single()
     setProfile(data || null)
