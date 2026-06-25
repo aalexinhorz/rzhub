@@ -8,6 +8,7 @@ import Perfil from './pages/Perfil'
 import Rumores from './pages/Rumores'
 import Contenidos from './pages/Contenidos'
 import OnTour from './pages/OnTour'
+import NoticiaDetalle from './pages/NoticiaDetalle'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/comunidad" element={<Comunidad />} />
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/noticias" element={<Rumores />} />
+        <Route path="/noticias/:slug" element={<NoticiaDetalle />} />
         <Route path="/contenidos" element={<Contenidos />} />
         <Route path="/on-tour" element={<OnTour />} />
       </Routes>

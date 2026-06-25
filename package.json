@@ -17,9 +17,11 @@
     "@supabase/supabase-js": "^2.107.0",
     "dom-to-image-more": "^3.10.0",
     "html2canvas": "^1.4.1",
+    "leaflet": "^1.9.4",
     "node-fetch": "^3.3.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^6.30.4"
   },
   "devDependencies": {
