@@ -118,7 +118,7 @@ export default function Redaccion() {
 
   if (!profile.es_redactor) return null
 
-  const categorias = ['Noticias', 'Mercado', 'Análisis', 'Opinión', 'Previa', 'Crónica']
+  const categorias = ['Real Zaragoza', 'Mercado', 'Análisis', 'Opinión', 'Previa', 'Crónica']
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f8f9fa' }}>
