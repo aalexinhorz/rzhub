@@ -17,6 +17,7 @@ export default function Redaccion() {
   const { user, profile, loading } = useAuth()
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
+  const slugEditadoManualmente = useRef(false)
   const [noticias, setNoticias] = useState([])
   const [vista, setVista] = useState('lista')
   const [editando, setEditando] = useState(null)
@@ -48,7 +49,7 @@ export default function Redaccion() {
   }, [user, profile])
 
   useEffect(() => {
-    if (!editando && titulo && !slugPersonalizado) {
+    if (!editando && !slugEditadoManualmente.current) {
       setSlugPersonalizado(generarSlug(titulo))
     }
   }, [titulo])
@@ -77,6 +78,7 @@ export default function Redaccion() {
     setMetaDescripcion('')
     setOgImagen('')
     setSeoAbierto(false)
+    slugEditadoManualmente.current = false
     setVista('editor')
   }
 
@@ -95,7 +97,13 @@ export default function Redaccion() {
     setMetaDescripcion(noticia.meta_descripcion || '')
     setOgImagen(noticia.og_imagen || '')
     setSeoAbierto(false)
+    slugEditadoManualmente.current = true
     setVista('editor')
+  }
+
+  function handleSlugManual(e) {
+    slugEditadoManualmente.current = true
+    setSlugPersonalizado(e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))
   }
 
   function handleImagenFile(e) {
@@ -135,9 +143,7 @@ export default function Redaccion() {
       if (!urlFinal) { setGuardando(false); return }
     }
 
-    const slugFinal = slugPersonalizado.trim()
-      ? slugPersonalizado.trim().toLowerCase().replace(/\s+/g, '-')
-      : (editando?.slug || generarSlug(titulo) + '-' + Date.now())
+    const slugFinal = slugPersonalizado.trim() || (editando?.slug || generarSlug(titulo) + '-' + Date.now())
 
     const datos = {
       titulo: titulo.trim(),
@@ -254,7 +260,6 @@ export default function Redaccion() {
               </div>
             )}
 
-            {/* Panel principal */}
             <div style={{ background: 'white', borderRadius: '16px', padding: '32px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
 
               <div style={{ marginBottom: '20px' }}>
@@ -269,7 +274,6 @@ export default function Redaccion() {
                 </select>
               </div>
 
-              {/* Imagen */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ fontSize: '11px', color: '#888', fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Imagen destacada</label>
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
@@ -312,10 +316,7 @@ export default function Redaccion() {
 
             {/* Panel SEO */}
             <div style={{ background: 'white', borderRadius: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
-              <button
-                onClick={() => setSeoAbierto(!seoAbierto)}
-                style={{ width: '100%', padding: '18px 24px', background: 'none', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', fontFamily: 'sans-serif' }}
-              >
+              <button onClick={() => setSeoAbierto(!seoAbierto)} style={{ width: '100%', padding: '18px 24px', background: 'none', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', fontFamily: 'sans-serif' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ fontSize: '18px' }}>🔍</span>
                   <span style={{ fontWeight: '700', fontSize: '15px', color: '#111' }}>SEO</span>
@@ -327,7 +328,6 @@ export default function Redaccion() {
               {seoAbierto && (
                 <div style={{ padding: '0 24px 28px', borderTop: '1px solid #f0f0f0' }}>
 
-                  {/* Preview Google */}
                   <div style={{ background: '#f8f9fa', borderRadius: '10px', padding: '16px 18px', margin: '20px 0 24px' }}>
                     <p style={{ margin: '0 0 8px', fontFamily: 'sans-serif', fontSize: '11px', color: '#aaa', fontWeight: '600', textTransform: 'uppercase' }}>Vista previa en Google</p>
                     <p style={{ margin: '0 0 2px', fontFamily: 'sans-serif', fontSize: '18px', color: '#1a0dab', fontWeight: '400', lineHeight: '1.3', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -363,7 +363,7 @@ export default function Redaccion() {
                     <label style={{ fontSize: '11px', color: '#888', fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Slug (URL del artículo)</label>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f8f9fa', borderRadius: '8px', border: '2px solid #ddd', padding: '0 12px', overflow: 'hidden' }}>
                       <span style={{ fontFamily: 'sans-serif', fontSize: '13px', color: '#aaa', whiteSpace: 'nowrap' }}>rzhub.es/noticias/</span>
-                      <input value={slugPersonalizado} onChange={e => setSlugPersonalizado(e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''))} placeholder={generarSlug(titulo) || 'slug-del-articulo'} style={{ flex: 1, padding: '12px 0', border: 'none', fontSize: '14px', fontFamily: 'sans-serif', background: 'transparent', outline: 'none' }} />
+                      <input value={slugPersonalizado} onChange={handleSlugManual} placeholder={generarSlug(titulo) || 'slug-del-articulo'} style={{ flex: 1, padding: '12px 0', border: 'none', fontSize: '14px', fontFamily: 'sans-serif', background: 'transparent', outline: 'none' }} />
                     </div>
                     <p style={{ margin: '4px 0 0', fontFamily: 'sans-serif', fontSize: '12px', color: '#aaa' }}>Se genera automáticamente del título. Solo letras, números y guiones.</p>
                   </div>
