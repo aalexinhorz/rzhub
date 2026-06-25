@@ -241,8 +241,8 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)' }}
           >
             {hero.imagen_url && (
-              <div style={{ width: '100%', height: '260px', overflow: 'hidden' }}>
-                <img src={hero.imagen_url} alt={hero.titulo} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              <div style={{ width: '100%', background: '#f0f0f0' }}>
+                <img src={hero.imagen_url} alt={hero.titulo} style={{ width: '100%', display: 'block', objectFit: 'contain', maxHeight: '400px' }} />
               </div>
             )}
             <div style={{ padding: '20px 24px 24px' }}>
@@ -273,8 +273,8 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
               onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)' }}
             >
               {post.imagen_url && (
-                <div style={{ width: '100%', height: '160px', overflow: 'hidden' }}>
-                  <img src={post.imagen_url} alt={post.titulo} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                <div style={{ width: '100%', background: '#f0f0f0' }}>
+                  <img src={post.imagen_url} alt={post.titulo} style={{ width: '100%', display: 'block', objectFit: 'contain', maxHeight: '180px' }} />
                 </div>
               )}
               <div style={{ padding: '14px 16px 18px', flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -304,8 +304,8 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)' }}
               >
                 {post.imagen_url && (
-                  <div style={{ width: '90px', minWidth: '90px', height: '70px', overflow: 'hidden' }}>
-                    <img src={post.imagen_url} alt={post.titulo} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  <div style={{ width: '90px', minWidth: '90px', height: '70px', overflow: 'hidden', background: '#f0f0f0' }}>
+                    <img src={post.imagen_url} alt={post.titulo} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
                   </div>
                 )}
                 <div style={{ padding: '10px 12px 10px 0', flex: 1 }}>
