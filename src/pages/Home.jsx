@@ -96,13 +96,7 @@ function PartidoWidget() {
   const enVivo = usePartidoEnVivo()
   const partido = enVivo || proximo
 
-  if (loading) return (
-    <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '16px', textAlign: 'center', maxWidth: '420px', width: '100%' }}>
-      <p style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif', fontSize: '13px' }}>Cargando partido...</p>
-    </div>
-  )
-
-  if (!partido) return null
+  if (loading || !partido) return null
 
   const esEnVivo = !!enVivo
   const home = partido.homeTeam
@@ -113,20 +107,18 @@ function PartidoWidget() {
 
   return (
     <div style={{
-      background: 'rgba(255,255,255,0.1)',
-      borderRadius: '12px',
-      padding: '16px 20px',
-      maxWidth: '420px',
-      width: '100%',
-      backdropFilter: 'blur(10px)',
-      border: '1px solid rgba(255,255,255,0.2)',
+      background: 'white',
+      borderRadius: '10px',
+      padding: '14px 20px',
+      border: '1px solid #e8e8e8',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-        <span style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>
+        <span style={{ color: '#0B4390', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
           {esEnVivo ? '🔴 En directo' : 'Próximo partido'}
         </span>
         {!esEnVivo && partido.startTimestamp && (
-          <span style={{ color: '#f5c400', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '700' }}>
+          <span style={{ color: '#f5c400', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '700', background: '#0B4390', padding: '2px 8px', borderRadius: '4px' }}>
             <Countdown timestamp={partido.startTimestamp} />
           </span>
         )}
@@ -135,42 +127,38 @@ function PartidoWidget() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flex: 1 }}>
           <img src={`https://images.fotmob.com/image_resources/logo/teamlogo/${home.id}_large.png`} alt={home.name}
-            style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+            style={{ width: '36px', height: '36px', objectFit: 'contain' }}
             onError={e => { e.target.style.display = 'none' }} />
-          <span style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>{home.shortName || home.name}</span>
+          <span style={{ color: '#111', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>{home.shortName || home.name}</span>
         </div>
-
         <div style={{ textAlign: 'center', flexShrink: 0 }}>
           {esEnVivo ? (
             <div>
-              <div style={{ color: 'white', fontFamily: 'Humane, sans-serif', fontSize: '36px', fontWeight: '700', lineHeight: 1 }}>
+              <div style={{ color: '#111', fontFamily: 'Humane, sans-serif', fontSize: '32px', fontWeight: '700', lineHeight: 1 }}>
                 {partido.homeScore?.current ?? 0} - {partido.awayScore?.current ?? 0}
               </div>
-              <div style={{ color: '#f5c400', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', marginTop: '4px' }}>
+              <div style={{ color: '#e65100', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', marginTop: '4px' }}>
                 {partido.time?.played || ''}′
               </div>
             </div>
           ) : (
             <div>
-              <div style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '16px', fontWeight: '700' }}>VS</div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'sans-serif', fontSize: '11px', marginTop: '4px' }}>{fechaStr} · {horaStr}</div>
+              <div style={{ color: '#111', fontFamily: 'sans-serif', fontSize: '15px', fontWeight: '700' }}>VS</div>
+              <div style={{ color: '#999', fontFamily: 'sans-serif', fontSize: '11px', marginTop: '4px' }}>{fechaStr} · {horaStr}</div>
             </div>
           )}
         </div>
-
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flex: 1 }}>
           <img src={`https://images.fotmob.com/image_resources/logo/teamlogo/${away.id}_large.png`} alt={away.name}
-            style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+            style={{ width: '36px', height: '36px', objectFit: 'contain' }}
             onError={e => { e.target.style.display = 'none' }} />
-          <span style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>{away.shortName || away.name}</span>
+          <span style={{ color: '#111', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>{away.shortName || away.name}</span>
         </div>
       </div>
 
       {partido.tournament && (
-        <div style={{ textAlign: 'center', marginTop: '10px' }}>
-          <span style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif', fontSize: '11px' }}>
-            {partido.tournament.name}
-          </span>
+        <div style={{ textAlign: 'center', marginTop: '8px' }}>
+          <span style={{ color: '#bbb', fontFamily: 'sans-serif', fontSize: '11px' }}>{partido.tournament.name}</span>
         </div>
       )}
     </div>
@@ -183,17 +171,17 @@ function LiveBanner({ live }) {
     <a href={`https://www.youtube.com/watch?v=${live.id}`} target="_blank" rel="noopener noreferrer"
       style={{
         display: 'flex', alignItems: 'center', gap: '12px',
-        background: 'rgba(255,0,0,0.12)', border: '1px solid rgba(255,0,0,0.4)',
-        borderRadius: '12px', padding: '12px 18px', maxWidth: '420px', width: '100%',
-        textDecoration: 'none', backdropFilter: 'blur(10px)',
+        background: '#fff5f5', border: '1px solid rgba(255,0,0,0.3)',
+        borderRadius: '8px', padding: '10px 16px',
+        textDecoration: 'none',
       }}
     >
-      <span style={{ fontSize: '20px', animation: 'pulse-live 2s infinite' }}>🔴</span>
+      <span style={{ fontSize: '18px', animation: 'pulse-live 2s infinite' }}>🔴</span>
       <div style={{ minWidth: 0 }}>
-        <div style={{ color: '#ff5555', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
+        <div style={{ color: '#ff5555', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
           Palmadas al Viento en directo
         </div>
-        <div style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ color: '#333', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {live.titulo}
         </div>
       </div>
@@ -212,14 +200,18 @@ function formatFecha(dateStr) {
 }
 
 function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
-  if (!noticias || noticias.length === 0) return null
+  if (!noticias || noticias.length === 0) return (
+    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '80px 20px', textAlign: 'center' }}>
+      <p style={{ fontFamily: 'sans-serif', color: '#999', fontSize: '15px' }}>No hay noticias publicadas todavía.</p>
+    </div>
+  )
 
   const hero = noticias[0]
   const secundarias = noticias.slice(1, 5)
   const masNoticias = noticias.slice(5, 8)
 
   return (
-    <div style={{ width: '100%', background: '#f8f9fa', padding: '40px 0 48px' }}>
+    <div style={{ width: '100%', background: '#f8f9fa', padding: '32px 0 48px' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 20px' }}>
 
         {/* Cabecera */}
@@ -232,13 +224,13 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
           </button>
         </div>
 
-        {/* Layout principal: hero izquierda + columna derecha */}
-        <div style={{ display: 'flex', gap: '24px', marginBottom: '32px' }}>
+        {/* Hero izquierda + columna derecha */}
+        <div style={{ display: 'flex', gap: '24px', marginBottom: '32px', flexWrap: 'wrap' }}>
 
-          {/* Hero izquierda */}
+          {/* Hero */}
           <div
             onClick={() => onAbrirNoticia(hero.slug)}
-            style={{ flex: '0 0 60%', cursor: 'pointer', background: 'white', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', transition: 'transform 0.2s, box-shadow 0.2s' }}
+            style={{ flex: '0 0 calc(60% - 12px)', minWidth: '280px', cursor: 'pointer', background: 'white', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', transition: 'transform 0.2s, box-shadow 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.13)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)' }}
           >
@@ -249,7 +241,7 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
             )}
             <div style={{ padding: '18px 20px 22px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ background: '#0B4390', color: 'white', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                <span style={{ background: '#0B4390', color: 'white', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '3px', textTransform: 'uppercase' }}>
                   {hero.categoria || 'Noticias'}
                 </span>
                 <span style={{ color: '#aaa', fontFamily: 'sans-serif', fontSize: '12px' }}>{formatFecha(hero.created_at)}</span>
@@ -266,13 +258,13 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
             </div>
           </div>
 
-          {/* Columna derecha: noticias secundarias apiladas */}
-          <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '0' }}>
+          {/* Columna derecha */}
+          <div style={{ flex: '1', minWidth: '240px', display: 'flex', flexDirection: 'column', background: 'white', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}>
             {secundarias.map((post, i) => (
               <div
                 key={post.id}
                 onClick={() => onAbrirNoticia(post.slug)}
-                style={{ cursor: 'pointer', background: 'white', padding: '14px 16px', borderBottom: i < secundarias.length - 1 ? '1px solid #f0f0f0' : 'none', display: 'flex', gap: '12px', alignItems: 'flex-start', transition: 'background 0.15s', borderRadius: i === 0 ? '10px 10px 0 0' : i === secundarias.length - 1 ? '0 0 10px 10px' : '0', boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}
+                style={{ cursor: 'pointer', padding: '14px 16px', borderBottom: i < secundarias.length - 1 ? '1px solid #f0f0f0' : 'none', display: 'flex', gap: '12px', alignItems: 'flex-start', transition: 'background 0.15s', flex: 1 }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#f8f9fa' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'white' }}
               >
@@ -283,7 +275,7 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
                 )}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px' }}>
-                    <span style={{ background: '#f5c400', color: '#0B4390', fontFamily: 'sans-serif', fontSize: '9px', fontWeight: '800', padding: '2px 6px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                    <span style={{ background: '#f5c400', color: '#0B4390', fontFamily: 'sans-serif', fontSize: '9px', fontWeight: '800', padding: '2px 6px', borderRadius: '3px', textTransform: 'uppercase' }}>
                       {post.categoria || 'Noticias'}
                     </span>
                     <span style={{ color: '#bbb', fontFamily: 'sans-serif', fontSize: '11px' }}>{formatFecha(post.created_at)}</span>
@@ -326,12 +318,6 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
         )}
 
       </div>
-
-      <style>{`
-        @media (max-width: 640px) {
-          .noticias-main { flex-direction: column !important; }
-        }
-      `}</style>
     </div>
   )
 }
@@ -340,6 +326,8 @@ export default function Home() {
   const navigate = useNavigate()
   const live = useLiveStream()
   const [noticias, setNoticias] = useState([])
+  const { partido: proximo } = useProximoPartido()
+  const enVivo = usePartidoEnVivo()
 
   useEffect(() => {
     async function fetchNoticias() {
@@ -355,77 +343,21 @@ export default function Home() {
   }, [])
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', flexDirection: 'column', background: '#f8f9fa' }}>
 
-      <div style={{
-        background: '#0B4390',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '24px',
-        padding: '40px 20px',
-      }}>
-        <img
-          src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png"
-          alt="Palmadas al Viento"
-          style={{ width: '280px', maxWidth: '85vw' }}
-        />
-
-        <p style={{
-          color: 'rgba(255,255,255,0.75)',
-          fontSize: 'clamp(14px, 4vw, 18px)',
-          textAlign: 'center',
-          maxWidth: '480px',
-          margin: 0,
-          fontFamily: 'sans-serif',
-          lineHeight: '1.5',
-        }}>
-          La web del Real Zaragoza. Crea tu alineación, valora jugadores y mucho más.
-        </p>
-
+      {/* Barra superior con partido y live */}
+      <div style={{ background: '#0B4390', padding: '8px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
         <LiveBanner live={live} />
-        <PartidoWidget />
+      </div>
 
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '500px' }}>
-          <button onClick={() => navigate('/lineup')} style={{
-            background: '#f5c400', color: '#0B4390', border: 'none',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '700',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}>
-            Crear alineación
-          </button>
-          <button onClick={() => navigate('/tierlist')} style={{
-            background: 'transparent', color: '#ffffff',
-            border: '2px solid rgba(255,255,255,0.4)',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}>
-            Tier List
-          </button>
-          <button onClick={() => navigate('/noticias')} style={{
-            background: 'transparent', color: '#ffffff',
-            border: '2px solid rgba(255,255,255,0.4)',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}>
-            Últimas Noticias
-          </button>
-          <button onClick={() => navigate('/contenidos')} style={{
-            background: 'transparent', color: '#ffffff',
-            border: '2px solid rgba(255,255,255,0.4)',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}>
-            Contenidos
-          </button>
+      {/* Widget partido en franja azul compacta */}
+      <div style={{ background: '#f0f4ff', borderBottom: '1px solid #dde4f5', padding: '12px 20px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <PartidoWidget />
         </div>
       </div>
 
+      {/* Noticias */}
       <SeccionNoticias
         noticias={noticias}
         onVerTodas={() => navigate('/noticias')}
