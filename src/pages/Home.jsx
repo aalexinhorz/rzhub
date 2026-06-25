@@ -215,81 +215,87 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
   if (!noticias || noticias.length === 0) return null
 
   const hero = noticias[0]
-  const secundarias = noticias.slice(1, 4)
-  const masNoticias = noticias.slice(4, 7)
+  const secundarias = noticias.slice(1, 5)
+  const masNoticias = noticias.slice(5, 8)
 
   return (
-    <div style={{ width: '100%', background: '#f8f9fa', paddingTop: '48px', paddingBottom: '48px' }}>
+    <div style={{ width: '100%', background: '#f8f9fa', padding: '40px 0 48px' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 20px' }}>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px', borderBottom: '3px solid #0B4390', paddingBottom: '12px' }}>
-          <h2 style={{ margin: 0, fontFamily: 'sans-serif', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: '800', color: '#0B4390', textTransform: 'uppercase', letterSpacing: '1px' }}>
+        {/* Cabecera */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', borderBottom: '3px solid #0B4390', paddingBottom: '10px' }}>
+          <h2 style={{ margin: 0, fontFamily: 'sans-serif', fontSize: 'clamp(16px, 2.5vw, 20px)', fontWeight: '900', color: '#0B4390', textTransform: 'uppercase', letterSpacing: '1.5px' }}>
             Últimas Noticias
           </h2>
-          <button onClick={onVerTodas} style={{ background: 'none', border: 'none', color: '#0B4390', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '700', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px', textDecoration: 'underline' }}>
+          <button onClick={onVerTodas} style={{ background: 'none', border: 'none', color: '#0B4390', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '700', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.5px', textDecoration: 'underline' }}>
             Ver todas →
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '32px' }}>
+        {/* Layout principal: hero izquierda + columna derecha */}
+        <div style={{ display: 'flex', gap: '24px', marginBottom: '32px' }}>
 
-          {/* Hero */}
+          {/* Hero izquierda */}
           <div
             onClick={() => onAbrirNoticia(hero.slug)}
-            style={{ gridColumn: 'span 2', cursor: 'pointer', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', transition: 'transform 0.2s, box-shadow 0.2s' }}
+            style={{ flex: '0 0 60%', cursor: 'pointer', background: 'white', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', transition: 'transform 0.2s, box-shadow 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.13)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)' }}
           >
             {hero.imagen_url && (
-              <div style={{ width: '100%', background: '#f0f0f0' }}>
-                <img src={hero.imagen_url} alt={hero.titulo} style={{ width: '100%', display: 'block', objectFit: 'contain', maxHeight: '400px' }} />
+              <div style={{ width: '100%', height: '340px', overflow: 'hidden', background: '#eee' }}>
+                <img src={hero.imagen_url} alt={hero.titulo} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               </div>
             )}
-            <div style={{ padding: '20px 24px 24px' }}>
+            <div style={{ padding: '18px 20px 22px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ background: '#0B4390', color: 'white', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
+                <span style={{ background: '#0B4390', color: 'white', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   {hero.categoria || 'Noticias'}
                 </span>
-                <span style={{ color: '#999', fontFamily: 'sans-serif', fontSize: '12px' }}>{formatFecha(hero.created_at)}</span>
+                <span style={{ color: '#aaa', fontFamily: 'sans-serif', fontSize: '12px' }}>{formatFecha(hero.created_at)}</span>
+                {hero.autor && <span style={{ color: '#aaa', fontFamily: 'sans-serif', fontSize: '12px' }}>· {hero.autor}</span>}
               </div>
-              <h3 style={{ margin: '0 0 10px', fontFamily: 'sans-serif', fontSize: 'clamp(18px, 2.5vw, 24px)', fontWeight: '800', color: '#111', lineHeight: '1.25' }}>
+              <h3 style={{ margin: '0 0 10px', fontFamily: 'sans-serif', fontSize: 'clamp(18px, 2.2vw, 26px)', fontWeight: '900', color: '#111', lineHeight: '1.2' }}>
                 {hero.titulo}
               </h3>
               {hero.excerpt && (
-                <p style={{ margin: 0, fontFamily: 'sans-serif', fontSize: '14px', color: '#555', lineHeight: '1.6', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                <p style={{ margin: 0, fontFamily: 'sans-serif', fontSize: '14px', color: '#666', lineHeight: '1.6', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                   {hero.excerpt}
                 </p>
               )}
             </div>
           </div>
 
-          {/* Secundarias */}
-          {secundarias.map(post => (
-            <div
-              key={post.id}
-              onClick={() => onAbrirNoticia(post.slug)}
-              style={{ cursor: 'pointer', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', transition: 'transform 0.2s, box-shadow 0.2s', display: 'flex', flexDirection: 'column' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.13)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)' }}
-            >
-              {post.imagen_url && (
-                <div style={{ width: '100%', background: '#f0f0f0' }}>
-                  <img src={post.imagen_url} alt={post.titulo} style={{ width: '100%', display: 'block', objectFit: 'contain', maxHeight: '180px' }} />
+          {/* Columna derecha: noticias secundarias apiladas */}
+          <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '0' }}>
+            {secundarias.map((post, i) => (
+              <div
+                key={post.id}
+                onClick={() => onAbrirNoticia(post.slug)}
+                style={{ cursor: 'pointer', background: 'white', padding: '14px 16px', borderBottom: i < secundarias.length - 1 ? '1px solid #f0f0f0' : 'none', display: 'flex', gap: '12px', alignItems: 'flex-start', transition: 'background 0.15s', borderRadius: i === 0 ? '10px 10px 0 0' : i === secundarias.length - 1 ? '0 0 10px 10px' : '0', boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#f8f9fa' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'white' }}
+              >
+                {post.imagen_url && (
+                  <div style={{ width: '80px', minWidth: '80px', height: '60px', borderRadius: '6px', overflow: 'hidden', background: '#eee' }}>
+                    <img src={post.imagen_url} alt={post.titulo} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  </div>
+                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px' }}>
+                    <span style={{ background: '#f5c400', color: '#0B4390', fontFamily: 'sans-serif', fontSize: '9px', fontWeight: '800', padding: '2px 6px', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.3px' }}>
+                      {post.categoria || 'Noticias'}
+                    </span>
+                    <span style={{ color: '#bbb', fontFamily: 'sans-serif', fontSize: '11px' }}>{formatFecha(post.created_at)}</span>
+                  </div>
+                  <h4 style={{ margin: 0, fontFamily: 'sans-serif', fontSize: 'clamp(13px, 1.5vw, 15px)', fontWeight: '700', color: '#111', lineHeight: '1.3', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    {post.titulo}
+                  </h4>
                 </div>
-              )}
-              <div style={{ padding: '14px 16px 18px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                  <span style={{ background: '#f5c400', color: '#0B4390', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '800', padding: '2px 7px', borderRadius: '4px', textTransform: 'uppercase' }}>
-                    {post.categoria || 'Noticias'}
-                  </span>
-                  <span style={{ color: '#bbb', fontFamily: 'sans-serif', fontSize: '11px' }}>{formatFecha(post.created_at)}</span>
-                </div>
-                <h4 style={{ margin: 0, fontFamily: 'sans-serif', fontSize: 'clamp(14px, 2vw, 16px)', fontWeight: '700', color: '#111', lineHeight: '1.3', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                  {post.titulo}
-                </h4>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
         </div>
 
         {/* Fila inferior */}
@@ -304,8 +310,8 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
                 onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)' }}
               >
                 {post.imagen_url && (
-                  <div style={{ width: '90px', minWidth: '90px', height: '70px', overflow: 'hidden', background: '#f0f0f0' }}>
-                    <img src={post.imagen_url} alt={post.titulo} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+                  <div style={{ width: '90px', minWidth: '90px', height: '70px', overflow: 'hidden', background: '#eee' }}>
+                    <img src={post.imagen_url} alt={post.titulo} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </div>
                 )}
                 <div style={{ padding: '10px 12px 10px 0', flex: 1 }}>
@@ -320,6 +326,12 @@ function SeccionNoticias({ noticias, onVerTodas, onAbrirNoticia }) {
         )}
 
       </div>
+
+      <style>{`
+        @media (max-width: 640px) {
+          .noticias-main { flex-direction: column !important; }
+        }
+      `}</style>
     </div>
   )
 }
@@ -336,7 +348,7 @@ export default function Home() {
         .select('*')
         .eq('publicada', true)
         .order('created_at', { ascending: false })
-        .limit(7)
+        .limit(8)
       setNoticias(data || [])
     }
     fetchNoticias()
