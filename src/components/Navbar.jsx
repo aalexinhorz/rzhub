@@ -16,7 +16,6 @@ export default function Navbar() {
     { to: '/tierlist', label: 'Tier List' },
     { to: '/comunidad', label: 'Comunidad' },
     { to: '/noticias', label: 'Noticias' },
-    { to: '/contenidos', label: 'Contenidos' },
     { to: '/on-tour', label: 'On Tour' },
   ]
 

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Lineup from './pages/Lineup'
@@ -25,7 +25,7 @@ export default function App() {
         <Route path="/noticias" element={<Noticias />} />
         <Route path="/noticias/:slug" element={<NoticiaDetalle />} />
         <Route path="/redaccion" element={<Redaccion />} />
-        <Route path="/contenidos" element={<Contenidos />} />
+        <Route path="/contenidos" element={<Navigate to="/" replace />} />
         <Route path="/on-tour" element={<OnTour />} />
       </Routes>
     </div>
