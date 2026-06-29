@@ -2,16 +2,6 @@ import { useState } from 'react'
 
 const ICS_URL = 'https://rzhub.es/calendario.ics'
 
-const PARTIDOS = [
-  { tipo: 'Amistoso', rival: 'Utebo', fecha: '29 Jul', sede: 'local' },
-  { tipo: 'Amistoso', rival: 'Barbastro', fecha: '1 Ago', sede: 'visitante' },
-  { tipo: 'Amistoso', rival: 'FC Andorra', fecha: '6 Ago', sede: 'local' },
-  { tipo: 'Amistoso', rival: 'Real Sociedad B', fecha: '8 Ago', sede: 'local' },
-  { tipo: 'Amistoso', rival: 'UD Logroñés', fecha: '14 Ago', sede: 'visitante' },
-  { tipo: 'Amistoso', rival: 'Villarreal B', fecha: '15 Ago', sede: 'visitante' },
-  { tipo: 'Amistoso', rival: 'Bilbao Athletic', fecha: '21 Ago', sede: 'local' },
-]
-
 export default function Calendario() {
   const [copiado, setCopiado] = useState(false)
 
@@ -238,96 +228,6 @@ export default function Calendario() {
           Compatible con Apple Calendar, Google Calendar, Outlook y cualquier app que soporte calendarios ICS.
           Los cambios de horario se actualizan automáticamente.
         </p>
-      </div>
-
-      {/* LISTA DE PARTIDOS */}
-      <div style={{
-        maxWidth: '560px',
-        margin: '56px auto 0',
-        padding: '0 24px',
-      }}>
-        <p style={{
-          fontFamily: 'Archivo, sans-serif',
-          fontWeight: '300',
-          fontSize: '13px',
-          letterSpacing: '3px',
-          textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.4)',
-          marginBottom: '16px',
-        }}>
-          Pretemporada 2026
-        </p>
-
-        <div style={{
-          backgroundColor: '#111',
-          border: '1px solid #1e1e1e',
-          borderRadius: '12px',
-          overflow: 'hidden',
-        }}>
-          {PARTIDOS.map((p, i) => (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '16px 20px',
-                borderBottom: i < PARTIDOS.length - 1 ? '1px solid #1e1e1e' : 'none',
-                gap: '16px',
-              }}
-            >
-              <span style={{
-                fontFamily: 'Archivo, sans-serif',
-                fontWeight: '700',
-                fontSize: '13px',
-                color: 'rgba(255,255,255,0.9)',
-                minWidth: '48px',
-              }}>
-                {p.fecha}
-              </span>
-              <div style={{
-                width: '6px', height: '6px', borderRadius: '50%',
-                backgroundColor: p.sede === 'local' ? '#0B4390' : '#333',
-                flexShrink: 0,
-              }} />
-              <span style={{
-                fontFamily: 'Archivo, sans-serif',
-                fontWeight: '700',
-                fontSize: '15px',
-                flex: 1,
-                color: 'rgba(255,255,255,0.85)',
-              }}>
-                {p.rival}
-              </span>
-              <span style={{
-                fontSize: '11px',
-                color: 'rgba(255,255,255,0.25)',
-                fontFamily: 'Archivo, sans-serif',
-                fontWeight: '300',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-              }}>
-                {p.tipo}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          marginTop: '16px',
-          padding: '0 4px',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#0B4390' }} />
-            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontFamily: 'Archivo, sans-serif', fontWeight: '300' }}>Local</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#333' }} />
-            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontFamily: 'Archivo, sans-serif', fontWeight: '300' }}>Visitante</span>
-          </div>
-        </div>
       </div>
 
     </div>
