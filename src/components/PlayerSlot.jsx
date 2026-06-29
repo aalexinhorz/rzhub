@@ -179,10 +179,10 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
 
   return (
     <>
-      <div ref={setNodeRef} style={{ position: 'absolute', left: `${slot.x}%`, top: `${slot.y}%`, transform: 'translate(-50%, -50%)', width: slotW, display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
+      <div ref={setNodeRef} data-slot-container style={{ position: 'absolute', left: `${slot.x}%`, top: `${slot.y}%`, transform: 'translate(-50%, -50%)', width: slotW, display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
         {player ? (
-          <div style={{ width: cardW, borderRadius: '8px', border: `3px solid ${borderColor}`, overflow: 'hidden', background: 'white', cursor: 'pointer', boxShadow: 'none', boxSizing: 'border-box' }}>
-            <div onClick={openModal} style={{ width: '100%', height: cardH, background: '#f5f5f5', position: 'relative', overflow: 'hidden' }}>
+          <div data-card-container style={{ width: cardW, borderRadius: '8px', border: `3px solid ${borderColor}`, overflow: 'hidden', background: 'white', cursor: 'pointer', boxShadow: 'none', boxSizing: 'border-box' }}>
+            <div data-card-photo onClick={openModal} style={{ width: '100%', height: cardH, background: '#f5f5f5', position: 'relative', overflow: 'hidden' }}>
               <PlayerPhoto src={player.photo} alt={player.name} />
               {player.teamLogo && (
                 <img crossOrigin="anonymous" src={player.teamLogo} alt="" style={{ position: 'absolute', top: '4px', left: '4px', width: '16px', height: '16px', objectFit: 'contain', zIndex: 3, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }} />

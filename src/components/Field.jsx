@@ -15,11 +15,36 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
     try {
       const img = fieldRef.current.querySelector('img')
       img.src = '/CAMPO_PARA_WEB.png'
-      await new Promise(r => setTimeout(r, 300))
+
+      const fieldRect = fieldRef.current.getBoundingClientRect()
+      const fieldW = fieldRect.width
+
+      const cards = fieldRef.current.querySelectorAll('[data-card]')
+      const cardContainers = fieldRef.current.querySelectorAll('[data-card-container]')
+      const cardPhotos = fieldRef.current.querySelectorAll('[data-card-photo]')
+      const slotContainers = fieldRef.current.querySelectorAll('[data-slot-container]')
+
+      const cardWpx = Math.round(fieldW * 0.13)
+      const cardHpx = Math.round(fieldW * 0.11)
+      const slotWpx = Math.round(fieldW * 0.15)
+
+      cards.forEach(el => { el.style.width = `${cardWpx}px` })
+      cardPhotos.forEach(el => { el.style.height = `${cardHpx}px` })
+      slotContainers.forEach(el => { el.style.width = `${slotWpx}px` })
+      cardContainers.forEach(el => { el.style.width = `${cardWpx}px` })
+
+      await new Promise(r => setTimeout(r, 400))
+
       const canvas = await html2canvas(fieldRef.current, {
         scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false,
       })
+
       img.src = '/CAMPO_PARA_WEB.svg'
+      cards.forEach(el => { el.style.width = '' })
+      cardPhotos.forEach(el => { el.style.height = '' })
+      slotContainers.forEach(el => { el.style.width = '' })
+      cardContainers.forEach(el => { el.style.width = '' })
+
       const link = document.createElement('a')
       link.download = `${teamName || 'alineacion'}.png`
       link.href = canvas.toDataURL('image/png')
