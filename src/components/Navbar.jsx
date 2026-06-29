@@ -16,6 +16,7 @@ export default function Navbar() {
     { to: '/tierlist', label: 'Tier List' },
     { to: '/comunidad', label: 'Comunidad' },
     { to: '/noticias', label: 'Noticias' },
+    { to: '/calendario', label: 'Calendario' },
     { to: '/on-tour', label: 'On Tour' },
   ]
 
@@ -33,117 +34,208 @@ export default function Navbar() {
         <nav style={{ display: 'flex', gap: '4px', marginLeft: '20px', flex: 1, alignItems: 'center' }} className="desktop-nav">
           {links.map(link => (
             <Link key={link.to} to={link.to} style={{
-              color: location.pathname === link.to ? '#f5c400' : 'rgba(255,255,255,0.75)',
-              textDecoration: 'none', fontWeight: location.pathname === link.to ? '700' : '400',
-              fontSize: '14px', padding: '6px 10px', borderRadius: '6px',
-              borderBottom: location.pathname === link.to ? '2px solid #f5c400' : '2px solid transparent',
+              color: location.pathname === link.to ? '#ffffff' : 'rgba(255,255,255,0.7)',
+              textDecoration: 'none',
+              padding: '6px 10px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: location.pathname === link.to ? '700' : '500',
+              fontFamily: 'Archivo, sans-serif',
+              background: location.pathname === link.to ? 'rgba(255,255,255,0.15)' : 'transparent',
               whiteSpace: 'nowrap',
             }}>
               {link.label}
             </Link>
           ))}
+
           {live && (
-            <a href={`https://www.youtube.com/watch?v=${live.id}`} target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#ff0000', color: 'white', padding: '5px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', fontFamily: 'sans-serif', textDecoration: 'none', whiteSpace: 'nowrap', animation: 'pulse-live 2s infinite' }}>
-              🔴 EN DIRECTO
+            <a href={live.url} target="_blank" rel="noopener noreferrer" style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              color: '#fff', textDecoration: 'none',
+              padding: '5px 10px', borderRadius: '6px',
+              fontSize: '13px', fontWeight: '700',
+              fontFamily: 'Archivo, sans-serif',
+              background: '#e53e3e',
+              marginLeft: '4px',
+            }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#fff', display: 'inline-block' }} />
+              EN DIRECTO
             </a>
           )}
         </nav>
 
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }} className="desktop-auth">
-          <a href="https://x.com/rzhub_" target="_blank" rel="noopener noreferrer"
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', color: 'white', textDecoration: 'none', flexShrink: 0 }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-            </svg>
-          </a>
+        {/* Usuario / Login */}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
           {user ? (
-            <>
-              <div onClick={() => navigate('/perfil')} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid #f5c400', background: '#f5c400', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <span style={{ color: '#0B4390', fontFamily: 'sans-serif', fontWeight: '700', fontSize: '11px' }}>{iniciales}</span>
-                  )}
-                </div>
-                <span style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap' }}>
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setMenuOpen(o => !o)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  background: 'rgba(255,255,255,0.15)', border: 'none',
+                  borderRadius: '20px', padding: '5px 12px 5px 5px',
+                  cursor: 'pointer', color: 'white',
+                }}
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: '11px', fontWeight: '700', color: '#0B4390' }}>{iniciales}</span>
+                  </div>
+                )}
+                <span style={{ fontSize: '13px', fontFamily: 'Archivo, sans-serif', fontWeight: '600' }}>
                   {nombre.split(' ')[0]}
                 </span>
-              </div>
-              <button onClick={signOut} style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.4)', color: 'rgba(255,255,255,0.75)', borderRadius: '6px', padding: '5px 12px', fontSize: '12px', fontFamily: 'sans-serif', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                Cerrar sesión
               </button>
-            </>
+
+              {menuOpen && (
+                <div style={{
+                  position: 'absolute', right: 0, top: '42px',
+                  background: 'white', borderRadius: '10px',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                  minWidth: '160px', zIndex: 200, overflow: 'hidden',
+                }}>
+                  <button onClick={() => { navigate('/perfil'); setMenuOpen(false) }} style={{
+                    display: 'block', width: '100%', padding: '12px 16px',
+                    background: 'none', border: 'none', textAlign: 'left',
+                    fontSize: '14px', fontFamily: 'Archivo, sans-serif',
+                    cursor: 'pointer', color: '#333',
+                  }}>
+                    Mi perfil
+                  </button>
+                  {profile?.es_redactor && (
+                    <button onClick={() => { navigate('/redaccion'); setMenuOpen(false) }} style={{
+                      display: 'block', width: '100%', padding: '12px 16px',
+                      background: 'none', border: 'none', textAlign: 'left',
+                      fontSize: '14px', fontFamily: 'Archivo, sans-serif',
+                      cursor: 'pointer', color: '#333',
+                    }}>
+                      Redacción
+                    </button>
+                  )}
+                  <button onClick={() => { signOut(); setMenuOpen(false) }} style={{
+                    display: 'block', width: '100%', padding: '12px 16px',
+                    background: 'none', border: 'none', textAlign: 'left',
+                    fontSize: '14px', fontFamily: 'Archivo, sans-serif',
+                    cursor: 'pointer', color: '#e53e3e',
+                    borderTop: '1px solid #f0f0f0',
+                  }}>
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
-            <button onClick={signInWithGoogle} style={{ background: '#f5c400', border: 'none', color: '#0B4390', borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-              Entrar con Google
+            <button onClick={signInWithGoogle} style={{
+              background: 'white', color: '#0B4390', border: 'none',
+              borderRadius: '8px', padding: '7px 14px',
+              fontSize: '13px', fontWeight: '700',
+              fontFamily: 'Archivo, sans-serif', cursor: 'pointer',
+            }}>
+              Iniciar sesión
             </button>
           )}
         </div>
 
-        <button onClick={() => setMenuOpen(!menuOpen)} className="hamburger" style={{ background: 'none', border: 'none', color: 'white', fontSize: '24px', cursor: 'pointer', marginLeft: 'auto', padding: '4px', display: 'none' }}>
-          {menuOpen ? '✕' : '☰'}
+        {/* Hamburguesa móvil */}
+        <button
+          onClick={() => setMenuOpen(o => !o)}
+          className="mobile-menu-btn"
+          style={{
+            display: 'none', background: 'none', border: 'none',
+            cursor: 'pointer', padding: '4px', marginLeft: '12px',
+          }}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+            {menuOpen
+              ? <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
+              : <><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></>
+            }
+          </svg>
         </button>
       </div>
 
+      {/* Menú móvil desplegable */}
       {menuOpen && (
-        <div style={{ background: '#0B4390', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '12px 20px 20px', display: 'flex', flexDirection: 'column', gap: '4px', zIndex: 99, position: 'relative' }} className="mobile-menu">
-          {live && (
-            <a href={`https://www.youtube.com/watch?v=${live.id}`} target="_blank" rel="noopener noreferrer" onClick={() => setMenuOpen(false)}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', background: '#ff0000', color: 'white', padding: '10px', borderRadius: '8px', fontSize: '14px', fontWeight: '700', fontFamily: 'sans-serif', textDecoration: 'none', marginBottom: '8px' }}>
-              🔴 EN DIRECTO AHORA
-            </a>
-          )}
+        <div className="mobile-menu" style={{
+          background: '#0B4390', padding: '8px 0 16px',
+          display: 'none', flexDirection: 'column',
+          position: 'relative', zIndex: 99,
+        }}>
           {links.map(link => (
-            <Link key={link.to} to={link.to} onClick={() => setMenuOpen(false)} style={{
-              color: location.pathname === link.to ? '#f5c400' : 'rgba(255,255,255,0.85)',
-              textDecoration: 'none', fontWeight: location.pathname === link.to ? '700' : '400',
-              fontSize: '16px', padding: '10px 8px', borderBottom: '1px solid rgba(255,255,255,0.08)', fontFamily: 'sans-serif',
-            }}>
+            <Link key={link.to} to={link.to}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                color: location.pathname === link.to ? '#ffffff' : 'rgba(255,255,255,0.75)',
+                textDecoration: 'none',
+                padding: '12px 20px',
+                fontSize: '15px',
+                fontWeight: location.pathname === link.to ? '700' : '400',
+                fontFamily: 'Archivo, sans-serif',
+                borderLeft: location.pathname === link.to ? '3px solid white' : '3px solid transparent',
+              }}>
               {link.label}
             </Link>
           ))}
-          <div style={{ marginTop: '12px' }}>
-            <a href="https://x.com/rzhub_" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 8px', borderBottom: '1px solid rgba(255,255,255,0.08)', textDecoration: 'none' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-              </svg>
-              <span style={{ color: 'rgba(255,255,255,0.85)', fontFamily: 'sans-serif', fontSize: '16px' }}>Síguenos en X</span>
+          {live && (
+            <a href={live.url} target="_blank" rel="noopener noreferrer" style={{
+              color: '#fff', textDecoration: 'none',
+              padding: '12px 20px', fontSize: '15px',
+              fontWeight: '700', fontFamily: 'Archivo, sans-serif',
+              display: 'flex', alignItems: 'center', gap: '8px',
+            }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#e53e3e', display: 'inline-block' }} />
+              EN DIRECTO
             </a>
-            {user ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-                <button onClick={() => { navigate('/perfil'); setMenuOpen(false) }} style={{ width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.3)', color: 'white', borderRadius: '8px', padding: '12px', fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '600', cursor: 'pointer' }}>
-                  Mi perfil
-                </button>
-                <button onClick={() => { signOut(); setMenuOpen(false) }} style={{ width: '100%', background: 'transparent', border: '1px solid rgba(255,255,255,0.4)', color: 'white', borderRadius: '8px', padding: '12px', fontSize: '15px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
-                  Cerrar sesión
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => { signInWithGoogle(); setMenuOpen(false) }} style={{ width: '100%', background: '#f5c400', border: 'none', color: '#0B4390', borderRadius: '8px', padding: '12px', fontSize: '15px', fontFamily: 'sans-serif', fontWeight: '700', cursor: 'pointer', marginTop: '8px' }}>
-                Entrar con Google
+          )}
+          {user ? (
+            <>
+              <button onClick={() => { navigate('/perfil'); setMenuOpen(false) }} style={{
+                background: 'none', border: 'none', textAlign: 'left',
+                color: 'rgba(255,255,255,0.75)', padding: '12px 20px',
+                fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer',
+                borderLeft: '3px solid transparent',
+              }}>
+                Mi perfil
               </button>
-            )}
-          </div>
+              {profile?.es_redactor && (
+                <button onClick={() => { navigate('/redaccion'); setMenuOpen(false) }} style={{
+                  background: 'none', border: 'none', textAlign: 'left',
+                  color: 'rgba(255,255,255,0.75)', padding: '12px 20px',
+                  fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer',
+                  borderLeft: '3px solid transparent',
+                }}>
+                  Redacción
+                </button>
+              )}
+              <button onClick={() => { signOut(); setMenuOpen(false) }} style={{
+                background: 'none', border: 'none', textAlign: 'left',
+                color: 'rgba(255,100,100,0.9)', padding: '12px 20px',
+                fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer',
+                borderLeft: '3px solid transparent',
+              }}>
+                Cerrar sesión
+              </button>
+            </>
+          ) : (
+            <button onClick={() => { signInWithGoogle(); setMenuOpen(false) }} style={{
+              background: 'white', color: '#0B4390', border: 'none',
+              margin: '8px 20px 0', borderRadius: '8px', padding: '10px',
+              fontSize: '14px', fontWeight: '700',
+              fontFamily: 'Archivo, sans-serif', cursor: 'pointer',
+            }}>
+              Iniciar sesión
+            </button>
+          )}
         </div>
       )}
 
       <style>{`
-        @keyframes pulse-live {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.6; }
-        }
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
           .desktop-nav { display: none !important; }
-          .desktop-auth { display: none !important; }
-          .hamburger { display: flex !important; }
-        }
-        @media (min-width: 641px) {
-          .mobile-menu { display: none !important; }
+          .mobile-menu-btn { display: block !important; }
+          .mobile-menu { display: flex !important; }
         }
       `}</style>
     </>

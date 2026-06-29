@@ -11,6 +11,7 @@ import OnTour from './pages/OnTour'
 import Noticias from './pages/Noticias'
 import NoticiaDetalle from './pages/NoticiaDetalle'
 import Redaccion from './pages/Redaccion'
+import Calendario from './pages/Calendario'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/redaccion" element={<Redaccion />} />
         <Route path="/contenidos" element={<Navigate to="/" replace />} />
         <Route path="/on-tour" element={<OnTour />} />
+        <Route path="/calendario" element={<Calendario />} />
       </Routes>
     </div>
   )
