@@ -1,0 +1,66 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//RZ HUB//Calendario Real Zaragoza//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Real Zaragoza
+X-WR-CALDESC:Partidos del Real Zaragoza - Pretemporada 2026
+X-WR-TIMEZONE:Europe/Madrid
+
+BEGIN:VEVENT
+UID:rz-2026-07-29@rzhub.es
+SUMMARY:Real Zaragoza vs Utebo (Amistoso)
+DTSTART;VALUE=DATE:20260729
+DTEND;VALUE=DATE:20260730
+DESCRIPTION:Partido amistoso de pretemporada
+END:VEVENT
+
+BEGIN:VEVENT
+UID:rz-2026-08-01@rzhub.es
+SUMMARY:Barbastro vs Real Zaragoza (Amistoso)
+DTSTART;VALUE=DATE:20260801
+DTEND;VALUE=DATE:20260802
+DESCRIPTION:Partido amistoso de pretemporada
+END:VEVENT
+
+BEGIN:VEVENT
+UID:rz-2026-08-06@rzhub.es
+SUMMARY:Real Zaragoza vs FC Andorra (Amistoso)
+DTSTART;VALUE=DATE:20260806
+DTEND;VALUE=DATE:20260807
+DESCRIPTION:Partido amistoso de pretemporada
+END:VEVENT
+
+BEGIN:VEVENT
+UID:rz-2026-08-08@rzhub.es
+SUMMARY:Real Zaragoza vs Real Sociedad B (Amistoso)
+DTSTART;VALUE=DATE:20260808
+DTEND;VALUE=DATE:20260809
+DESCRIPTION:Partido amistoso de pretemporada
+END:VEVENT
+
+BEGIN:VEVENT
+UID:rz-2026-08-14@rzhub.es
+SUMMARY:UD Logroñés vs Real Zaragoza (Amistoso)
+DTSTART;VALUE=DATE:20260814
+DTEND;VALUE=DATE:20260815
+DESCRIPTION:Partido amistoso de pretemporada
+END:VEVENT
+
+BEGIN:VEVENT
+UID:rz-2026-08-15@rzhub.es
+SUMMARY:Villarreal B vs Real Zaragoza (Amistoso)
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+DESCRIPTION:Partido amistoso de pretemporada
+END:VEVENT
+
+BEGIN:VEVENT
+UID:rz-2026-08-21@rzhub.es
+SUMMARY:Real Zaragoza vs Bilbao Athletic (Amistoso)
+DTSTART;VALUE=DATE:20260821
+DTEND;VALUE=DATE:20260822
+DESCRIPTION:Partido amistoso de pretemporada
+END:VEVENT
+
+END:VCALENDAR

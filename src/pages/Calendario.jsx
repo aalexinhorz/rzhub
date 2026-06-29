@@ -1,10 +1,15 @@
 import { useState } from 'react'
 
-const ICS_URL = 'https://rzhub.es/calendario.ics' // Cambiar cuando esté listo
+const ICS_URL = 'https://rzhub.es/calendario.ics'
 
-const PARTIDOS_PLACEHOLDER = [
-  { jornada: 1, rival: 'Por confirmar', fecha: '—', hora: '—', sede: 'local' },
-  { jornada: 2, rival: 'Por confirmar', fecha: '—', hora: '—', sede: 'visitante' },
+const PARTIDOS = [
+  { tipo: 'Amistoso', rival: 'Utebo', fecha: '29 Jul', sede: 'local' },
+  { tipo: 'Amistoso', rival: 'Barbastro', fecha: '1 Ago', sede: 'visitante' },
+  { tipo: 'Amistoso', rival: 'FC Andorra', fecha: '6 Ago', sede: 'local' },
+  { tipo: 'Amistoso', rival: 'Real Sociedad B', fecha: '8 Ago', sede: 'local' },
+  { tipo: 'Amistoso', rival: 'UD Logroñés', fecha: '14 Ago', sede: 'visitante' },
+  { tipo: 'Amistoso', rival: 'Villarreal B', fecha: '15 Ago', sede: 'visitante' },
+  { tipo: 'Amistoso', rival: 'Bilbao Athletic', fecha: '21 Ago', sede: 'local' },
 ]
 
 export default function Calendario() {
@@ -57,7 +62,7 @@ export default function Calendario() {
           color: 'rgba(255,255,255,0.6)',
           margin: '0 0 12px',
         }}>
-          Real Zaragoza · 1ª RFEF 26/27
+          Real Zaragoza · Pretemporada 2026
         </p>
         <h1 style={{
           fontFamily: 'Humane, sans-serif',
@@ -221,7 +226,6 @@ export default function Calendario() {
           {copiado ? '¡URL copiada!' : 'Copiar URL del calendario (.ics)'}
         </button>
 
-        {/* Info */}
         <p style={{
           fontSize: '12px',
           color: 'rgba(255,255,255,0.3)',
@@ -236,7 +240,7 @@ export default function Calendario() {
         </p>
       </div>
 
-      {/* PRÓXIMOS PARTIDOS */}
+      {/* LISTA DE PARTIDOS */}
       <div style={{
         maxWidth: '560px',
         margin: '56px auto 0',
@@ -251,7 +255,7 @@ export default function Calendario() {
           color: 'rgba(255,255,255,0.4)',
           marginBottom: '16px',
         }}>
-          Partidos
+          Pretemporada 2026
         </p>
 
         <div style={{
@@ -260,27 +264,25 @@ export default function Calendario() {
           borderRadius: '12px',
           overflow: 'hidden',
         }}>
-          {PARTIDOS_PLACEHOLDER.map((p, i) => (
+          {PARTIDOS.map((p, i) => (
             <div
               key={i}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 padding: '16px 20px',
-                borderBottom: i < PARTIDOS_PLACEHOLDER.length - 1 ? '1px solid #1e1e1e' : 'none',
+                borderBottom: i < PARTIDOS.length - 1 ? '1px solid #1e1e1e' : 'none',
                 gap: '16px',
               }}
             >
               <span style={{
                 fontFamily: 'Archivo, sans-serif',
-                fontWeight: '300',
-                fontSize: '11px',
-                letterSpacing: '2px',
-                color: 'rgba(255,255,255,0.25)',
-                minWidth: '28px',
-                textTransform: 'uppercase',
+                fontWeight: '700',
+                fontSize: '13px',
+                color: 'rgba(255,255,255,0.9)',
+                minWidth: '48px',
               }}>
-                J{p.jornada}
+                {p.fecha}
               </span>
               <div style={{
                 width: '6px', height: '6px', borderRadius: '50%',
@@ -292,31 +294,38 @@ export default function Calendario() {
                 fontWeight: '700',
                 fontSize: '15px',
                 flex: 1,
-                color: 'rgba(255,255,255,0.7)',
+                color: 'rgba(255,255,255,0.85)',
               }}>
                 {p.rival}
               </span>
               <span style={{
-                fontSize: '13px',
-                color: 'rgba(255,255,255,0.3)',
+                fontSize: '11px',
+                color: 'rgba(255,255,255,0.25)',
                 fontFamily: 'Archivo, sans-serif',
                 fontWeight: '300',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
               }}>
-                {p.fecha}
+                {p.tipo}
               </span>
             </div>
           ))}
+        </div>
 
-          <div style={{
-            padding: '14px 20px',
-            textAlign: 'center',
-            fontSize: '12px',
-            color: 'rgba(255,255,255,0.2)',
-            fontFamily: 'Archivo, sans-serif',
-            fontWeight: '300',
-            borderTop: '1px solid #1e1e1e',
-          }}>
-            Calendario completo disponible cuando se publique oficialmente
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          marginTop: '16px',
+          padding: '0 4px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#0B4390' }} />
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontFamily: 'Archivo, sans-serif', fontWeight: '300' }}>Local</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#333' }} />
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontFamily: 'Archivo, sans-serif', fontWeight: '300' }}>Visitante</span>
           </div>
         </div>
       </div>
