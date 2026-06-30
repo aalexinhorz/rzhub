@@ -15,7 +15,7 @@ export default function Navbar() {
     { to: '/lineup', label: 'Alineación' },
     { to: '/tierlist', label: 'Tier List' },
     { to: '/comunidad', label: 'Comunidad' },
-    { to: '/noticias', label: 'Noticias' },
+    { to: '/rumores', label: 'Noticias' },
     { to: '/calendario', label: 'Calendario' },
     { to: '/on-tour', label: 'On Tour' },
   ]
@@ -64,7 +64,6 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* Usuario / Login */}
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
           {user ? (
             <div style={{ position: 'relative' }}>
@@ -138,7 +137,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Hamburguesa móvil */}
         <button
           onClick={() => setMenuOpen(o => !o)}
           className="mobile-menu-btn"
@@ -156,7 +154,6 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Menú móvil desplegable */}
       {menuOpen && (
         <div className="mobile-menu" style={{
           background: '#0B4390', padding: '8px 0 16px',

@@ -29,6 +29,7 @@ export default function App() {
         <Route path="/contenidos" element={<Navigate to="/" replace />} />
         <Route path="/on-tour" element={<OnTour />} />
         <Route path="/calendario" element={<Calendario />} />
+        <Route path="/rumores" element={<Rumores />} />
       </Routes>
     </div>
   )
