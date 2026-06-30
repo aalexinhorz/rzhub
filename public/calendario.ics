@@ -113,7 +113,7 @@ END:VEVENT
 
 BEGIN:VEVENT
 UID:rz-j07-2026@rzhub.es
-SUMMARY:Atletico Madrile\u00f1o vs Real Zaragoza (J7)
+SUMMARY:Atletico Madrileño vs Real Zaragoza (J7)
 DTSTART;VALUE=DATE:20261011
 DTEND;VALUE=DATE:20261012
 DESCRIPTION:Jornada 7 - 1a RFEF Grupo 2 2026/2027
@@ -337,7 +337,7 @@ END:VEVENT
 
 BEGIN:VEVENT
 UID:rz-j35-2027@rzhub.es
-SUMMARY:Real Zaragoza vs Atletico Madrile\u00f1o (J35)
+SUMMARY:Real Zaragoza vs Atletico Madrileño (J35)
 DTSTART;VALUE=DATE:20270502
 DTEND;VALUE=DATE:20270503
 DESCRIPTION:Jornada 35 - 1a RFEF Grupo 2 2026/2027
