@@ -1,11 +1,22 @@
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import useLiveStream from '../hooks/useLiveStream'
-import { supabase } from '../hooks/useAuth'
 
 const TEAM_ID = 2815
 const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY
 const API_HOST = 'sportapi7.p.rapidapi.com'
+
+const PARTIDOS = [
+  { rival: 'Utebo', fecha: '29 Jul', sede: 'local', tipo: 'Amistoso', escudo: '/escudos/spain_utebo.football-logos.cc.svg' },
+  { rival: 'Barbastro', fecha: '1 Ago', sede: 'visitante', tipo: 'Amistoso', escudo: '/escudos/ud-barbastro-seeklogo.png' },
+  { rival: 'FC Andorra', fecha: '6 Ago', sede: 'local', tipo: 'Amistoso', escudo: '/escudos/Logo_FC_Andorra_-_2021 (1).svg' },
+  { rival: 'Real Sociedad B', fecha: '8 Ago', sede: 'local', tipo: 'Amistoso', escudo: '/escudos/Real_Sociedad_logo.svg' },
+  { rival: 'UD Logroñés', fecha: '14 Ago', sede: 'visitante', tipo: 'Amistoso', escudo: '/escudos/spain_ud-logrones.football-logos.cc.svg' },
+  { rival: 'Villarreal B', fecha: '15 Ago', sede: 'visitante', tipo: 'Amistoso', escudo: '/escudos/Villarreal_CF_logo-en.svg' },
+  { rival: 'Bilbao Athletic', fecha: '21 Ago', sede: 'local', tipo: 'Amistoso', escudo: '/escudos/Club_Athletic_Bilbao_logo (1).svg' },
+]
+
+const DUPLICADOS = [...PARTIDOS, ...PARTIDOS, ...PARTIDOS]
 
 function useProximoPartido() {
   const [partido, setPartido] = useState(null)
@@ -16,12 +27,7 @@ function useProximoPartido() {
       try {
         const res = await fetch(
           `https://${API_HOST}/api/v1/team/${TEAM_ID}/events/next/0`,
-          {
-            headers: {
-              'x-rapidapi-host': API_HOST,
-              'x-rapidapi-key': API_KEY,
-            }
-          }
+          { headers: { 'x-rapidapi-host': API_HOST, 'x-rapidapi-key': API_KEY } }
         )
         const data = await res.json()
         const events = data?.events || []
@@ -46,12 +52,7 @@ function usePartidoEnVivo() {
       try {
         const res = await fetch(
           `https://${API_HOST}/api/v1/team/${TEAM_ID}/events/live`,
-          {
-            headers: {
-              'x-rapidapi-host': API_HOST,
-              'x-rapidapi-key': API_KEY,
-            }
-          }
+          { headers: { 'x-rapidapi-host': API_HOST, 'x-rapidapi-key': API_KEY } }
         )
         if (!res.ok) return
         const data = await res.json()
@@ -207,6 +208,135 @@ function LiveBanner({ live }) {
   )
 }
 
+function CarruselPartidos() {
+  const trackRef = useRef(null)
+  const posRef = useRef(0)
+  const rafRef = useRef(null)
+  const CARD_W = 200
+  const GAP = 10
+  const STEP = 0.4
+  const TOTAL_W = PARTIDOS.length * (CARD_W + GAP)
+
+  useEffect(() => {
+    const animate = () => {
+      posRef.current += STEP
+      if (posRef.current >= TOTAL_W) posRef.current -= TOTAL_W
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translateX(-${posRef.current}px)`
+      }
+      rafRef.current = requestAnimationFrame(animate)
+    }
+    rafRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [])
+
+  return (
+    <div style={{
+      width: '100%',
+      paddingTop: '14px',
+      paddingBottom: '12px',
+      borderBottom: '1px solid rgba(255,255,255,0.1)',
+    }}>
+      <p style={{
+        fontFamily: 'Archivo, sans-serif',
+        fontWeight: '300',
+        fontSize: '12px',
+        letterSpacing: '2.5px',
+        textTransform: 'uppercase',
+        color: 'rgba(255,255,255,0.45)',
+        margin: '0 0 10px',
+        paddingLeft: '20px',
+      }}>
+        Próximos partidos
+      </p>
+
+      <div style={{ width: '100%', overflow: 'hidden', position: 'relative' }}>
+        <div style={{
+          position: 'absolute', left: 0, top: 0, bottom: 0, width: '60px', zIndex: 2,
+          background: 'linear-gradient(to right, #0B4390, transparent)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', right: 0, top: 0, bottom: 0, width: '60px', zIndex: 2,
+          background: 'linear-gradient(to left, #0B4390, transparent)',
+          pointerEvents: 'none',
+        }} />
+        <div
+          ref={trackRef}
+          style={{
+            display: 'flex',
+            gap: `${GAP}px`,
+            willChange: 'transform',
+            width: 'max-content',
+          }}
+        >
+          {DUPLICADOS.map((p, i) => (
+            <div
+              key={i}
+              style={{
+                width: `${CARD_W}px`,
+                flexShrink: 0,
+                backgroundColor: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: '10px',
+                padding: '12px 14px',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '12px',
+              }}
+            >
+              <img
+                src={p.escudo}
+                alt={p.rival}
+                style={{ width: '36px', height: '36px', objectFit: 'contain', flexShrink: 0 }}
+                onError={e => { e.target.style.display = 'none' }}
+              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
+                <div style={{
+                  fontFamily: 'Archivo, sans-serif',
+                  fontWeight: '700',
+                  fontSize: '13px',
+                  color: 'white',
+                  lineHeight: 1.2,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}>
+                  {p.rival}
+                </div>
+                <div style={{
+                  fontFamily: 'Archivo, sans-serif',
+                  fontWeight: '300',
+                  fontSize: '11px',
+                  color: 'rgba(255,255,255,0.5)',
+                }}>
+                  {p.fecha}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <div style={{
+                    width: '5px', height: '5px', borderRadius: '50%',
+                    backgroundColor: p.sede === 'local' ? '#f5c400' : 'rgba(255,255,255,0.2)',
+                    flexShrink: 0,
+                  }} />
+                  <span style={{
+                    fontSize: '10px',
+                    fontWeight: '300',
+                    color: 'rgba(255,255,255,0.35)',
+                    fontFamily: 'Archivo, sans-serif',
+                  }}>
+                    {p.sede === 'local' ? 'Local' : 'Visitante'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
   const navigate = useNavigate()
   const live = useLiveStream()
@@ -217,69 +347,81 @@ export default function Home() {
       background: '#0B4390',
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '24px',
-      padding: '40px 20px',
+      alignItems: 'stretch',
     }}>
-      <img
-        src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png"
-        alt="Palmadas al Viento"
-        style={{ width: '280px', maxWidth: '85vw' }}
-      />
 
-      <p style={{
-        color: 'rgba(255,255,255,0.75)',
-        fontSize: 'clamp(14px, 4vw, 18px)',
-        textAlign: 'center',
-        maxWidth: '480px',
-        margin: 0,
-        fontFamily: 'sans-serif',
-        lineHeight: '1.5',
+      {/* CARRUSEL — justo debajo del navbar */}
+      <CarruselPartidos />
+
+      {/* CONTENIDO CENTRADO */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '24px',
+        padding: '40px 20px',
+        flex: 1,
       }}>
-        La web del Real Zaragoza. Crea tu alineación, valora jugadores y mucho más.
-      </p>
+        <img
+          src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png"
+          alt="Palmadas al Viento"
+          style={{ width: '280px', maxWidth: '85vw' }}
+        />
 
-      <LiveBanner live={live} />
+        <p style={{
+          color: 'rgba(255,255,255,0.75)',
+          fontSize: 'clamp(14px, 4vw, 18px)',
+          textAlign: 'center',
+          maxWidth: '480px',
+          margin: 0,
+          fontFamily: 'sans-serif',
+          lineHeight: '1.5',
+        }}>
+          La web para todos los zaragocistas. Crea tu alineación, valora jugadores y mucho más.
+        </p>
 
-      <PartidoWidget />
+        <LiveBanner live={live} />
 
-      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '500px' }}>
-        <button onClick={() => navigate('/lineup')} style={{
-          background: '#f5c400', color: '#0B4390', border: 'none',
-          borderRadius: '8px', padding: '14px 20px',
-          fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '700',
-          cursor: 'pointer', flex: 1, minWidth: '130px',
-        }}>
-          Crear alineación
-        </button>
-        <button onClick={() => navigate('/tierlist')} style={{
-          background: 'transparent', color: '#ffffff',
-          border: '2px solid rgba(255,255,255,0.4)',
-          borderRadius: '8px', padding: '14px 20px',
-          fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-          cursor: 'pointer', flex: 1, minWidth: '130px',
-        }}>
-          Tier List
-        </button>
-        <button onClick={() => navigate('/noticias')} style={{
-          background: 'transparent', color: '#ffffff',
-          border: '2px solid rgba(255,255,255,0.4)',
-          borderRadius: '8px', padding: '14px 20px',
-          fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-          cursor: 'pointer', flex: 1, minWidth: '130px',
-        }}>
-          Últimas Noticias
-        </button>
-        <button onClick={() => navigate('/contenidos')} style={{
-          background: 'transparent', color: '#ffffff',
-          border: '2px solid rgba(255,255,255,0.4)',
-          borderRadius: '8px', padding: '14px 20px',
-          fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-          cursor: 'pointer', flex: 1, minWidth: '130px',
-        }}>
-          Contenidos
-        </button>
+        <PartidoWidget />
+
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '500px' }}>
+          <button onClick={() => navigate('/lineup')} style={{
+            background: '#f5c400', color: '#0B4390', border: 'none',
+            borderRadius: '8px', padding: '14px 20px',
+            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '700',
+            cursor: 'pointer', flex: 1, minWidth: '130px',
+          }}>
+            Crear alineación
+          </button>
+          <button onClick={() => navigate('/tierlist')} style={{
+            background: 'transparent', color: '#ffffff',
+            border: '2px solid rgba(255,255,255,0.4)',
+            borderRadius: '8px', padding: '14px 20px',
+            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
+            cursor: 'pointer', flex: 1, minWidth: '130px',
+          }}>
+            Tier List
+          </button>
+          <button onClick={() => navigate('/on-tour')} style={{
+            background: 'transparent', color: '#ffffff',
+            border: '2px solid rgba(255,255,255,0.4)',
+            borderRadius: '8px', padding: '14px 20px',
+            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
+            cursor: 'pointer', flex: 1, minWidth: '130px',
+          }}>
+            On Tour
+          </button>
+          <button onClick={() => navigate('/calendario')} style={{
+            background: 'transparent', color: '#ffffff',
+            border: '2px solid rgba(255,255,255,0.4)',
+            borderRadius: '8px', padding: '14px 20px',
+            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
+            cursor: 'pointer', flex: 1, minWidth: '130px',
+          }}>
+            Calendario
+          </button>
+        </div>
       </div>
     </div>
   )

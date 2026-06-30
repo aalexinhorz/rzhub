@@ -1,16 +1,17 @@
 import { useState } from 'react'
 
 const ICS_URL = 'https://rzhub.es/calendario.ics'
+const ICS_WEBCAL = ICS_URL.replace('https://', 'webcal://')
 
 export default function Calendario() {
   const [copiado, setCopiado] = useState(false)
 
   const handleApple = () => {
-    window.location.href = `webcal://${ICS_URL.replace('https://', '')}`
+    window.location.href = ICS_WEBCAL
   }
 
   const handleGoogle = () => {
-    const url = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(ICS_URL)}`
+    const url = `https://www.google.com/calendar/render?cid=${encodeURIComponent(ICS_WEBCAL)}`
     window.open(url, '_blank')
   }
 
@@ -52,7 +53,7 @@ export default function Calendario() {
           color: 'rgba(255,255,255,0.6)',
           margin: '0 0 12px',
         }}>
-          Real Zaragoza · Pretemporada 2026
+          Real Zaragoza · Temporada 2026 - 2027
         </p>
         <h1 style={{
           fontFamily: 'Humane, sans-serif',
