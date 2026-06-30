@@ -32,13 +32,13 @@ function icono(escudo, color) {
   return L.divIcon({ className: '', html: html, iconSize: [40, 40], iconAnchor: [20, 20] })
 }
 
+function getMapsUrl(lat, lng) {
+  return 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng
+}
+
 export default function OnTour() {
   const [sel, setSel] = useState(null)
   const total = D.reduce((a, d) => a + d.km, 0)
-
-  const mapsUrl = sel
-    ? 'https://www.google.com/maps/dir/Zaragoza/' + sel.lat + ',' + sel.lng
-    : '#'
 
   const linkStyle = {
     display: 'block',
@@ -115,14 +115,14 @@ export default function OnTour() {
                 {sel.nota && (
                   <div style={{ fontFamily: 'sans-serif', fontSize: '11px', color: '#999', marginTop: '8px' }}>{sel.nota}</div>
                 )}
-                <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={linkStyle}>
-                  Como llegar desde Zaragoza
+                <a href={getMapsUrl(sel.lat, sel.lng)} target="_blank" rel="noopener noreferrer" style={linkStyle}>
+                  Cómo llegar al estadio
                 </a>
               </div>
             </div>
           ) : (
             <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 2px 8px rgba(0,0,0,0.12)', textAlign: 'center', color: '#999', fontFamily: 'sans-serif', fontSize: '14px' }}>
-              Haz click en un escudo del mapa para ver mas informacion
+              Haz click en un escudo del mapa para ver más información
             </div>
           )}
         </div>
@@ -133,7 +133,7 @@ export default function OnTour() {
           {D.map(d => (
             <div
               key={d.num}
-              onClick={() => setSel(d)}
+              onClick={() => window.open(getMapsUrl(d.lat, d.lng), '_blank')}
               style={{ background: 'white', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', borderLeft: '4px solid ' + d.color }}
             >
               <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
