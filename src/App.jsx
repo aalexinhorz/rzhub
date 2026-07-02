@@ -12,6 +12,7 @@ import Noticias from './pages/Noticias'
 import NoticiaDetalle from './pages/NoticiaDetalle'
 import Redaccion from './pages/Redaccion'
 import Calendario from './pages/Calendario'
+import Contacto from './pages/Contacto'
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/on-tour" element={<OnTour />} />
         <Route path="/calendario" element={<Calendario />} />
         <Route path="/rumores" element={<Rumores />} />
+        <Route path="/contacto" element={<Contacto />} />
       </Routes>
     </div>
   )
