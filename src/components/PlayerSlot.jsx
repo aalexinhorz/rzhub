@@ -86,7 +86,7 @@ function SubSearch({ label, pending, search, results, onSearchChange, onSelect, 
   )
 }
 
-export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer }) {
+export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer, capturing }) {
   const [showModal, setShowModal] = useState(false)
   const [search, setSearch] = useState('')
   const [results, setResults] = useState([])
@@ -114,6 +114,7 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
   }, [searchSub2, allPlayers])
 
   function openModal() {
+    if (capturing) return
     setPendingSub1(sub1 || null)
     setPendingSub2(sub2 || null)
     setSearch(''); setSearchSub1(''); setSearchSub2('')
@@ -167,76 +168,128 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
     if (customPlayer) { setPendingSub2(customPlayer); setSearchSub2(''); setResultsSub2([]) }
   }
 
-  const borderColor = player ? (player.isZaragoza ? '#0B4390' : '#f5c400') : 'transparent'
+  const isZaragoza = player?.isZaragoza
+  // Colores exactos del red-theme de Atlético Stats adaptados a rzhub
+  const borderColor = isZaragoza ? '#0B4390' : '#f5c400'
+  const nameBarBg = isZaragoza ? '#0B4390' : '#f5c400'
+  const nameTextColor = isZaragoza ? '#ffffff' : '#000000'
+  // Fondo degradado exacto del red-theme
+  const cardBg = isZaragoza
+    ? 'linear-gradient(180deg, #c5d8f0 0%, #ddeaf8 40%, #eef4fc 70%, #f5f8fd 100%)'
+    : 'linear-gradient(180deg, #f5e6b0 0%, #faf0cc 40%, #fdf7e8 70%, #fefcf3 100%)'
 
-  const cardW = 'clamp(52px, 13vw, 82px)'
-  const cardH = 'clamp(44px, 11vw, 82px)'
   const slotW = 'clamp(60px, 15vw, 100px)'
-  const fontSize = 'clamp(7px, 1.8vw, 10px)'
+  const cardW = 'clamp(52px, 13vw, 82px)'
+  const cardH = 'clamp(52px, 13vw, 82px)'
   const subFontSize = 'clamp(6px, 1.4vw, 8px)'
   const plusSize = 'clamp(28px, 7vw, 46px)'
   const plusFontSize = 'clamp(14px, 3.5vw, 22px)'
+  const nameFontSize = 'clamp(7px, 1.8vw, 11px)'
 
   return (
     <>
-      <div ref={setNodeRef} style={{ position: 'absolute', left: `${slot.x}%`, top: `${slot.y}%`, transform: 'translate(-50%, -50%)', width: slotW, display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
+      <div ref={setNodeRef} data-slot-container style={{
+        position: 'absolute', left: `${slot.x}%`, top: `${slot.y}%`,
+        transform: 'translate(-50%, -50%)', width: slotW,
+        display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2,
+      }}>
         {player ? (
-          <div style={{ width: cardW, borderRadius: '8px', border: `3px solid ${borderColor}`, overflow: 'hidden', background: 'white', cursor: 'pointer', boxShadow: 'none', boxSizing: 'border-box' }}>
-            <div onClick={openModal} style={{ width: '100%', height: cardH, background: '#f5f5f5', position: 'relative', overflow: 'hidden' }}>
+          <div data-card-container onClick={openModal} style={{
+            width: cardW,
+            borderRadius: '6px',
+            border: `3px solid ${borderColor}`,
+            overflow: 'hidden',
+            cursor: 'pointer',
+            boxSizing: 'border-box',
+            position: 'relative',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+            background: cardBg,
+          }}>
+            {/* Foto */}
+            <div data-card-photo style={{
+              width: '100%',
+              height: cardH,
+              position: 'relative',
+              overflow: 'hidden',
+              flexShrink: 0,
+            }}>
               <PlayerPhoto src={player.photo} alt={player.name} />
+
+              {/* Escudo arriba izquierda */}
               {player.teamLogo && (
-                <img crossOrigin="anonymous" src={player.teamLogo} alt="" style={{ position: 'absolute', top: '4px', left: '4px', width: '16px', height: '16px', objectFit: 'contain', zIndex: 3, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }} />
+                <img crossOrigin="anonymous" src={player.teamLogo} alt=""
+                  style={{
+                    position: 'absolute', top: '3px', left: '3px',
+                    width: 'clamp(10px, 2.5vw, 16px)',
+                    height: 'clamp(10px, 2.5vw, 16px)',
+                    objectFit: 'contain', zIndex: 3,
+                    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))',
+                  }} />
               )}
             </div>
-            <div onClick={openModal} style={{ background: borderColor, padding: '3px', textAlign: 'center', width: '100%', boxSizing: 'border-box' }}>
-              <span style={{ color: '#FFFFFF', fontSize: fontSize, fontFamily: 'Archivo, sans-serif', fontWeight: 'bold', letterSpacing: '-0.3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+
+            {/* Nombre */}
+            <div style={{
+              background: nameBarBg,
+              padding: '4px 3px',
+              textAlign: 'center',
+              width: '100%',
+              boxSizing: 'border-box',
+              flexShrink: 0,
+            }}>
+              <span style={{
+                color: nameTextColor,
+                fontSize: nameFontSize,
+                fontFamily: 'Archivo, sans-serif',
+                fontWeight: '700',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: 'block',
+              }}>
                 {player.shortName || player.name}
               </span>
             </div>
-            {sub1 ? <SubRow player={sub1} onClick={() => onRemoveSub(slot.id, 0)} /> : (
-              <div onClick={openModal} style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box' }}>
+
+            {/* Suplentes */}
+            {sub1 ? (
+              <SubRow player={sub1} onClick={e => { e.stopPropagation(); onRemoveSub(slot.id, 0) }} />
+            ) : (
+              <div data-sub-empty style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box' }}>
                 <span style={{ fontSize: subFontSize, color: 'rgba(0,0,0,0.3)', fontFamily: 'sans-serif' }}>+ suplente</span>
               </div>
             )}
-            {sub2 ? <SubRow player={sub2} onClick={() => onRemoveSub(slot.id, 1)} /> : (
-              <div onClick={openModal} style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box' }}>
+            {sub2 ? (
+              <SubRow player={sub2} onClick={e => { e.stopPropagation(); onRemoveSub(slot.id, 1) }} />
+            ) : (
+              <div data-sub-empty style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box' }}>
                 <span style={{ fontSize: subFontSize, color: 'rgba(0,0,0,0.3)', fontFamily: 'sans-serif' }}>+ suplente</span>
               </div>
             )}
           </div>
         ) : (
           <div onClick={openModal} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-            <div style={{ width: plusSize, height: plusSize, borderRadius: '50%', background: isOver ? '#444' : '#1a1a1a', border: `3px solid ${isOver ? '#fff' : 'rgba(255,255,255,0.6)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: plusFontSize, transition: 'all 0.15s' }}>+</div>
-            <div style={{ background: 'rgba(0,0,0,0.55)', color: 'rgba(255,255,255,0.85)', fontSize: subFontSize, fontFamily: 'sans-serif', fontWeight: 'bold', padding: '2px 6px', borderRadius: '3px' }}>{slot.label}</div>
+            <div style={{
+              width: plusSize, height: plusSize, borderRadius: '50%',
+              background: isOver ? '#444' : '#1a1a1a',
+              border: `3px solid ${isOver ? '#fff' : 'rgba(255,255,255,0.6)'}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: 'white', fontSize: plusFontSize, transition: 'all 0.15s',
+            }}>+</div>
+            <div style={{
+              background: 'rgba(0,0,0,0.55)', color: 'rgba(255,255,255,0.85)',
+              fontSize: subFontSize, fontFamily: 'sans-serif', fontWeight: 'bold',
+              padding: '2px 6px', borderRadius: '3px',
+            }}>{slot.label}</div>
           </div>
         )}
       </div>
 
-      {showModal && (
-        <div onClick={handleClose} style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.6)',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          overflowY: 'auto',
-          paddingTop: '20px',
-          paddingBottom: '20px',
-        }}>
-          <div onClick={e => e.stopPropagation()} style={{
-            background: '#f5f5f5',
-            borderRadius: '16px',
-            width: '90%',
-            maxWidth: '480px',
-            margin: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
-            maxHeight: '90vh',
-          }}>
+      {showModal && !capturing && (
+        <div onClick={handleClose} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflowY: 'auto', paddingTop: '20px', paddingBottom: '20px' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#f5f5f5', borderRadius: '16px', width: '90%', maxWidth: '480px', margin: 'auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.4)', maxHeight: '90vh' }}>
             <div style={{ background: '#0B4390', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
               <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px', fontFamily: 'sans-serif' }}>
                 {player ? 'Cambiar jugador' : `Seleccionar ${slot.label}`}
