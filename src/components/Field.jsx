@@ -9,50 +9,88 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
   const [nombreGuardado, setNombreGuardado] = useState('')
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
+  const [capturing, setCapturing] = useState(false)
 
   async function handleDownload() {
     if (!fieldRef.current) return
+    setCapturing(true)
+
     try {
-      const img = fieldRef.current.querySelector('img')
-      img.src = '/CAMPO_PARA_WEB.png'
+      window.scrollTo(0, 0)
+      await new Promise(r => setTimeout(r, 100))
 
-      const fieldRect = fieldRef.current.getBoundingClientRect()
-      const fieldW = fieldRect.width
+      // Clonar el campo
+      const original = fieldRef.current
+      const clone = original.cloneNode(true)
 
-      const cards = fieldRef.current.querySelectorAll('[data-card]')
-      const cardContainers = fieldRef.current.querySelectorAll('[data-card-container]')
-      const cardPhotos = fieldRef.current.querySelectorAll('[data-card-photo]')
-      const slotContainers = fieldRef.current.querySelectorAll('[data-slot-container]')
+      const fieldW = original.getBoundingClientRect().width
 
+      // Posicionar el clon fuera de pantalla
+      clone.style.position = 'fixed'
+      clone.style.top = '-9999px'
+      clone.style.left = '0'
+      clone.style.width = `${fieldW}px`
+      clone.style.overflow = 'hidden'
+      clone.style.borderRadius = '12px'
+      document.body.appendChild(clone)
+
+      // Cambiar imagen de campo a PNG en el clon
+      const cloneImg = clone.querySelector('img')
+      if (cloneImg) cloneImg.src = '/CAMPO_PARA_WEB.png'
+
+      // Ocultar suplentes en el clon
+      clone.querySelectorAll('[data-sub-row]').forEach(el => { el.style.display = 'none' })
+
+      // Fijar tamaños de tarjetas en el clon
       const cardWpx = Math.round(fieldW * 0.13)
       const cardHpx = Math.round(fieldW * 0.11)
       const slotWpx = Math.round(fieldW * 0.15)
 
-      cards.forEach(el => { el.style.width = `${cardWpx}px` })
-      cardPhotos.forEach(el => { el.style.height = `${cardHpx}px` })
-      slotContainers.forEach(el => { el.style.width = `${slotWpx}px` })
-      cardContainers.forEach(el => { el.style.width = `${cardWpx}px` })
-
-      await new Promise(r => setTimeout(r, 400))
-
-      const canvas = await html2canvas(fieldRef.current, {
-        scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false,
+      clone.querySelectorAll('[data-card]').forEach(el => { el.style.width = `${cardWpx}px` })
+      clone.querySelectorAll('[data-card-photo]').forEach(el => {
+        el.style.height = `${cardHpx}px`
+        el.style.overflow = 'hidden'
+        el.style.position = 'relative'
+      })
+      clone.querySelectorAll('[data-slot-container]').forEach(el => { el.style.width = `${slotWpx}px` })
+      clone.querySelectorAll('[data-card-container]').forEach(el => {
+        el.style.width = `${cardWpx}px`
+        el.style.overflow = 'hidden'
       })
 
-      img.src = '/CAMPO_PARA_WEB.svg'
-      cards.forEach(el => { el.style.width = '' })
-      cardPhotos.forEach(el => { el.style.height = '' })
-      slotContainers.forEach(el => { el.style.width = '' })
-      cardContainers.forEach(el => { el.style.width = '' })
+      // Forzar overflow hidden en todas las fotos del clon
+      clone.querySelectorAll('img').forEach(img => {
+        if (img !== cloneImg) {
+          img.style.maxWidth = '100%'
+          img.style.maxHeight = '100%'
+          img.style.objectFit = 'cover'
+          img.style.objectPosition = '50% 15%'
+        }
+      })
+
+      await new Promise(r => setTimeout(r, 500))
+
+      const canvas = await html2canvas(clone, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        logging: false,
+        width: fieldW,
+        height: original.getBoundingClientRect().height,
+      })
+
+      document.body.removeChild(clone)
 
       const link = document.createElement('a')
       link.download = `${teamName || 'alineacion'}.png`
       link.href = canvas.toDataURL('image/png')
       link.click()
+
     } catch (error) {
       console.error('Error al descargar:', error)
-      const img = fieldRef.current?.querySelector('img')
-      if (img) img.src = '/CAMPO_PARA_WEB.svg'
+    } finally {
+      setCapturing(false)
     }
   }
 
@@ -87,8 +125,8 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
           </button>
         )}
         {window.innerWidth > 640 && (
-          <button onClick={handleDownload} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '24px', border: '2px solid #0B4390', background: 'white', color: '#0B4390', fontWeight: 'bold', fontSize: '14px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
-            ⬇ Descargar
+          <button onClick={handleDownload} disabled={capturing} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '24px', border: '2px solid #0B4390', background: 'white', color: '#0B4390', fontWeight: 'bold', fontSize: '14px', fontFamily: 'sans-serif', cursor: capturing ? 'wait' : 'pointer', opacity: capturing ? 0.7 : 1 }}>
+            {capturing ? '⏳ Generando...' : '⬇ Descargar'}
           </button>
         )}
       </div>
@@ -127,6 +165,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
               onSelectSub={onSelectSub}
               onRemoveSub={onRemoveSub}
               onAddCustomPlayer={onAddCustomPlayer}
+              capturing={capturing}
             />
           ))}
         </div>
