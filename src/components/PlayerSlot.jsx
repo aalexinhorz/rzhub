@@ -17,7 +17,7 @@ function SubRow({ player, onClick }) {
   const imgSize = 'clamp(14px, 3.5vw, 22px)'
   const fontSize = 'clamp(6px, 1.5vw, 8px)'
   return (
-    <div data-sub-row onClick={onClick} title="Clic para quitar" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 3px', background: bgColor, width: '100%', boxSizing: 'border-box' }}>
+    <div onClick={onClick} title="Clic para quitar" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 3px', background: bgColor, width: '100%', boxSizing: 'border-box' }}>
       <div style={{ width: imgSize, height: imgSize, flexShrink: 0, overflow: 'hidden', background: 'rgba(0,0,0,0.2)' }}>
         <img crossOrigin="anonymous" src={player.photo || DEFAULT_PHOTO} alt={player.name}
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%', display: 'block' }}
@@ -86,7 +86,7 @@ function SubSearch({ label, pending, search, results, onSearchChange, onSelect, 
   )
 }
 
-export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer, capturing }) {
+export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer }) {
   const [showModal, setShowModal] = useState(false)
   const [search, setSearch] = useState('')
   const [results, setResults] = useState([])
@@ -114,7 +114,6 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
   }, [searchSub2, allPlayers])
 
   function openModal() {
-    if (capturing) return
     setPendingSub1(sub1 || null)
     setPendingSub2(sub2 || null)
     setSearch(''); setSearchSub1(''); setSearchSub2('')
@@ -180,10 +179,10 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
 
   return (
     <>
-      <div ref={setNodeRef} data-slot-container style={{ position: 'absolute', left: `${slot.x}%`, top: `${slot.y}%`, transform: 'translate(-50%, -50%)', width: slotW, display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
+      <div ref={setNodeRef} style={{ position: 'absolute', left: `${slot.x}%`, top: `${slot.y}%`, transform: 'translate(-50%, -50%)', width: slotW, display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
         {player ? (
-          <div data-card-container style={{ width: cardW, borderRadius: '8px', border: `3px solid ${borderColor}`, overflow: 'hidden', background: 'white', cursor: 'pointer', boxShadow: 'none', boxSizing: 'border-box' }}>
-            <div data-card-photo onClick={openModal} style={{ width: '100%', height: cardH, background: '#f5f5f5', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ width: cardW, borderRadius: '8px', border: `3px solid ${borderColor}`, overflow: 'hidden', background: 'white', cursor: 'pointer', boxShadow: 'none', boxSizing: 'border-box' }}>
+            <div onClick={openModal} style={{ width: '100%', height: cardH, background: '#f5f5f5', position: 'relative', overflow: 'hidden' }}>
               <PlayerPhoto src={player.photo} alt={player.name} />
               {player.teamLogo && (
                 <img crossOrigin="anonymous" src={player.teamLogo} alt="" style={{ position: 'absolute', top: '4px', left: '4px', width: '16px', height: '16px', objectFit: 'contain', zIndex: 3, filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }} />
@@ -194,17 +193,13 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
                 {player.shortName || player.name}
               </span>
             </div>
-            {sub1 ? (
-              <SubRow player={sub1} onClick={() => onRemoveSub(slot.id, 0)} />
-            ) : (
-              <div data-sub-row onClick={openModal} style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box' }}>
+            {sub1 ? <SubRow player={sub1} onClick={() => onRemoveSub(slot.id, 0)} /> : (
+              <div onClick={openModal} style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box' }}>
                 <span style={{ fontSize: subFontSize, color: 'rgba(0,0,0,0.3)', fontFamily: 'sans-serif' }}>+ suplente</span>
               </div>
             )}
-            {sub2 ? (
-              <SubRow player={sub2} onClick={() => onRemoveSub(slot.id, 1)} />
-            ) : (
-              <div data-sub-row onClick={openModal} style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box' }}>
+            {sub2 ? <SubRow player={sub2} onClick={() => onRemoveSub(slot.id, 1)} /> : (
+              <div onClick={openModal} style={{ display: 'flex', alignItems: 'center', padding: '3px 4px', cursor: 'pointer', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box' }}>
                 <span style={{ fontSize: subFontSize, color: 'rgba(0,0,0,0.3)', fontFamily: 'sans-serif' }}>+ suplente</span>
               </div>
             )}
@@ -217,9 +212,31 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
         )}
       </div>
 
-      {showModal && !capturing && (
-        <div onClick={handleClose} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', zIndex: 1000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflowY: 'auto', paddingTop: '20px', paddingBottom: '20px' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#f5f5f5', borderRadius: '16px', width: '90%', maxWidth: '480px', margin: 'auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.4)', maxHeight: '90vh' }}>
+      {showModal && (
+        <div onClick={handleClose} style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.6)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
+          overflowY: 'auto',
+          paddingTop: '20px',
+          paddingBottom: '20px',
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: '#f5f5f5',
+            borderRadius: '16px',
+            width: '90%',
+            maxWidth: '480px',
+            margin: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+            maxHeight: '90vh',
+          }}>
             <div style={{ background: '#0B4390', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
               <span style={{ color: 'white', fontWeight: 'bold', fontSize: '16px', fontFamily: 'sans-serif' }}>
                 {player ? 'Cambiar jugador' : `Seleccionar ${slot.label}`}

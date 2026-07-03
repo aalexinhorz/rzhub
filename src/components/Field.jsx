@@ -17,70 +17,31 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
 
     try {
       window.scrollTo(0, 0)
-      await new Promise(r => setTimeout(r, 100))
+      await new Promise(r => setTimeout(r, 150))
 
-      // Clonar el campo
-      const original = fieldRef.current
-      const clone = original.cloneNode(true)
+      const campoImg = fieldRef.current.querySelector('img')
+      if (campoImg) campoImg.src = '/CAMPO_PARA_WEB.png'
 
-      const fieldW = original.getBoundingClientRect().width
+      // Solo ocultar huecos vacíos, NO los suplentes reales
+      const subEmpties = fieldRef.current.querySelectorAll('[data-sub-empty]')
+      subEmpties.forEach(el => { el.style.display = 'none' })
 
-      // Posicionar el clon fuera de pantalla
-      clone.style.position = 'fixed'
-      clone.style.top = '-9999px'
-      clone.style.left = '0'
-      clone.style.width = `${fieldW}px`
-      clone.style.overflow = 'hidden'
-      clone.style.borderRadius = '12px'
-      document.body.appendChild(clone)
+      await new Promise(r => setTimeout(r, 300))
 
-      // Cambiar imagen de campo a PNG en el clon
-      const cloneImg = clone.querySelector('img')
-      if (cloneImg) cloneImg.src = '/CAMPO_PARA_WEB.png'
-
-      // Ocultar suplentes en el clon
-      clone.querySelectorAll('[data-sub-row]').forEach(el => { el.style.display = 'none' })
-
-      // Fijar tamaños de tarjetas en el clon
-      const cardWpx = Math.round(fieldW * 0.13)
-      const cardHpx = Math.round(fieldW * 0.11)
-      const slotWpx = Math.round(fieldW * 0.15)
-
-      clone.querySelectorAll('[data-card]').forEach(el => { el.style.width = `${cardWpx}px` })
-      clone.querySelectorAll('[data-card-photo]').forEach(el => {
-        el.style.height = `${cardHpx}px`
-        el.style.overflow = 'hidden'
-        el.style.position = 'relative'
-      })
-      clone.querySelectorAll('[data-slot-container]').forEach(el => { el.style.width = `${slotWpx}px` })
-      clone.querySelectorAll('[data-card-container]').forEach(el => {
-        el.style.width = `${cardWpx}px`
-        el.style.overflow = 'hidden'
-      })
-
-      // Forzar overflow hidden en todas las fotos del clon
-      clone.querySelectorAll('img').forEach(img => {
-        if (img !== cloneImg) {
-          img.style.maxWidth = '100%'
-          img.style.maxHeight = '100%'
-          img.style.objectFit = 'cover'
-          img.style.objectPosition = '50% 15%'
-        }
-      })
-
-      await new Promise(r => setTimeout(r, 500))
-
-      const canvas = await html2canvas(clone, {
+      const canvas = await html2canvas(fieldRef.current, {
         scale: 2,
         useCORS: true,
         allowTaint: false,
         backgroundColor: '#ffffff',
         logging: false,
-        width: fieldW,
-        height: original.getBoundingClientRect().height,
+        x: 0,
+        y: 0,
+        scrollX: 0,
+        scrollY: 0,
       })
 
-      document.body.removeChild(clone)
+      if (campoImg) campoImg.src = '/CAMPO_PARA_WEB.svg'
+      subEmpties.forEach(el => { el.style.display = '' })
 
       const link = document.createElement('a')
       link.download = `${teamName || 'alineacion'}.png`
@@ -89,6 +50,9 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
 
     } catch (error) {
       console.error('Error al descargar:', error)
+      const campoImg = fieldRef.current?.querySelector('img')
+      if (campoImg) campoImg.src = '/CAMPO_PARA_WEB.svg'
+      fieldRef.current?.querySelectorAll('[data-sub-empty]').forEach(el => { el.style.display = '' })
     } finally {
       setCapturing(false)
     }
