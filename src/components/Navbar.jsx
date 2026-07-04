@@ -58,30 +58,106 @@ export default function Navbar() {
   const navigate = useNavigate()
   const { user, profile, signInWithGoogle, signOut } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
+  // Igual que en el mega-menú de desktop: mobileMounted controla si el panel
+  // está en el DOM, mobilePanelOpen controla el estado visual (opacity/transform).
+  const [mobileMounted, setMobileMounted] = useState(false)
+  const [mobilePanelOpen, setMobilePanelOpen] = useState(false)
+  const mobileOpenFrameRef = useRef([null, null])
+  const mobileUnmountTimeoutRef = useRef(null)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+
+  // hoveredSeccion = sección "activa" (controla si el panel está abierto)
+  // renderedSeccion = sección cuyo contenido está montado en el DOM
+  //   (se mantiene un poco más que hoveredSeccion para poder animar el cierre)
   const [hoveredSeccion, setHoveredSeccion] = useState(null)
+  const [renderedSeccion, setRenderedSeccion] = useState(null)
+  const [contentKey, setContentKey] = useState(0)
+  // panelOpen es el estado "visual" real (controla opacity/transform).
+  // Va desacoplado de hoveredSeccion para poder forzar un frame en estado
+  // cerrado antes de pasar a abierto, y que la transición de entrada
+  // se dispare igual que la de salida.
+  const [panelOpen, setPanelOpen] = useState(false)
+
+  const closeTimeoutRef = useRef(null)
+  const unmountTimeoutRef = useRef(null)
+  const openFrameRef = useRef([null, null])
+
   const live = useLiveStream()
-  const timeoutRef = useRef(null)
 
   const nombre = profile?.username || profile?.name || user?.user_metadata?.name || user?.email || ''
   const avatarUrl = profile?.avatar_url || null
   const iniciales = nombre.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 
-  const handleMouseEnter = (label) => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+  const handleEnterSeccion = (label) => {
+    clearTimeout(closeTimeoutRef.current)
+    clearTimeout(unmountTimeoutRef.current)
+    cancelAnimationFrame(openFrameRef.current[0])
+    cancelAnimationFrame(openFrameRef.current[1])
+
+    const veniaCerrado = renderedSeccion === null
+
+    if (renderedSeccion !== label) {
+      setRenderedSeccion(label)
+      setContentKey(k => k + 1) // fuerza el re-render con animación de crossfade
+    }
     setHoveredSeccion(label)
+
+    if (veniaCerrado) {
+      // Nos aseguramos de que el panel se monte cerrado...
+      setPanelOpen(false)
+      // ...y esperamos dos frames (el navegador pinte el estado cerrado)
+      // antes de pasar a abierto, para que el transition tenga un punto de partida.
+      openFrameRef.current[0] = requestAnimationFrame(() => {
+        openFrameRef.current[1] = requestAnimationFrame(() => setPanelOpen(true))
+      })
+    } else {
+      // Ya estaba abierto (solo cambiamos de sección): se queda abierto.
+      setPanelOpen(true)
+    }
   }
 
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => setHoveredSeccion(null), 150)
+  const handleLeaveSeccion = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setHoveredSeccion(null)
+      setPanelOpen(false)
+      // esperamos a que termine la transición antes de desmontar el contenido
+      unmountTimeoutRef.current = setTimeout(() => setRenderedSeccion(null), 220)
+    }, 120)
   }
 
   const isActive = (links) => links.some(l => location.pathname === l.to)
 
+  const openMobileMenu = () => {
+    clearTimeout(mobileUnmountTimeoutRef.current)
+    cancelAnimationFrame(mobileOpenFrameRef.current[0])
+    cancelAnimationFrame(mobileOpenFrameRef.current[1])
+    setMenuOpen(true)
+    setMobilePanelOpen(false) // aseguramos que se monte cerrado
+    setMobileMounted(true)
+    mobileOpenFrameRef.current[0] = requestAnimationFrame(() => {
+      mobileOpenFrameRef.current[1] = requestAnimationFrame(() => setMobilePanelOpen(true))
+    })
+  }
+
+  const closeMobileMenu = () => {
+    cancelAnimationFrame(mobileOpenFrameRef.current[0])
+    cancelAnimationFrame(mobileOpenFrameRef.current[1])
+    setMenuOpen(false)
+    setMobilePanelOpen(false)
+    mobileUnmountTimeoutRef.current = setTimeout(() => setMobileMounted(false), 220)
+  }
+
+  const toggleMobileMenu = () => {
+    if (menuOpen) closeMobileMenu()
+    else openMobileMenu()
+  }
+
+  const seccionActiva = SECCIONES.find(s => s.label === renderedSeccion)
+
   return (
     <>
       <div style={{ background: '#0B4390', padding: '0 20px', display: 'flex', alignItems: 'center', height: '60px', position: 'relative', zIndex: 200 }}>
-        <Link to="/" onClick={() => setMenuOpen(false)}>
+        <Link to="/" onClick={closeMobileMenu}>
           <img src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png" alt="Palmadas al Viento" style={{ height: '32px', flexShrink: 0, display: 'block' }} />
         </Link>
 
@@ -99,8 +175,8 @@ export default function Navbar() {
 
           {SECCIONES.map(seccion => (
             <div key={seccion.label} style={{ position: 'relative', height: '60px', display: 'flex', alignItems: 'center' }}
-              onMouseEnter={() => handleMouseEnter(seccion.label)}
-              onMouseLeave={handleMouseLeave}
+              onMouseEnter={() => handleEnterSeccion(seccion.label)}
+              onMouseLeave={handleLeaveSeccion}
             >
               <button style={{
                 display: 'flex', alignItems: 'center', gap: '4px',
@@ -111,43 +187,13 @@ export default function Navbar() {
                 padding: '6px 10px', height: '60px',
                 fontSize: '13px', fontWeight: isActive(seccion.links) ? '700' : '500',
                 fontFamily: 'Archivo, sans-serif', cursor: 'pointer', whiteSpace: 'nowrap',
+                transition: 'border-color 0.2s ease, color 0.2s ease',
               }}>
                 {seccion.label}
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: hoveredSeccion === seccion.label ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: hoveredSeccion === seccion.label ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.25s ease' }}>
                   <polyline points="6 9 12 15 18 9"/>
                 </svg>
               </button>
-
-              {hoveredSeccion === seccion.label && (
-                <div onMouseEnter={() => handleMouseEnter(seccion.label)} onMouseLeave={handleMouseLeave}
-                  style={{
-                    position: 'fixed', top: '60px', left: 0, right: 0,
-                    background: '#f8f8f8', borderBottom: '1px solid #e0e0e0',
-                    zIndex: 300, display: 'flex', justifyContent: 'center',
-                    gap: '8px', padding: '16px 24px',
-                  }}
-                >
-                  {seccion.links.map(link => (
-                    <Link key={link.to} to={link.to} onClick={() => setHoveredSeccion(null)}
-                      style={{
-                        display: 'flex', flexDirection: 'column', alignItems: 'center',
-                        gap: '8px', padding: '16px 28px',
-                        textDecoration: 'none',
-                        color: location.pathname === link.to ? '#0B4390' : '#444',
-                        background: location.pathname === link.to ? 'rgba(11,67,144,0.06)' : 'white',
-                        border: '1px solid',
-                        borderColor: location.pathname === link.to ? 'rgba(11,67,144,0.2)' : '#e8e8e8',
-                        borderRadius: '12px', minWidth: '110px',
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(11,67,144,0.06)'; e.currentTarget.style.borderColor = 'rgba(11,67,144,0.2)'; e.currentTarget.style.color = '#0B4390' }}
-                      onMouseLeave={e => { if (location.pathname !== link.to) { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#e8e8e8'; e.currentTarget.style.color = '#444' } }}
-                    >
-                      <span style={{ color: location.pathname === link.to ? '#0B4390' : '#666' }}>{link.icon}</span>
-                      <span style={{ fontSize: '13px', fontWeight: '600', fontFamily: 'Archivo, sans-serif', whiteSpace: 'nowrap' }}>{link.label}</span>
-                    </Link>
-                  ))}
-                </div>
-              )}
             </div>
           ))}
 
@@ -207,20 +253,90 @@ export default function Navbar() {
           )}
         </div>
 
-        <button onClick={() => setMenuOpen(o => !o)} className="mobile-menu-btn"
-          style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', marginLeft: 'auto' }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-            {menuOpen
-              ? <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
-              : <><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></>
-            }
-          </svg>
+        <button onClick={toggleMobileMenu} className="mobile-menu-btn"
+          style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', marginLeft: 'auto', width: '24px', height: '24px', position: 'relative' }}>
+          {/* Barras HTML en vez de <line> de SVG: el transform-origin de un elemento
+              normal no depende de transform-box, así que el pivote de rotación
+              es consistente en todos los navegadores (incluido Safari). */}
+          <span style={{
+            position: 'absolute', left: '3px', top: '5px', width: '18px', height: '2px',
+            background: 'white', borderRadius: '1px',
+            transformOrigin: '0 0',
+            transform: menuOpen
+              ? 'translate(9px, 7px) rotate(45deg) translateY(6px) translate(-9px, -7px)'
+              : 'translate(9px, 7px) rotate(0deg) translate(-9px, -7px)',
+            transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          }} />
+          <span style={{
+            position: 'absolute', left: '3px', top: '11px', width: '18px', height: '2px',
+            background: 'white', borderRadius: '1px',
+            opacity: menuOpen ? 0 : 1,
+            transition: 'opacity 0.15s ease',
+          }} />
+          <span style={{
+            position: 'absolute', left: '3px', top: '17px', width: '18px', height: '2px',
+            background: 'white', borderRadius: '1px',
+            transformOrigin: '0 0',
+            transform: menuOpen
+              ? 'translate(9px, -5px) rotate(-45deg) translateY(-6px) translate(-9px, 5px)'
+              : 'translate(9px, -5px) rotate(0deg) translate(-9px, 5px)',
+            transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+          }} />
         </button>
       </div>
 
-      {menuOpen && (
-        <div className="mobile-menu" style={{ position: 'fixed', top: '60px', left: 0, right: 0, bottom: 0, background: '#0B4390', zIndex: 150, overflowY: 'auto', display: 'none', flexDirection: 'column', padding: '16px 0 32px' }}>
-          <Link to="/" onClick={() => setMenuOpen(false)} style={{ color: location.pathname === '/' ? '#ffffff' : 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '12px 24px', fontSize: '15px', fontWeight: '700', fontFamily: 'Archivo, sans-serif', borderLeft: location.pathname === '/' ? '3px solid white' : '3px solid transparent', display: 'block' }}>
+      {/* Panel único del mega-menú: se mantiene montado un poco más allá del hover
+          para poder animar la salida, y usa opacity + translateY con transition */}
+      {seccionActiva && (
+        <div
+          onMouseEnter={() => handleEnterSeccion(renderedSeccion)}
+          onMouseLeave={handleLeaveSeccion}
+          style={{
+            position: 'fixed', top: '60px', left: 0, right: 0,
+            background: '#f8f8f8', borderBottom: '1px solid #e0e0e0',
+            zIndex: 300, display: 'flex', justifyContent: 'center',
+            gap: '8px', padding: '16px 24px',
+            opacity: panelOpen ? 1 : 0,
+            transform: panelOpen ? 'translateY(0)' : 'translateY(-8px)',
+            transition: 'opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.22s cubic-bezier(0.4, 0, 0.2, 1)',
+            pointerEvents: panelOpen ? 'auto' : 'none',
+          }}
+        >
+          <div key={contentKey} className="mega-menu-content" style={{ display: 'flex', gap: '8px' }}>
+            {seccionActiva.links.map(link => (
+              <Link key={link.to} to={link.to} onClick={() => { setHoveredSeccion(null); setPanelOpen(false); setRenderedSeccion(null) }}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center',
+                  gap: '8px', padding: '16px 28px',
+                  textDecoration: 'none',
+                  color: location.pathname === link.to ? '#0B4390' : '#444',
+                  background: location.pathname === link.to ? 'rgba(11,67,144,0.06)' : 'white',
+                  border: '1px solid',
+                  borderColor: location.pathname === link.to ? 'rgba(11,67,144,0.2)' : '#e8e8e8',
+                  borderRadius: '12px', minWidth: '110px',
+                  transition: 'background 0.15s ease, border-color 0.15s ease, color 0.15s ease',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(11,67,144,0.06)'; e.currentTarget.style.borderColor = 'rgba(11,67,144,0.2)'; e.currentTarget.style.color = '#0B4390' }}
+                onMouseLeave={e => { if (location.pathname !== link.to) { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#e8e8e8'; e.currentTarget.style.color = '#444' } }}
+              >
+                <span style={{ color: location.pathname === link.to ? '#0B4390' : '#666' }}>{link.icon}</span>
+                <span style={{ fontSize: '13px', fontWeight: '600', fontFamily: 'Archivo, sans-serif', whiteSpace: 'nowrap' }}>{link.label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {mobileMounted && (
+        <div className="mobile-menu" style={{
+          position: 'fixed', top: '60px', left: 0, right: 0, bottom: 0,
+          background: '#0B4390', zIndex: 150, overflowY: 'auto',
+          display: 'none', flexDirection: 'column', padding: '16px 0 32px',
+          opacity: mobilePanelOpen ? 1 : 0,
+          transform: mobilePanelOpen ? 'translateY(0)' : 'translateY(-12px)',
+          transition: 'opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.22s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}>
+          <Link to="/" onClick={closeMobileMenu} style={{ color: location.pathname === '/' ? '#ffffff' : 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '12px 24px', fontSize: '15px', fontWeight: '700', fontFamily: 'Archivo, sans-serif', borderLeft: location.pathname === '/' ? '3px solid white' : '3px solid transparent', display: 'block' }}>
             Inicio
           </Link>
 
@@ -230,7 +346,7 @@ export default function Navbar() {
                 {seccion.label}
               </div>
               {seccion.links.map(link => (
-                <Link key={link.to} to={link.to} onClick={() => setMenuOpen(false)}
+                <Link key={link.to} to={link.to} onClick={closeMobileMenu}
                   style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 24px', color: location.pathname === link.to ? '#ffffff' : 'rgba(255,255,255,0.75)', textDecoration: 'none', fontSize: '15px', fontWeight: location.pathname === link.to ? '700' : '400', fontFamily: 'Archivo, sans-serif', borderLeft: location.pathname === link.to ? '3px solid white' : '3px solid transparent' }}>
                   <span style={{ opacity: location.pathname === link.to ? 1 : 0.6 }}>{link.icon}</span>
                   {link.label}
@@ -249,20 +365,20 @@ export default function Navbar() {
           <div style={{ margin: '24px 24px 0', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '20px' }}>
             {user ? (
               <>
-                <button onClick={() => { navigate('/perfil'); setMenuOpen(false) }} style={{ display: 'block', width: '100%', background: 'none', border: 'none', textAlign: 'left', color: 'rgba(255,255,255,0.75)', padding: '10px 0', fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
+                <button onClick={() => { navigate('/perfil'); closeMobileMenu() }} style={{ display: 'block', width: '100%', background: 'none', border: 'none', textAlign: 'left', color: 'rgba(255,255,255,0.75)', padding: '10px 0', fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
                   Mi perfil
                 </button>
                 {profile?.es_redactor && (
-                  <button onClick={() => { navigate('/redaccion'); setMenuOpen(false) }} style={{ display: 'block', width: '100%', background: 'none', border: 'none', textAlign: 'left', color: 'rgba(255,255,255,0.75)', padding: '10px 0', fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
+                  <button onClick={() => { navigate('/redaccion'); closeMobileMenu() }} style={{ display: 'block', width: '100%', background: 'none', border: 'none', textAlign: 'left', color: 'rgba(255,255,255,0.75)', padding: '10px 0', fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
                     Redacción
                   </button>
                 )}
-                <button onClick={() => { signOut(); setMenuOpen(false) }} style={{ display: 'block', width: '100%', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', textAlign: 'center', color: 'rgba(255,100,100,0.9)', padding: '12px', fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer', marginTop: '8px' }}>
+                <button onClick={() => { signOut(); closeMobileMenu() }} style={{ display: 'block', width: '100%', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', textAlign: 'center', color: 'rgba(255,100,100,0.9)', padding: '12px', fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer', marginTop: '8px' }}>
                   Cerrar sesión
                 </button>
               </>
             ) : (
-              <button onClick={() => { signInWithGoogle(); setMenuOpen(false) }} style={{ display: 'block', width: '100%', background: 'white', color: '#0B4390', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '15px', fontWeight: '700', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
+              <button onClick={() => { signInWithGoogle(); closeMobileMenu() }} style={{ display: 'block', width: '100%', background: 'white', color: '#0B4390', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '15px', fontWeight: '700', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
                 Iniciar sesión
               </button>
             )}
@@ -271,6 +387,14 @@ export default function Navbar() {
       )}
 
       <style>{`
+        @keyframes megaMenuFadeSlide {
+          from { opacity: 0; transform: translateY(-4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .mega-menu-content {
+          animation: megaMenuFadeSlide 0.2s ease;
+        }
+
         @media (max-width: 768px) {
           .desktop-nav { display: none !important; }
           .mobile-menu-btn { display: block !important; }
