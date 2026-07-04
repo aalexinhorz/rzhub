@@ -13,6 +13,7 @@ import NoticiaDetalle from './pages/NoticiaDetalle'
 import Redaccion from './pages/Redaccion'
 import Calendario from './pages/Calendario'
 import Contacto from './pages/Contacto'
+import Porra from './pages/Porra'
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/calendario" element={<Calendario />} />
         <Route path="/rumores" element={<Rumores />} />
         <Route path="/contacto" element={<Contacto />} />
+        <Route path="/porra" element={<Porra />} />
       </Routes>
     </div>
   )

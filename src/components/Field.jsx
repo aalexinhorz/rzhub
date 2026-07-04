@@ -9,52 +9,25 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
   const [nombreGuardado, setNombreGuardado] = useState('')
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
-  const [capturing, setCapturing] = useState(false)
 
   async function handleDownload() {
     if (!fieldRef.current) return
-    setCapturing(true)
-
     try {
-      window.scrollTo(0, 0)
-      await new Promise(r => setTimeout(r, 150))
-
-      const campoImg = fieldRef.current.querySelector('img')
-      if (campoImg) campoImg.src = '/CAMPO_PARA_WEB.png'
-
-      // Solo ocultar huecos vacíos, NO los suplentes reales
-      const subEmpties = fieldRef.current.querySelectorAll('[data-sub-empty]')
-      subEmpties.forEach(el => { el.style.display = 'none' })
-
+      const img = fieldRef.current.querySelector('img')
+      img.src = '/CAMPO_PARA_WEB.png'
       await new Promise(r => setTimeout(r, 300))
-
       const canvas = await html2canvas(fieldRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-        logging: false,
-        x: 0,
-        y: 0,
-        scrollX: 0,
-        scrollY: 0,
+        scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false,
       })
-
-      if (campoImg) campoImg.src = '/CAMPO_PARA_WEB.svg'
-      subEmpties.forEach(el => { el.style.display = '' })
-
+      img.src = '/CAMPO_PARA_WEB.svg'
       const link = document.createElement('a')
       link.download = `${teamName || 'alineacion'}.png`
       link.href = canvas.toDataURL('image/png')
       link.click()
-
     } catch (error) {
       console.error('Error al descargar:', error)
-      const campoImg = fieldRef.current?.querySelector('img')
-      if (campoImg) campoImg.src = '/CAMPO_PARA_WEB.svg'
-      fieldRef.current?.querySelectorAll('[data-sub-empty]').forEach(el => { el.style.display = '' })
-    } finally {
-      setCapturing(false)
+      const img = fieldRef.current?.querySelector('img')
+      if (img) img.src = '/CAMPO_PARA_WEB.svg'
     }
   }
 
@@ -89,8 +62,8 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
           </button>
         )}
         {window.innerWidth > 640 && (
-          <button onClick={handleDownload} disabled={capturing} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '24px', border: '2px solid #0B4390', background: 'white', color: '#0B4390', fontWeight: 'bold', fontSize: '14px', fontFamily: 'sans-serif', cursor: capturing ? 'wait' : 'pointer', opacity: capturing ? 0.7 : 1 }}>
-            {capturing ? '⏳ Generando...' : '⬇ Descargar'}
+          <button onClick={handleDownload} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '24px', border: '2px solid #0B4390', background: 'white', color: '#0B4390', fontWeight: 'bold', fontSize: '14px', fontFamily: 'sans-serif', cursor: 'pointer' }}>
+            ⬇ Descargar
           </button>
         )}
       </div>
@@ -129,7 +102,6 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
               onSelectSub={onSelectSub}
               onRemoveSub={onRemoveSub}
               onAddCustomPlayer={onAddCustomPlayer}
-              capturing={capturing}
             />
           ))}
         </div>

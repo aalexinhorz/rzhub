@@ -42,6 +42,10 @@ const SECCIONES = [
         icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.31 2.69-6 6-6s6 2.69 6 6"/><path d="M17 14c1.66 0 3 1.34 3 3v2"/></svg>
       },
       {
+        to: '/porra', label: 'La Porra',
+        icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      },
+      {
         to: '/contacto', label: 'Contacto',
         icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
       },
@@ -81,7 +85,6 @@ export default function Navbar() {
           <img src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png" alt="Palmadas al Viento" style={{ height: '32px', flexShrink: 0, display: 'block' }} />
         </Link>
 
-        {/* Desktop nav */}
         <nav style={{ display: 'flex', gap: '4px', marginLeft: '20px', flex: 1, alignItems: 'center' }} className="desktop-nav">
           <Link to="/" style={{
             color: location.pathname === '/' ? '#ffffff' : 'rgba(255,255,255,0.7)',
@@ -95,9 +98,7 @@ export default function Navbar() {
           </Link>
 
           {SECCIONES.map(seccion => (
-            <div
-              key={seccion.label}
-              style={{ position: 'relative', height: '60px', display: 'flex', alignItems: 'center' }}
+            <div key={seccion.label} style={{ position: 'relative', height: '60px', display: 'flex', alignItems: 'center' }}
               onMouseEnter={() => handleMouseEnter(seccion.label)}
               onMouseLeave={handleMouseLeave}
             >
@@ -117,11 +118,8 @@ export default function Navbar() {
                 </svg>
               </button>
 
-              {/* Barra secundaria estilo Atlético Stats */}
               {hoveredSeccion === seccion.label && (
-                <div
-                  onMouseEnter={() => handleMouseEnter(seccion.label)}
-                  onMouseLeave={handleMouseLeave}
+                <div onMouseEnter={() => handleMouseEnter(seccion.label)} onMouseLeave={handleMouseLeave}
                   style={{
                     position: 'fixed', top: '60px', left: 0, right: 0,
                     background: '#f8f8f8', borderBottom: '1px solid #e0e0e0',
@@ -130,10 +128,7 @@ export default function Navbar() {
                   }}
                 >
                   {seccion.links.map(link => (
-                    <Link
-                      key={link.to}
-                      to={link.to}
-                      onClick={() => setHoveredSeccion(null)}
+                    <Link key={link.to} to={link.to} onClick={() => setHoveredSeccion(null)}
                       style={{
                         display: 'flex', flexDirection: 'column', alignItems: 'center',
                         gap: '8px', padding: '16px 28px',
@@ -142,29 +137,13 @@ export default function Navbar() {
                         background: location.pathname === link.to ? 'rgba(11,67,144,0.06)' : 'white',
                         border: '1px solid',
                         borderColor: location.pathname === link.to ? 'rgba(11,67,144,0.2)' : '#e8e8e8',
-                        borderRadius: '12px',
-                        minWidth: '110px',
-                        transition: 'all 0.15s',
+                        borderRadius: '12px', minWidth: '110px',
                       }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.background = 'rgba(11,67,144,0.06)'
-                        e.currentTarget.style.borderColor = 'rgba(11,67,144,0.2)'
-                        e.currentTarget.style.color = '#0B4390'
-                      }}
-                      onMouseLeave={e => {
-                        if (location.pathname !== link.to) {
-                          e.currentTarget.style.background = 'white'
-                          e.currentTarget.style.borderColor = '#e8e8e8'
-                          e.currentTarget.style.color = '#444'
-                        }
-                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(11,67,144,0.06)'; e.currentTarget.style.borderColor = 'rgba(11,67,144,0.2)'; e.currentTarget.style.color = '#0B4390' }}
+                      onMouseLeave={e => { if (location.pathname !== link.to) { e.currentTarget.style.background = 'white'; e.currentTarget.style.borderColor = '#e8e8e8'; e.currentTarget.style.color = '#444' } }}
                     >
-                      <span style={{ color: location.pathname === link.to ? '#0B4390' : '#666' }}>
-                        {link.icon}
-                      </span>
-                      <span style={{ fontSize: '13px', fontWeight: '600', fontFamily: 'Archivo, sans-serif', whiteSpace: 'nowrap' }}>
-                        {link.label}
-                      </span>
+                      <span style={{ color: location.pathname === link.to ? '#0B4390' : '#666' }}>{link.icon}</span>
+                      <span style={{ fontSize: '13px', fontWeight: '600', fontFamily: 'Archivo, sans-serif', whiteSpace: 'nowrap' }}>{link.label}</span>
                     </Link>
                   ))}
                 </div>
@@ -187,19 +166,15 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* Usuario desktop */}
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }} className="desktop-nav">
           {user ? (
             <div style={{ position: 'relative' }}>
-              <button
-                onClick={() => setUserMenuOpen(o => !o)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '8px',
-                  background: 'rgba(255,255,255,0.15)', border: 'none',
-                  borderRadius: '20px', padding: '5px 12px 5px 5px',
-                  cursor: 'pointer', color: 'white',
-                }}
-              >
+              <button onClick={() => setUserMenuOpen(o => !o)} style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                background: 'rgba(255,255,255,0.15)', border: 'none',
+                borderRadius: '20px', padding: '5px 12px 5px 5px',
+                cursor: 'pointer', color: 'white',
+              }}>
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} />
                 ) : (
@@ -207,17 +182,10 @@ export default function Navbar() {
                     <span style={{ fontSize: '11px', fontWeight: '700', color: '#0B4390' }}>{iniciales}</span>
                   </div>
                 )}
-                <span style={{ fontSize: '13px', fontFamily: 'Archivo, sans-serif', fontWeight: '600' }}>
-                  {nombre.split(' ')[0]}
-                </span>
+                <span style={{ fontSize: '13px', fontFamily: 'Archivo, sans-serif', fontWeight: '600' }}>{nombre.split(' ')[0]}</span>
               </button>
               {userMenuOpen && (
-                <div style={{
-                  position: 'absolute', right: 0, top: '42px',
-                  background: 'white', borderRadius: '10px',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                  minWidth: '160px', zIndex: 300, overflow: 'hidden',
-                }}>
+                <div style={{ position: 'absolute', right: 0, top: '42px', background: 'white', borderRadius: '10px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)', minWidth: '160px', zIndex: 300, overflow: 'hidden' }}>
                   <button onClick={() => { navigate('/perfil'); setUserMenuOpen(false) }} style={{ display: 'block', width: '100%', padding: '12px 16px', background: 'none', border: 'none', textAlign: 'left', fontSize: '14px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer', color: '#333' }}>
                     Mi perfil
                   </button>
@@ -239,12 +207,8 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Hamburguesa móvil */}
-        <button
-          onClick={() => setMenuOpen(o => !o)}
-          className="mobile-menu-btn"
-          style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', marginLeft: 'auto' }}
-        >
+        <button onClick={() => setMenuOpen(o => !o)} className="mobile-menu-btn"
+          style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', marginLeft: 'auto' }}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
             {menuOpen
               ? <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>
@@ -254,51 +218,21 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Drawer móvil */}
       {menuOpen && (
-        <div className="mobile-menu" style={{
-          position: 'fixed', top: '60px', left: 0, right: 0, bottom: 0,
-          background: '#0B4390', zIndex: 150, overflowY: 'auto',
-          display: 'none', flexDirection: 'column', padding: '16px 0 32px',
-        }}>
-          <Link to="/" onClick={() => setMenuOpen(false)} style={{
-            color: location.pathname === '/' ? '#ffffff' : 'rgba(255,255,255,0.75)',
-            textDecoration: 'none', padding: '12px 24px', fontSize: '16px',
-            fontWeight: '700', fontFamily: 'Archivo, sans-serif',
-            borderLeft: location.pathname === '/' ? '3px solid white' : '3px solid transparent',
-            display: 'block',
-          }}>
+        <div className="mobile-menu" style={{ position: 'fixed', top: '60px', left: 0, right: 0, bottom: 0, background: '#0B4390', zIndex: 150, overflowY: 'auto', display: 'none', flexDirection: 'column', padding: '16px 0 32px' }}>
+          <Link to="/" onClick={() => setMenuOpen(false)} style={{ color: location.pathname === '/' ? '#ffffff' : 'rgba(255,255,255,0.75)', textDecoration: 'none', padding: '12px 24px', fontSize: '15px', fontWeight: '700', fontFamily: 'Archivo, sans-serif', borderLeft: location.pathname === '/' ? '3px solid white' : '3px solid transparent', display: 'block' }}>
             Inicio
           </Link>
 
           {SECCIONES.map(seccion => (
             <div key={seccion.label}>
-              <div style={{
-                padding: '20px 24px 8px',
-                fontFamily: 'Archivo, sans-serif', fontSize: '11px',
-                fontWeight: '700', letterSpacing: '2px',
-                color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase',
-              }}>
+              <div style={{ padding: '20px 24px 8px', fontFamily: 'Archivo, sans-serif', fontSize: '11px', fontWeight: '700', letterSpacing: '2px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>
                 {seccion.label}
               </div>
               {seccion.links.map(link => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMenuOpen(false)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '12px',
-                    padding: '11px 24px',
-                    color: location.pathname === link.to ? '#ffffff' : 'rgba(255,255,255,0.75)',
-                    textDecoration: 'none', fontSize: '16px',
-                    fontWeight: location.pathname === link.to ? '700' : '400',
-                    fontFamily: 'Archivo, sans-serif',
-                    borderLeft: location.pathname === link.to ? '3px solid white' : '3px solid transparent',
-                  }}
-                >
-                  <span style={{ opacity: location.pathname === link.to ? 1 : 0.6 }}>
-                    {link.icon}
-                  </span>
+                <Link key={link.to} to={link.to} onClick={() => setMenuOpen(false)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 24px', color: location.pathname === link.to ? '#ffffff' : 'rgba(255,255,255,0.75)', textDecoration: 'none', fontSize: '15px', fontWeight: location.pathname === link.to ? '700' : '400', fontFamily: 'Archivo, sans-serif', borderLeft: location.pathname === link.to ? '3px solid white' : '3px solid transparent' }}>
+                  <span style={{ opacity: location.pathname === link.to ? 1 : 0.6 }}>{link.icon}</span>
                   {link.label}
                 </Link>
               ))}
@@ -306,11 +240,7 @@ export default function Navbar() {
           ))}
 
           {live && (
-            <a href={live.url} target="_blank" rel="noopener noreferrer" style={{
-              color: '#fff', textDecoration: 'none', padding: '12px 24px',
-              fontSize: '15px', fontWeight: '700', fontFamily: 'Archivo, sans-serif',
-              display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px',
-            }}>
+            <a href={live.url} target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none', padding: '12px 24px', fontSize: '15px', fontWeight: '700', fontFamily: 'Archivo, sans-serif', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#e53e3e', display: 'inline-block' }} />
               EN DIRECTO
             </a>
@@ -319,11 +249,11 @@ export default function Navbar() {
           <div style={{ margin: '24px 24px 0', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '20px' }}>
             {user ? (
               <>
-                <button onClick={() => { navigate('/perfil'); setMenuOpen(false) }} style={{ display: 'block', width: '100%', background: 'none', border: 'none', textAlign: 'left', color: 'rgba(255,255,255,0.75)', padding: '10px 0', fontSize: '16px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
+                <button onClick={() => { navigate('/perfil'); setMenuOpen(false) }} style={{ display: 'block', width: '100%', background: 'none', border: 'none', textAlign: 'left', color: 'rgba(255,255,255,0.75)', padding: '10px 0', fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
                   Mi perfil
                 </button>
                 {profile?.es_redactor && (
-                  <button onClick={() => { navigate('/redaccion'); setMenuOpen(false) }} style={{ display: 'block', width: '100%', background: 'none', border: 'none', textAlign: 'left', color: 'rgba(255,255,255,0.75)', padding: '10px 0', fontSize: '16px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
+                  <button onClick={() => { navigate('/redaccion'); setMenuOpen(false) }} style={{ display: 'block', width: '100%', background: 'none', border: 'none', textAlign: 'left', color: 'rgba(255,255,255,0.75)', padding: '10px 0', fontSize: '15px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
                     Redacción
                   </button>
                 )}
