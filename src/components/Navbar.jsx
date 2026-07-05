@@ -334,7 +334,7 @@ export default function Navbar() {
       {mobileMounted && (
         <div className="mobile-menu" style={{
           position: 'fixed', top: '60px', left: 0, right: 0, bottom: 0,
-          background: '#0B4390', zIndex: 150, overflowY: 'auto',
+          background: '#0B4390', zIndex: 2150, overflowY: 'auto',
           display: 'none', flexDirection: 'column', padding: '16px 0 32px',
           opacity: mobilePanelOpen ? 1 : 0,
           transform: mobilePanelOpen ? 'translateY(0)' : 'translateY(-12px)',
