@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { MapContainer, TileLayer, Marker } from 'react-leaflet'
+import { useState, useEffect } from 'react'
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -34,6 +34,40 @@ function icono(escudo, color) {
 
 function getMapsUrl(lat, lng) {
   return 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng
+}
+
+// Leaflet calcula el tamaño del mapa en el momento en que se monta el contenedor.
+// En mobile, el contenedor puede cambiar de tamaño después de ese primer cálculo
+// (por el layout responsive, el teclado virtual, el cambio de orientación, o
+// simplemente porque el viewport tarda un frame en asentarse), y el mapa se
+// queda "congelado" con el tamaño viejo, mostrando solo una parte o vacío.
+// Este componente fuerza a Leaflet a recalcular el tamaño en esos casos.
+function MapSizeFix() {
+  const map = useMap()
+
+  useEffect(() => {
+    // Recalcular en el próximo frame tras montar (cubre el primer render en mobile)
+    const raf = requestAnimationFrame(() => map.invalidateSize())
+
+    // Recalcular también un poco después, por si el layout tarda en asentarse
+    const t1 = setTimeout(() => map.invalidateSize(), 200)
+    const t2 = setTimeout(() => map.invalidateSize(), 600)
+
+    // Recalcular ante resize / cambio de orientación (mobile)
+    const onResize = () => map.invalidateSize()
+    window.addEventListener('resize', onResize)
+    window.addEventListener('orientationchange', onResize)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      clearTimeout(t1)
+      clearTimeout(t2)
+      window.removeEventListener('resize', onResize)
+      window.removeEventListener('orientationchange', onResize)
+    }
+  }, [map])
+
+  return null
 }
 
 export default function OnTour() {
@@ -80,17 +114,18 @@ export default function OnTour() {
         </div>
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
-        <div style={{ flex: 1, borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
+      <div className="ontour-mapwrap" style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+        <div className="ontour-map" style={{ flex: 1, minWidth: 0, borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
           <MapContainer center={[40.0, -3.5]} zoom={6} style={{ height: '500px', width: '100%' }} scrollWheelZoom={false}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <MapSizeFix />
             {D.map(d => (
               <Marker key={d.num} position={[d.lat, d.lng]} icon={icono(d.escudo, d.color)} eventHandlers={{ click: () => setSel(d) }} />
             ))}
           </MapContainer>
         </div>
 
-        <div style={{ width: '320px', flexShrink: 0 }}>
+        <div className="ontour-sidebar" style={{ width: '320px', flexShrink: 0 }}>
           {sel ? (
             <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
               <div style={{ background: sel.color, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -161,6 +196,34 @@ export default function OnTour() {
           ))}
         </div>
       </div>
+
+      <style>{`
+        /* En desktop el MapContainer ya trae su propio height:500px inline
+           (fijado por style={{ height: '500px', width: '100%' }}), así que
+           aquí NO tocamos width/height del .leaflet-container a nivel global:
+           una regla 100%/100% heredaría de un padre (.ontour-map) sin altura
+           explícita y el mapa colapsaría a 0px, justo el bug que veíamos en
+           desktop. Solo forzamos un tamaño explícito dentro del breakpoint
+           mobile/tablet, donde sí hace falta. */
+
+        @media (max-width: 900px) {
+          .ontour-mapwrap {
+            flex-direction: column !important;
+            padding: 16px !important;
+          }
+          .ontour-map {
+            width: 100% !important;
+            flex: none !important;
+          }
+          .ontour-map .leaflet-container {
+            width: 100% !important;
+            height: 340px !important;
+          }
+          .ontour-sidebar {
+            width: 100% !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
