@@ -251,7 +251,7 @@ export default function Navbar() {
               )}
             </div>
           ) : (
-            <button onClick={signInWithGoogle} style={{ background: 'white', color: '#0B4390', border: 'none', borderRadius: '8px', padding: '7px 14px', fontSize: '13px', fontWeight: '700', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
+            <button onClick={signInWithGoogle} className="navbar-login-btn" style={{ background: 'white', color: '#0B4390', border: 'none', borderRadius: '8px', padding: '7px 14px', fontSize: '13px', fontWeight: '700', fontFamily: 'Archivo, sans-serif', cursor: 'pointer', transition: 'transform 0.18s ease, box-shadow 0.18s ease' }}>
               Iniciar sesión
             </button>
           )}
@@ -382,7 +382,7 @@ export default function Navbar() {
                 </button>
               </>
             ) : (
-              <button onClick={() => { signInWithGoogle(); closeMobileMenu() }} style={{ display: 'block', width: '100%', background: 'white', color: '#0B4390', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '15px', fontWeight: '700', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
+              <button onClick={() => { signInWithGoogle(); closeMobileMenu() }} className="navbar-login-btn" style={{ display: 'block', width: '100%', background: 'white', color: '#0B4390', border: 'none', borderRadius: '8px', padding: '12px', fontSize: '15px', fontWeight: '700', fontFamily: 'Archivo, sans-serif', cursor: 'pointer', transition: 'transform 0.18s ease, box-shadow 0.18s ease' }}>
                 Iniciar sesión
               </button>
             )}
@@ -397,6 +397,18 @@ export default function Navbar() {
         }
         .mega-menu-content {
           animation: megaMenuFadeSlide 0.2s ease;
+        }
+
+        /* Hover con escala: no afecta el layout del header (60px fijo)
+           porque transform no participa en el flujo del documento, solo
+           es un efecto visual pintado por encima. */
+        .navbar-login-btn:hover {
+          transform: scale(1.05);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+        }
+        .navbar-login-btn:active {
+          transform: scale(1.02);
+          box-shadow: none;
         }
 
         @media (max-width: 768px) {

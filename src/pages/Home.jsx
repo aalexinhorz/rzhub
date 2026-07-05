@@ -386,42 +386,80 @@ export default function Home() {
         <PartidoWidget />
 
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '500px' }}>
-          <button onClick={() => navigate('/lineup')} style={{
-            background: '#f5c400', color: '#0B4390', border: 'none',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '700',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}>
+          <button
+            onClick={() => navigate('/lineup')}
+            className="home-btn home-btn-primary"
+            style={{
+              background: '#f5c400', color: '#0B4390', border: 'none',
+              borderRadius: '8px', padding: '14px 20px',
+              fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '700',
+              cursor: 'pointer', flex: 1, minWidth: '130px',
+              transition: 'transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease',
+            }}
+          >
             Crear alineación
           </button>
-          <button onClick={() => navigate('/tierlist')} style={{
-            background: 'transparent', color: '#ffffff',
-            border: '2px solid rgba(255,255,255,0.4)',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}>
+          <button
+            onClick={() => navigate('/tierlist')}
+            className="home-btn home-btn-outline"
+            style={{
+              background: 'transparent', color: '#ffffff',
+              border: '2px solid rgba(255,255,255,0.4)',
+              borderRadius: '8px', padding: '14px 20px',
+              fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
+              cursor: 'pointer', flex: 1, minWidth: '130px',
+              transition: 'transform 0.18s ease, background 0.18s ease, border-color 0.18s ease',
+            }}
+          >
             Tier List
           </button>
-          <button onClick={() => navigate('/on-tour')} style={{
-            background: 'transparent', color: '#ffffff',
-            border: '2px solid rgba(255,255,255,0.4)',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}>
+          <button
+            onClick={() => navigate('/on-tour')}
+            className="home-btn home-btn-outline"
+            style={{
+              background: 'transparent', color: '#ffffff',
+              border: '2px solid rgba(255,255,255,0.4)',
+              borderRadius: '8px', padding: '14px 20px',
+              fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
+              cursor: 'pointer', flex: 1, minWidth: '130px',
+              transition: 'transform 0.18s ease, background 0.18s ease, border-color 0.18s ease',
+            }}
+          >
             On Tour
           </button>
-          <button onClick={() => navigate('/calendario')} style={{
-            background: 'transparent', color: '#ffffff',
-            border: '2px solid rgba(255,255,255,0.4)',
-            borderRadius: '8px', padding: '14px 20px',
-            fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
-            cursor: 'pointer', flex: 1, minWidth: '130px',
-          }}>
+          <button
+            onClick={() => navigate('/calendario')}
+            className="home-btn home-btn-outline"
+            style={{
+              background: 'transparent', color: '#ffffff',
+              border: '2px solid rgba(255,255,255,0.4)',
+              borderRadius: '8px', padding: '14px 20px',
+              fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600',
+              cursor: 'pointer', flex: 1, minWidth: '130px',
+              transition: 'transform 0.18s ease, background 0.18s ease, border-color 0.18s ease',
+            }}
+          >
             Calendario
           </button>
         </div>
+
+        <style>{`
+          .home-btn-primary:hover {
+            background: #ffd633;
+            transform: scale(1.05);
+          }
+          .home-btn-primary:active {
+            transform: scale(1.02);
+          }
+          .home-btn-outline:hover {
+            background: rgba(255,255,255,0.12);
+            border-color: rgba(255,255,255,0.7);
+            transform: scale(1.05);
+          }
+          .home-btn-outline:active {
+            transform: scale(1.02);
+          }
+        `}</style>
       </div>
     </div>
   )
