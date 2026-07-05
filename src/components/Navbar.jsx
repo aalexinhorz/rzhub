@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import useLiveStream from '../hooks/useLiveStream'
@@ -87,6 +87,30 @@ export default function Navbar() {
   const openFrameRef = useRef([null, null])
 
   const live = useLiveStream()
+
+  // Bloquea el scroll de la página de fondo mientras el menú mobile está
+  // abierto (evita el scroll "por detrás" del menú, típico en iOS/Safari
+  // donde un simple overflow:hidden no basta). Guardamos la posición de
+  // scroll para restaurarla exactamente al cerrar.
+  useEffect(() => {
+    if (!menuOpen) return
+
+    const scrollY = window.scrollY
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.left = '0'
+    document.body.style.right = '0'
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.overflow = ''
+      window.scrollTo(0, scrollY)
+    }
+  }, [menuOpen])
 
   const nombre = profile?.username || profile?.name || user?.user_metadata?.name || user?.email || ''
   const avatarUrl = profile?.avatar_url || null
@@ -335,6 +359,7 @@ export default function Navbar() {
         <div className="mobile-menu" style={{
           position: 'fixed', top: '60px', left: 0, right: 0, bottom: 0,
           background: '#0B4390', zIndex: 2150, overflowY: 'auto',
+          overscrollBehavior: 'contain', WebkitOverflowScrolling: 'touch',
           display: 'none', flexDirection: 'column', padding: '16px 0 32px',
           opacity: mobilePanelOpen ? 1 : 0,
           transform: mobilePanelOpen ? 'translateY(0)' : 'translateY(-12px)',
