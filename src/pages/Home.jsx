@@ -351,7 +351,7 @@ export default function Home() {
       alignItems: 'stretch',
     }}>
       <Helmet>
-        <title>RZ Hub | La web del Real Zaragoza</title>
+        <title>RZ Hub | Todo sobre el Real Zaragoza</title>
         <meta name="description" content="La plataforma fan del Real Zaragoza. Crea tu alineación, sigue el mercado, el calendario y mucho más." />
         <meta property="og:title" content="RZ Hub | La web del Real Zaragoza" />
         <meta property="og:description" content="La plataforma fan del Real Zaragoza. Crea tu alineación, sigue el mercado, el calendario y mucho más." />
