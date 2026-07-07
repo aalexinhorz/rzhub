@@ -64,7 +64,7 @@ DESCRIPTION:Partido amistoso de pretemporada
 END:VEVENT
 
 BEGIN:VEVENT
-UID:rz-2026-07-29@rzhub.es
+UID:rz-2026-08-22@rzhub.es
 SUMMARY:Numancia vs Real Zaragoza (Amistoso)
 DTSTART;VALUE=DATE:20260822
 DTEND;VALUE=DATE:20260823
