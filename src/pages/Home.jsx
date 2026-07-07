@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
+import { Helmet } from 'react-helmet-async'
 import useLiveStream from '../hooks/useLiveStream'
 
 const TEAM_ID = 2815
@@ -192,7 +193,7 @@ function LiveBanner({ live }) {
       <span style={{ fontSize: '20px', animation: 'pulse-live 2s infinite' }}>🔴</span>
       <div style={{ minWidth: 0 }}>
         <div style={{ color: '#ff5555', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>
-          Palmadas al Viento en directo
+          RZ Hub en directo
         </div>
         <div style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {live.titulo}
@@ -349,6 +350,15 @@ export default function Home() {
       flexDirection: 'column',
       alignItems: 'stretch',
     }}>
+      <Helmet>
+        <title>RZ Hub | La web del Real Zaragoza</title>
+        <meta name="description" content="La plataforma fan del Real Zaragoza. Crea tu alineación, sigue el mercado, el calendario y mucho más." />
+        <meta property="og:title" content="RZ Hub | La web del Real Zaragoza" />
+        <meta property="og:description" content="La plataforma fan del Real Zaragoza. Crea tu alineación, sigue el mercado, el calendario y mucho más." />
+        <meta property="og:url" content="https://rzhub.es" />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://rzhub.es" />
+      </Helmet>
 
       {/* CARRUSEL — justo debajo del navbar */}
       <CarruselPartidos />
@@ -365,7 +375,7 @@ export default function Home() {
       }}>
         <img
           src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png"
-          alt="Palmadas al Viento"
+          alt="RZ Hub - Real Zaragoza"
           style={{ width: '280px', maxWidth: '85vw' }}
         />
 

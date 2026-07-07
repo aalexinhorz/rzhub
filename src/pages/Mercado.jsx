@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { supabase } from '../hooks/useAuth'
 
 const ESCUDO_ZARAGOZA = '/escudos/Real_Zaragoza_logo (3).svg'
@@ -178,7 +179,6 @@ function MovimientoRow({ mov, isMobile }) {
   if (isMobile) {
     return (
       <div style={{ background: 'white', borderBottom: '1px solid #f0f0f0', padding: '16px' }}>
-        {/* Fila superior: foto + nombre + badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
           <div style={{ width: '52px', height: '52px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#f0f0f0', border: '2px solid #e0e0e0' }}>
             <img src={mov.foto_url || DEFAULT_PHOTO} alt={mov.nombre} crossOrigin="anonymous"
@@ -202,7 +202,6 @@ function MovimientoRow({ mov, isMobile }) {
           </div>
         </div>
 
-        {/* Fila clubs */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
           <ClubInfo club={origenEsZaragoza ? 'Real Zaragoza' : clubOrigen} isZaragoza={origenEsZaragoza} label="Origen" color={origenEsZaragoza ? '#0B4390' : '#333'} />
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={tipo.color} strokeWidth="2.5" style={{ flexShrink: 0 }}>
@@ -212,7 +211,6 @@ function MovimientoRow({ mov, isMobile }) {
           <ClubInfo club={destinoEsZaragoza ? 'Real Zaragoza' : clubDestino} isZaragoza={destinoEsZaragoza} label="Destino" color={destinoEsZaragoza ? '#0B4390' : '#333'} />
         </div>
 
-        {/* Fecha */}
         {mov.fecha && (
           <div style={{ textAlign: 'right', marginTop: '10px' }}>
             <span style={{ fontSize: '12px', color: '#bbb', fontFamily: 'Archivo, sans-serif' }}>
@@ -224,20 +222,17 @@ function MovimientoRow({ mov, isMobile }) {
     )
   }
 
-  // Desktop
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', background: 'white', borderBottom: '1px solid #f0f0f0', transition: 'background 0.15s' }}
       onMouseEnter={e => { e.currentTarget.style.background = '#fafafa' }}
       onMouseLeave={e => { e.currentTarget.style.background = 'white' }}
     >
-      {/* Foto */}
       <div style={{ width: '52px', height: '52px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#f0f0f0', border: '2px solid #e0e0e0' }}>
         <img src={mov.foto_url || DEFAULT_PHOTO} alt={mov.nombre} crossOrigin="anonymous"
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 15%', display: 'block' }}
           onError={e => { e.target.src = DEFAULT_PHOTO }} />
       </div>
 
-      {/* Nombre + badges */}
       <div style={{ minWidth: '180px', flexShrink: 0 }}>
         <div style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '700', fontSize: '16px', color: '#111', marginBottom: '5px' }}>
           {mov.nombre}
@@ -254,19 +249,15 @@ function MovimientoRow({ mov, isMobile }) {
         </div>
       </div>
 
-      {/* Club origen */}
       <ClubInfo club={origenEsZaragoza ? 'Real Zaragoza' : clubOrigen} isZaragoza={origenEsZaragoza} label="Origen" color={origenEsZaragoza ? '#0B4390' : '#333'} />
 
-      {/* Flecha */}
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={tipo.color} strokeWidth="2.5" style={{ flexShrink: 0 }}>
         <line x1="5" y1="12" x2="19" y2="12"/>
         <polyline points="12 5 19 12 12 19"/>
       </svg>
 
-      {/* Club destino */}
       <ClubInfo club={destinoEsZaragoza ? 'Real Zaragoza' : clubDestino} isZaragoza={destinoEsZaragoza} label="Destino" color={destinoEsZaragoza ? '#0B4390' : '#333'} />
 
-      {/* Fecha */}
       <div style={{ marginLeft: 'auto', flexShrink: 0, textAlign: 'right' }}>
         {mov.fecha && (
           <span style={{ fontSize: '13px', color: '#bbb', fontFamily: 'Archivo, sans-serif', whiteSpace: 'nowrap' }}>
@@ -322,6 +313,15 @@ export default function Mercado() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5', color: '#111', fontFamily: 'Archivo, sans-serif', paddingBottom: '80px' }}>
+      <Helmet>
+        <title>Mercado de fichajes | RZ Hub - Real Zaragoza</title>
+        <meta name="description" content={`Sigue todas las altas y bajas del Real Zaragoza. ${altas.length} incorporaciones y ${bajas.length} salidas en la temporada 26/27.`} />
+        <meta property="og:title" content="Mercado de fichajes | RZ Hub - Real Zaragoza" />
+        <meta property="og:description" content="Todas las altas, bajas y cesiones del Real Zaragoza actualizadas en tiempo real." />
+        <meta property="og:url" content="https://rzhub.es/mercado" />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://rzhub.es/mercado" />
+      </Helmet>
 
       <div style={{ backgroundColor: '#0B4390', padding: '60px 24px 50px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(255,255,255,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
