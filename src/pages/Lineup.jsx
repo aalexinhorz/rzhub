@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { DndContext, closestCenter } from '@dnd-kit/core'
 import Field from '../components/Field'
 import SidePanel from '../components/SidePanel'
@@ -183,6 +184,16 @@ export default function Lineup() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#ffffff', fontFamily: 'sans-serif' }}>
+      <Helmet>
+        <title>Alineación del Real Zaragoza | Crea tu XI | RZ Hub</title>
+        <meta name="description" content="Crea tu alineación ideal del Real Zaragoza. Elige formación, coloca los jugadores de la plantilla y comparte tu XI con otros zaragocistas." />
+        <meta property="og:title" content="Alineación del Real Zaragoza | Crea tu XI | RZ Hub" />
+        <meta property="og:description" content="Crea tu alineación ideal del Real Zaragoza. Elige formación, coloca los jugadores y comparte tu XI." />
+        <meta property="og:url" content="https://rzhub.es/lineup" />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://rzhub.es/lineup" />
+      </Helmet>
+
       <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '1300px', margin: '0 auto', padding: '16px', gap: '24px' }}>
         <DndContext collisionDetection={closestCenter}>
           <Field

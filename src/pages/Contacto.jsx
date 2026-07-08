@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { Helmet } from 'react-helmet-async'
 import emailjs from '@emailjs/browser'
 
 const SERVICE_ID = 'service_yu2o009'
@@ -7,7 +8,7 @@ const PUBLIC_KEY = '4UVo2QGYmg_lTiY_p'
 
 const inputStyle = {
   width: '100%', padding: '14px 16px',
-  backgroundColor: '#1a1a1a', border: '1px solid #2a2a2a',
+  backgroundColor: '#ffffff', border: '1px solid #ffffff',
   borderRadius: '10px', color: 'white',
   fontFamily: 'Archivo, sans-serif', fontSize: '15px',
   outline: 'none', boxSizing: 'border-box',
@@ -46,12 +47,20 @@ export default function Contacto() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', color: 'white', fontFamily: 'Archivo, sans-serif', paddingBottom: '80px' }}>
+      <Helmet>
+        <title>Contacto | RZ Hub - Real Zaragoza</title>
+        <meta name="description" content="¿Tienes alguna sugerencia o idea para RZ Hub? Escríbenos. La plataforma fan del Real Zaragoza hecha por y para zaragocistas." />
+        <meta property="og:title" content="Contacto | RZ Hub - Real Zaragoza" />
+        <meta property="og:description" content="¿Tienes alguna sugerencia o idea para RZ Hub? Escríbenos." />
+        <meta property="og:url" content="https://rzhub.es/contacto" />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://rzhub.es/contacto" />
+      </Helmet>
 
-      {/* HERO */}
       <div style={{ backgroundColor: '#0B4390', padding: '60px 24px 50px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(255,255,255,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <p style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '300', fontSize: 'clamp(12px, 2.5vw, 14px)', letterSpacing: '4px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', margin: '0 0 12px' }}>
-   RZ HUB
+          RZ HUB
         </p>
         <h1 style={{ fontFamily: 'Humane, sans-serif', fontSize: 'clamp(64px, 16vw, 130px)', fontWeight: '700', lineHeight: 0.9, margin: '0 0 20px', letterSpacing: '6px', textTransform: 'uppercase' }}>
           CONTACTO
@@ -61,7 +70,6 @@ export default function Contacto() {
         </p>
       </div>
 
-      {/* FORMULARIO */}
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '48px 24px 0' }}>
 
         <div style={{ marginBottom: '16px' }}>
@@ -75,7 +83,7 @@ export default function Contacto() {
             placeholder="Tu nombre"
             style={inputStyle}
             onFocus={e => { e.target.style.borderColor = '#0B4390' }}
-            onBlur={e => { e.target.style.borderColor = '#2a2a2a' }}
+            onBlur={e => { e.target.style.borderColor = '#ffffff' }}
           />
         </div>
 
@@ -90,7 +98,7 @@ export default function Contacto() {
             placeholder="¿De qué se trata?"
             style={inputStyle}
             onFocus={e => { e.target.style.borderColor = '#0B4390' }}
-            onBlur={e => { e.target.style.borderColor = '#2a2a2a' }}
+            onBlur={e => { e.target.style.borderColor = '#ffffff' }}
           />
         </div>
 
@@ -105,7 +113,7 @@ export default function Contacto() {
             rows={6}
             style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
             onFocus={e => { e.target.style.borderColor = '#0B4390' }}
-            onBlur={e => { e.target.style.borderColor = '#2a2a2a' }}
+            onBlur={e => { e.target.style.borderColor = '#ffffff' }}
           />
         </div>
 
@@ -114,7 +122,7 @@ export default function Contacto() {
           disabled={enviando}
           style={{
             width: '100%', padding: '16px',
-            backgroundColor: enviando ? '#333' : '#0B4390',
+            backgroundColor: enviando ? '#ffffff' : '#0B4390',
             border: 'none', borderRadius: '10px',
             color: 'white', fontSize: '15px', fontWeight: '700',
             fontFamily: 'Archivo, sans-serif', cursor: enviando ? 'not-allowed' : 'pointer',

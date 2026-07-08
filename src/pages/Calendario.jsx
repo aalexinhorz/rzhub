@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 
 const ICS_URL = 'https://rzhub.es/calendario.ics'
 const ICS_WEBCAL = ICS_URL.replace('https://', 'webcal://')
@@ -41,6 +42,15 @@ export default function Calendario() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', color: 'white', fontFamily: 'Archivo, sans-serif', paddingBottom: '80px' }}>
+      <Helmet>
+        <title>Calendario Real Zaragoza 26/27 | RZ Hub</title>
+        <meta name="description" content="Añade todos los partidos del Real Zaragoza a tu calendario. Compatible con Apple Calendar, Google Calendar y Outlook. Se actualiza automáticamente." />
+        <meta property="og:title" content="Calendario Real Zaragoza 26/27 | RZ Hub" />
+        <meta property="og:description" content="Añade todos los partidos del Real Zaragoza a tu calendario. Compatible con Apple Calendar, Google Calendar y Outlook." />
+        <meta property="og:url" content="https://rzhub.es/calendario" />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://rzhub.es/calendario" />
+      </Helmet>
 
       <div style={{ backgroundColor: '#0B4390', padding: '60px 24px 50px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(255,255,255,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -36,28 +37,16 @@ function getMapsUrl(lat, lng) {
   return 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng
 }
 
-// Leaflet calcula el tamaño del mapa en el momento en que se monta el contenedor.
-// En mobile, el contenedor puede cambiar de tamaño después de ese primer cálculo
-// (por el layout responsive, el teclado virtual, el cambio de orientación, o
-// simplemente porque el viewport tarda un frame en asentarse), y el mapa se
-// queda "congelado" con el tamaño viejo, mostrando solo una parte o vacío.
-// Este componente fuerza a Leaflet a recalcular el tamaño en esos casos.
 function MapSizeFix() {
   const map = useMap()
 
   useEffect(() => {
-    // Recalcular en el próximo frame tras montar (cubre el primer render en mobile)
     const raf = requestAnimationFrame(() => map.invalidateSize())
-
-    // Recalcular también un poco después, por si el layout tarda en asentarse
     const t1 = setTimeout(() => map.invalidateSize(), 200)
     const t2 = setTimeout(() => map.invalidateSize(), 600)
-
-    // Recalcular ante resize / cambio de orientación (mobile)
     const onResize = () => map.invalidateSize()
     window.addEventListener('resize', onResize)
     window.addEventListener('orientationchange', onResize)
-
     return () => {
       cancelAnimationFrame(raf)
       clearTimeout(t1)
@@ -90,6 +79,15 @@ export default function OnTour() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5' }}>
+      <Helmet>
+        <title>On Tour · Desplazamientos Real Zaragoza 26/27 | RZ Hub</title>
+        <meta name="description" content={`Todos los desplazamientos del Real Zaragoza en la temporada 26/27. ${D.length} viajes, hasta ${total.toLocaleString()} km en total. Planifica tu viaje con Google Maps.`} />
+        <meta property="og:title" content="On Tour · Desplazamientos Real Zaragoza 26/27 | RZ Hub" />
+        <meta property="og:description" content={`Mapa interactivo con todos los desplazamientos del Real Zaragoza esta temporada. ${D.length} viajes de visitante.`} />
+        <meta property="og:url" content="https://rzhub.es/on-tour" />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://rzhub.es/on-tour" />
+      </Helmet>
 
       <div style={{ background: '#0B4390', padding: '32px 24px 24px', color: 'white' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -198,14 +196,6 @@ export default function OnTour() {
       </div>
 
       <style>{`
-        /* En desktop el MapContainer ya trae su propio height:500px inline
-           (fijado por style={{ height: '500px', width: '100%' }}), así que
-           aquí NO tocamos width/height del .leaflet-container a nivel global:
-           una regla 100%/100% heredaría de un padre (.ontour-map) sin altura
-           explícita y el mapa colapsaría a 0px, justo el bug que veíamos en
-           desktop. Solo forzamos un tamaño explícito dentro del breakpoint
-           mobile/tablet, donde sí hace falta. */
-
         @media (max-width: 900px) {
           .ontour-mapwrap {
             flex-direction: column !important;
