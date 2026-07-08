@@ -15,6 +15,7 @@ const PARTIDOS = [
   { rival: 'UD Logroñés', fecha: '14 Ago', sede: 'visitante', tipo: 'Amistoso', escudo: '/escudos/spain_ud-logrones.football-logos.cc.svg' },
   { rival: 'Villarreal B', fecha: '15 Ago', sede: 'visitante', tipo: 'Amistoso', escudo: '/escudos/Villarreal_CF_logo-en.svg' },
   { rival: 'Bilbao Athletic', fecha: '21 Ago', sede: 'local', tipo: 'Amistoso', escudo: '/escudos/Club_Athletic_Bilbao_logo (1).svg' },
+  { rival: 'CD Numancia', fecha: '22 Ago', sede: '', tipo: 'Amistoso', escudo: '/escudos/spain_numancia.football-logos.cc.svg' },
 ]
 
 const DUPLICADOS = [...PARTIDOS, ...PARTIDOS, ...PARTIDOS]
