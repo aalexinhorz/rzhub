@@ -374,7 +374,7 @@ export default function Home() {
         flex: 1,
       }}>
         <img
-          src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png"
+          src="/LOGO_RZHUB.png"
           alt="RZ Hub - Real Zaragoza"
           style={{ width: '280px', maxWidth: '85vw' }}
         />

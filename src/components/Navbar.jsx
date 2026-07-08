@@ -186,7 +186,7 @@ export default function Navbar() {
     <>
       <div style={{ background: '#0B4390', padding: '0 20px', display: 'flex', alignItems: 'center', height: '60px', position: 'relative', zIndex: 200 }}>
         <Link to="/" onClick={closeMobileMenu}>
-          <img src="/PALMADAS_AL_VIENTO_HORIZONTAL 3.png" alt="Palmadas al Viento" style={{ height: '32px', flexShrink: 0, display: 'block' }} />
+          <img src="/LOGO_RZHUB.png" alt="RZ Hub" style={{ height: '32px', flexShrink: 0, display: 'block' }} />
         </Link>
 
         <nav style={{ display: 'flex', gap: '4px', marginLeft: '20px', flex: 1, alignItems: 'center' }} className="desktop-nav">
