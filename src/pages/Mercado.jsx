@@ -119,9 +119,28 @@ const ESCUDOS_CLUBS = {
   'Venezia': '/escudos/venezia.cc.svg',
 }
 
+const tsdbCache = {}
+
+async function fetchEscudoFromTSDB(club) {
+  if (!club) return null
+  if (tsdbCache[club] !== undefined) return tsdbCache[club]
+  try {
+    const res = await fetch(
+      `https://www.thesportsdb.com/api/v1/json/123/searchteams.php?t=${encodeURIComponent(club)}`
+    )
+    const data = await res.json()
+    const badge = data?.teams?.[0]?.strBadge || null
+    tsdbCache[club] = badge
+    return badge
+  } catch {
+    tsdbCache[club] = null
+    return null
+  }
+}
+
 const TIPO_CONFIG = {
-  alta:          { label: 'Alta',       color: '#27ae60', esEntrada: true },
-  baja:          { label: 'Baja',        color: '#e74c3c', esEntrada: false },
+  alta:          { label: 'Alta',          color: '#27ae60', esEntrada: true },
+  baja:          { label: 'Baja',          color: '#e74c3c', esEntrada: false },
   cesion_salida: { label: 'Cedido',        color: '#e74c3c', esEntrada: false },
   cesion_vuelta: { label: 'Vuelta cesión', color: '#27ae60', esEntrada: true },
 }
@@ -131,26 +150,50 @@ function normalizar(str) {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
 }
 
-function getEscudo(club) {
-  if (!club) return null
-  return ESCUDOS_CLUBS[club] || null
-}
-
 const POSICION_COLORS = {
-  POR: { bg: 'rgba(255,152,0,0.15)', border: '#ff9800', text: '#ff9800' },
+  POR: { bg: 'rgba(255,152,0,0.15)',  border: '#ff9800', text: '#ff9800' },
   DEF: { bg: 'rgba(33,150,243,0.15)', border: '#2196f3', text: '#2196f3' },
-  MED: { bg: 'rgba(76,175,80,0.15)', border: '#4caf50', text: '#4caf50' },
-  DEL: { bg: 'rgba(233,30,99,0.15)', border: '#e91e63', text: '#e91e63' },
+  MED: { bg: 'rgba(76,175,80,0.15)',  border: '#4caf50', text: '#4caf50' },
+  DEL: { bg: 'rgba(233,30,99,0.15)',  border: '#e91e63', text: '#e91e63' },
 }
 
 function ClubInfo({ club, isZaragoza, label, color }) {
-  const escudo = isZaragoza ? ESCUDO_ZARAGOZA : getEscudo(club)
   const nombre = isZaragoza ? 'Real Zaragoza' : (club || 'Libre')
+  const esLibre = !isZaragoza && club === 'Libre'
+
+  const [escudoSrc, setEscudoSrc] = useState(
+    isZaragoza ? ESCUDO_ZARAGOZA :
+    esLibre ? '/escudos/agentelibre.svg' :
+    (ESCUDOS_CLUBS[club] || null)
+  )
+  const [cargando, setCargando] = useState(false)
+
+  useEffect(() => {
+    if (isZaragoza || esLibre) return
+    if (ESCUDOS_CLUBS[club]) {
+      setEscudoSrc(ESCUDOS_CLUBS[club])
+      return
+    }
+    if (!club) return
+    if (tsdbCache[club] !== undefined) {
+      setEscudoSrc(tsdbCache[club])
+      return
+    }
+    setCargando(true)
+    fetchEscudoFromTSDB(club).then(url => {
+      setEscudoSrc(url)
+      setCargando(false)
+    })
+  }, [club, isZaragoza, esLibre])
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', flex: 1 }}>
       <div style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {escudo ? (
-          <img src={escudo} alt={nombre} style={{ width: '40px', height: '40px', objectFit: 'contain' }} onError={e => { e.target.style.display = 'none' }} />
+        {cargando ? (
+          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#f0f0f0', opacity: 0.6 }} />
+        ) : escudoSrc ? (
+          <img src={escudoSrc} alt={nombre} style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+            onError={e => { e.target.style.display = 'none' }} />
         ) : (
           <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', color: '#999', fontWeight: '700' }}>
             {nombre[0]}
@@ -180,7 +223,6 @@ function MovimientoRow({ mov, isMobile }) {
   if (isMobile) {
     return (
       <div style={{ background: 'white', borderBottom: '1px solid #f0f0f0', padding: '16px' }}>
-        {/* Fila superior: foto + nombre + badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
           <div style={{ width: '52px', height: '52px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#f0f0f0', border: '2px solid #e0e0e0' }}>
             <img src={mov.foto_url || DEFAULT_PHOTO} alt={mov.nombre} crossOrigin="anonymous"
@@ -203,8 +245,6 @@ function MovimientoRow({ mov, isMobile }) {
             </div>
           </div>
         </div>
-
-        {/* Fila clubs */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
           <ClubInfo club={origenEsZaragoza ? 'Real Zaragoza' : clubOrigen} isZaragoza={origenEsZaragoza} label="Origen" color={origenEsZaragoza ? '#0B4390' : '#333'} />
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={tipo.color} strokeWidth="2.5" style={{ flexShrink: 0 }}>
@@ -213,8 +253,6 @@ function MovimientoRow({ mov, isMobile }) {
           </svg>
           <ClubInfo club={destinoEsZaragoza ? 'Real Zaragoza' : clubDestino} isZaragoza={destinoEsZaragoza} label="Destino" color={destinoEsZaragoza ? '#0B4390' : '#333'} />
         </div>
-
-        {/* Fecha */}
         {mov.fecha && (
           <div style={{ textAlign: 'right', marginTop: '10px' }}>
             <span style={{ fontSize: '12px', color: '#bbb', fontFamily: 'Archivo, sans-serif' }}>
@@ -226,20 +264,16 @@ function MovimientoRow({ mov, isMobile }) {
     )
   }
 
-  // Desktop
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 24px', background: 'white', borderBottom: '1px solid #f0f0f0', transition: 'background 0.15s' }}
       onMouseEnter={e => { e.currentTarget.style.background = '#fafafa' }}
       onMouseLeave={e => { e.currentTarget.style.background = 'white' }}
     >
-      {/* Foto */}
       <div style={{ width: '52px', height: '52px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#f0f0f0', border: '2px solid #e0e0e0' }}>
         <img src={mov.foto_url || DEFAULT_PHOTO} alt={mov.nombre} crossOrigin="anonymous"
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 15%', display: 'block' }}
           onError={e => { e.target.src = DEFAULT_PHOTO }} />
       </div>
-
-      {/* Nombre + badges */}
       <div style={{ minWidth: '180px', flexShrink: 0 }}>
         <div style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '700', fontSize: '16px', color: '#111', marginBottom: '5px' }}>
           {mov.nombre}
@@ -255,20 +289,12 @@ function MovimientoRow({ mov, isMobile }) {
           )}
         </div>
       </div>
-
-      {/* Club origen */}
       <ClubInfo club={origenEsZaragoza ? 'Real Zaragoza' : clubOrigen} isZaragoza={origenEsZaragoza} label="Origen" color={origenEsZaragoza ? '#0B4390' : '#333'} />
-
-      {/* Flecha */}
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={tipo.color} strokeWidth="2.5" style={{ flexShrink: 0 }}>
         <line x1="5" y1="12" x2="19" y2="12"/>
         <polyline points="12 5 19 12 12 19"/>
       </svg>
-
-      {/* Club destino */}
       <ClubInfo club={destinoEsZaragoza ? 'Real Zaragoza' : clubDestino} isZaragoza={destinoEsZaragoza} label="Destino" color={destinoEsZaragoza ? '#0B4390' : '#333'} />
-
-      {/* Fecha */}
       <div style={{ marginLeft: 'auto', flexShrink: 0, textAlign: 'right' }}>
         {mov.fecha && (
           <span style={{ fontSize: '13px', color: '#bbb', fontFamily: 'Archivo, sans-serif', whiteSpace: 'nowrap' }}>
@@ -324,7 +350,6 @@ export default function Mercado() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5', color: '#111', fontFamily: 'Archivo, sans-serif', paddingBottom: '80px' }}>
-
       <div style={{ backgroundColor: '#0B4390', padding: '60px 24px 50px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(255,255,255,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <p style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '300', fontSize: '13px', letterSpacing: '4px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', margin: '0 0 12px' }}>
