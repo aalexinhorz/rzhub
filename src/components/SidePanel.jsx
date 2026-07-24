@@ -52,7 +52,7 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
       await emailjs.send(
         'service_yu2o009',
         'template_j4mlxar',
-        { mensaje: peticion.trim() },
+        { mensaje: peticion.trim(), email: '' },
         { publicKey: '4UVo2QGYmg_lTiY_p' }
       )
       setPeticionEnviada(true)
