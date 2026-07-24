@@ -53,7 +53,7 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
         'service_yu2o009',
         'template_j4mlxar',
         { mensaje: peticion.trim(), email: '' },
-        { publicKey: '4UVo2QGYmg_lTiY_p' }
+        { publicKey: '4UVo2QGYmg_lTiY_p', privateKey: 'dGSMsNSLxJ_jytvoORyA_' }
       )
       setPeticionEnviada(true)
       setPeticion('')
