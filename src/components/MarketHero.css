@@ -1,0 +1,83 @@
+/* ============================================================
+   MARKET HERO — cabecera de la página Mercado. Misma textura
+   ambiental (estadio + overlay azul) que el resto del Design
+   System, para que la página se sienta parte de la landing.
+   ============================================================ */
+
+.market-hero {
+  background:
+    linear-gradient(
+      90deg,
+      #06328a 0%,
+      #05286d 50%,
+      #041f5c 100%
+    ),
+    url('/images/estadio-comunidad.webp');
+  background-size: cover;
+  background-position: center;
+  padding: 48px 0 44px;
+}
+
+.market-hero__container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-inline: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.market-hero__top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.market-hero__intro {
+  min-width: 0;
+}
+
+.market-hero__eyebrow {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0 0 10px;
+}
+
+.market-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(64px, 8vw, 118px);
+  line-height: 0.88;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0 0 14px;
+}
+
+.market-hero__desc {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  max-width: 460px;
+}
+
+/* -------- Tablet -------- */
+@media (max-width: 1024px) and (min-width: 641px) {
+  .market-hero { padding: 40px 0 36px; }
+}
+
+/* -------- Mobile -------- */
+@media (max-width: 640px) {
+  .market-hero { padding: 28px 0 24px; }
+  .market-hero__container { padding-inline: 20px; gap: 24px; }
+  .market-hero__title { font-size: clamp(54px, 18vw, 76px); }
+  .market-hero__top { gap: 16px; }
+}

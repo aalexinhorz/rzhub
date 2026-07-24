@@ -1,0 +1,11 @@
+/* El grid de columnas del footer se define con estilos inline (values
+   dinámicos ya existentes); un estilo inline gana siempre a cualquier
+   regla de hoja de estilos salvo que esta use !important — por eso
+   es la única forma de que este media query pueda colapsar el grid
+   en mobile. */
+@media (max-width: 640px) {
+  .home-footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: var(--space-6) !important;
+  }
+}

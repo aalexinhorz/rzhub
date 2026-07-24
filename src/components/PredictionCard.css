@@ -1,0 +1,304 @@
+/* ============================================================
+   PREDICTION CARD — "La Porra", estado PRE_MATCH del componente
+   dinámico del Hero. Bloque de conversión: toda la jerarquía visual
+   empuja hacia el CTA "Jugar ahora". El morado es un acento propio
+   de esta feature (no vive en tokens.css porque no se reutiliza
+   fuera de La Porra).
+   ============================================================ */
+
+.prediction-card {
+  --porra-purple: #06328a;
+  --porra-purple-dark: #6d28d9;
+
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(20, 45, 110, 0.35) 0%,
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      #0d1b4b 0%,
+      #081731 35%,
+      #07162e 70%,
+      #051429 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  padding: 16px 22px;
+
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), border-color 220ms ease;
+}
+.prediction-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+/* -------- Cabecera -------- */
+
+.prediction-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.prediction-card__icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #0d1b4b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 0 14px rgba(255, 255, 255, 0.03);
+}
+
+.prediction-card__heading {
+  min-width: 0;
+}
+
+.prediction-card__title {
+  font-family: var(--font-body);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0 0 2px;
+}
+
+.prediction-card__subtitle {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* -------- Pronóstico (centro visual) -------- */
+
+.prediction-card__matchup {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 4%, 32px);
+}
+
+.prediction-card__team {
+  flex: 1 1 0%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.prediction-card__team img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+.prediction-card__team-fallback {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+}
+.prediction-card__team-name {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prediction-card__score {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.prediction-card__score-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+.prediction-card__score-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 26px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: var(--font-body);
+  font-size: 40px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+  line-height: 1;
+}
+.prediction-card__score-sep {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 400;
+}
+
+/* En mobile el marcador ocupaba demasiado ancho a costa de los
+   escudos; se lo compensa aquí (los escudos se adaptan al marcador
+   más compacto, no al revés). Desktop/tablet grande sin cambios. */
+@media (max-width: 640px) {
+  .prediction-card__score-box {
+    min-width: 112px;
+    padding: 10px 16px;
+    font-size: 32px;
+  }
+  .prediction-card__team img,
+  .prediction-card__team-fallback {
+    width: 54px;
+    height: 54px;
+  }
+}
+@media (max-width: 359px) {
+  .prediction-card__score-box {
+    min-width: 92px;
+    padding: 8px 12px;
+    font-size: 28px;
+  }
+  .prediction-card__team img,
+  .prediction-card__team-fallback {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+/* -------- Métricas -------- */
+
+.prediction-card__metrics {
+  display: grid;
+  /* minmax(0, 1fr) en vez de 1fr a secas: el mismo patrón de siempre
+     — sin esto, la pista de grid toma como mínimo el min-content de
+     "Puntos en juego" y desborda el ancho disponible en móviles
+     pequeños. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+.prediction-card__metric {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.03);
+  color: #ffc800;
+  transition: background 200ms ease;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+.prediction-card__metric svg {
+  flex-shrink: 0;
+}
+.prediction-card__metric:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+@media (min-width: 1280px) {
+  .prediction-card__metric svg {
+    width: 36px;
+    height: 36px;
+  }
+}
+@media (min-width: 1440px) {
+  .prediction-card__metric svg {
+    width: 40px;
+    height: 40px;
+  }
+}
+.prediction-card__metric-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.prediction-card__metric-value {
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.prediction-card__metric-label {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 359px) {
+  .prediction-card__metrics {
+    gap: 8px;
+  }
+  .prediction-card__metric {
+    gap: 8px;
+    padding: 10px 8px;
+  }
+  .prediction-card__metric-value {
+    font-size: 20px;
+  }
+  .prediction-card__metric-label {
+    font-size: 11px;
+    line-height: 1.2;
+    white-space: normal;
+  }
+  .prediction-card__metric svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* -------- CTA -------- */
+/* El botón usa la clase compartida .hero-cta (HeroSection.css) —
+   mismo degradado/animación/hover que "Crear mi alineación". */
+
+/* -------- Empty state (sin partido programado) -------- */
+
+.prediction-card--empty {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}

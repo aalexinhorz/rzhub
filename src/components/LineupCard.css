@@ -1,0 +1,268 @@
+/* ============================================================
+   LINEUP CARD — "Tu alineación", segundo bloque del Hero Action
+   Card. No es un acceso al Lineup Builder: es una llamada a
+   participar antes de que se cierre el plazo — la urgencia (cuenta
+   atrás) es el elemento con más peso visual después del CTA.
+   Comparte paleta y CTA (.hero-cta) con PredictionCard para que
+   ambas cards se sientan como una sola pieza de diseño.
+
+   Nota de layout: esta card vive dentro de .lineup-teaser, que
+   ocupa el 40% del alto de .hero__panel (60% para .porra-card,
+   ver HeroSection.css) SOLO por encima de 1024px — ahí es donde
+   .hero__panel tiene una altura fija (igualada a la columna
+   izquierda del Hero) que repartir. Por debajo de 1024px el Hero
+   se apila en una columna y .hero__panel pasa a height:auto (sin
+   ese límite), así que el campo táctico puede crecer con libertad
+   en tablet/mobile; en desktop real (>1024px) su tamaño está
+   calibrado al máximo que cabe en ese 40% sin desbordar.
+   ============================================================ */
+
+.lineup-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(20, 45, 110, 0.35) 0%,
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      #0d1b4b 0%,
+      #081731 35%,
+      #07162e 70%,
+      #051429 100%
+    );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  padding: 18px 22px;
+}
+
+/* -------- Cabecera -------- */
+
+.lineup-card__header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.lineup-card__icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: #0d1b4b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 0 14px rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffc800;
+}
+
+.lineup-card__heading {
+  min-width: 0;
+}
+
+.lineup-card__title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0 0 2px;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.lineup-card__subtitle {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+/* -------- Cuerpo: cuenta atrás + previsualización del campo -------- */
+
+.lineup-card__main {
+  flex: 1;
+  /* Sin esto, el grid toma como alto mínimo el de su contenido y
+     desborda por debajo de la card cuando el 40% de .hero__panel es
+     más bajo que ese contenido — mismo patrón de "mínimo automático"
+     de siempre en este proyecto. */
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(140px, 1.1fr);
+  align-items: center;
+  gap: clamp(16px, 3vw, 32px);
+}
+
+.lineup-card__countdown,
+.lineup-card__preview {
+  min-width: 0;
+}
+
+/* -------- Cuenta atrás: editorial, no "reloj digital" -------- */
+
+.lineup-card__countdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lineup-card__countdown-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.lineup-card__countdown-values {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.lineup-card__countdown-group {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.lineup-card__time-value {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: clamp(28px, 3.2vw, 38px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: #ffc800;
+}
+
+/* Al cambiar un minuto/hora, el número entra con una transición
+   vertical muy breve — solo si el usuario no ha pedido menos
+   movimiento. Se dispara solo (sin JS) porque cada valor nuevo
+   remonta el span vía su `key`. */
+@media (prefers-reduced-motion: no-preference) {
+  .lineup-card__time-value {
+    animation: lineup-countdown-roll 260ms ease-out;
+  }
+}
+@keyframes lineup-countdown-roll {
+  from { transform: translateY(-8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.lineup-card__countdown-unit {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.lineup-card__countdown-caption {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* -------- Mini-campo táctico -------- */
+
+.lineup-card__preview {
+  display: flex;
+}
+
+.lineup-card__pitch-wrapper {
+  width: 100%;
+  max-width: 140px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lineup-card__pitch-wrapper:hover {
+  transform: scale(1.02);
+}
+
+.lineup-card__pitch {
+  width: min(100%, 140px);
+}
+.lineup-card__pitch svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  overflow: visible;
+}
+
+/* -------- Responsive -------- */
+
+/* No hay override ">=1280px" que agrande el campo: el presupuesto de
+   alto de .lineup-card__main en el rango >1024px (con altura fija,
+   ver nota arriba) es un puñado de px fijos (cabecera + CTA +
+   paddings), no depende del ancho del viewport — medido su mínimo
+   real (~100px, en 1160px de ancho), por eso 140px de campo (≈93px
+   de alto, con margen de seguridad) es el tamaño máximo que aprovecha
+   ese hueco sin solaparse con el CTA, para TODO este rango. */
+
+/* Por debajo de 1024px el Hero se apila a una columna y
+   .hero__panel deja de tener una altura fija que repartir (ver nota
+   de layout arriba): el campo recupera aquí el tamaño generoso que
+   pide el diseño, sin el límite del 40%. */
+@media (max-width: 1024px) {
+  .lineup-card__main {
+    grid-template-columns: minmax(0, 0.85fr) minmax(220px, 1.15fr);
+    gap: 24px;
+  }
+  .lineup-card__pitch-wrapper { max-width: 340px; }
+  .lineup-card__pitch { width: min(100%, 340px); }
+}
+
+/* Mobile: una única columna. Orden: cabecera → cuenta atrás → campo
+   → botón. La urgencia sigue siendo lo primero que se ve, nunca el
+   campo por delante del contador. */
+@media (max-width: 640px) {
+  .lineup-card {
+    padding: 18px 20px;
+    gap: 16px;
+  }
+  .lineup-card__main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .lineup-card__countdown {
+    align-items: center;
+    text-align: center;
+  }
+  .lineup-card__countdown-values {
+    justify-content: center;
+  }
+  .lineup-card__time-value {
+    font-size: clamp(38px, 13vw, 56px);
+  }
+  .lineup-card__pitch-wrapper {
+    max-width: 320px;
+  }
+  .lineup-card__pitch {
+    width: 100%;
+  }
+}
+
+@media (max-width: 359px) {
+  .lineup-card__pitch-wrapper {
+    max-width: 240px;
+  }
+}

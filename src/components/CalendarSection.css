@@ -1,0 +1,585 @@
+/* ============================================================
+   CALENDAR SECTION — sincronización del calendario. Rompe con la
+   dinámica de "cards" del resto de la Home: una única tarjeta premium
+   con texto a la izquierda y un mockup de teléfono a la derecha.
+   ============================================================ */
+
+.calendar-section {
+  padding: 40px 32px 96px;
+}
+
+.calendar-section__container {
+  position: relative;
+  /* Igual max-width + padding horizontal que .community-section__container,
+     para que los bordes de esta card queden alineados con "Miles de
+     zaragocistas" y la encuesta de Comunidad. */
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 56px;
+  border-radius: 24px;
+  background: #03090f;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
+  display: flex;
+  align-items: stretch;
+  gap: 48px;
+
+  /* El teléfono sobresale (position:absolute) tanto por arriba como
+     por abajo. Queremos que SOLO el sobresaliente superior sea
+     visible; clip-path con insets asimétricos recorta exactamente
+     en el borde de la card por abajo/izq/der pero deja "abierto"
+     (offset negativo) el borde superior. */
+  clip-path: inset(-120px 0 0 0 round 24px);
+}
+
+/* -------- Bloque de texto -------- */
+
+.calendar-section__text {
+  flex: 0 0 45%;
+  max-width: 45%;
+}
+
+.calendar-section__eyebrow {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #82b6e0;
+  margin: 0 0 14px;
+}
+
+.calendar-section__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(32px, 3.6vw, 52px);
+  line-height: 1;
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+  color: #ffffff;
+  white-space: nowrap;
+  margin: 0 0 16px;
+}
+
+.calendar-section__desc {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 420px;
+  margin: 0 0 28px;
+}
+
+/* -------- Beneficios (icono + texto, no son cards) -------- */
+
+.calendar-benefits {
+  display: flex;
+  /* nowrap + items flexibles (flex:1) en vez de 4 columnas de ancho
+     intrínseco: así se encogen juntas de forma continua a medida que
+     el contenedor se estrecha (p.ej. entre el breakpoint de tablet y
+     el max-width de la card), en lugar de que la 4ª caiga de golpe a
+     una segunda fila en ese tramo intermedio. El wrap real solo se
+     reactiva en el layout apilado de mobile (ver media query). */
+  flex-wrap: nowrap;
+  gap: 16px clamp(8px, 1.6vw, 26px);
+}
+
+.calendar-benefit {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.calendar-benefit__icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  color: #ffc800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.calendar-benefit__icon svg {
+  width: 32px;
+  height: 32px;
+}
+.calendar-benefit__icon svg {
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.calendar-benefit:hover .calendar-benefit__icon svg {
+  transform: scale(1.08);
+}
+
+.calendar-benefit__text {
+  font-family: var(--font-body);
+  font-size: clamp(11.5px, 1.05vw, 12.5px);
+  line-height: 1.35;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  max-width: 120px;
+}
+
+/* -------- Bloque visual -------- */
+
+.calendar-section__visual {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  /* stretch (no flex-end): le da una altura DEFINIDA igual a la del
+     contenido de la card (dictada por el texto), para que el
+     height:100% de .calendar-phone-stack pueda resolverse contra
+     ella sin ambigüedad. */
+  align-self: stretch;
+}
+
+/* Altura = 100% del alto de contenido de la card (sin inflarla):
+   .calendar-phone cuelga dentro en position:absolute y es él quien
+   sobresale por arriba, sin afectar el tamaño de este contenedor
+   de referencia. */
+.calendar-phone-stack {
+  position: relative;
+  flex: 0 0 210px;
+  width: 210px;
+  height: 100%;
+}
+
+/* Ocupa todo el espacio libre entre el teléfono y el borde derecho
+   del contenedor, y centra el widget dentro de ese hueco para que
+   quede a la misma distancia del teléfono que del final de la card. */
+.calendar-widget-slot {
+  flex: 1;
+  min-width: 0; /* si no, el min-content del widget lo desborda al encogerse */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* -------- Smartphone (mockup CSS de alta fidelidad, estilo titanio) -------- */
+
+.calendar-phone {
+  /* position:absolute (no relative) para que su alto extra no infle
+     la caja de .calendar-phone-stack, que es la que define el alto
+     real de la card. top/bottom negativos = sobresale por ambos
+     lados (más centrado); el clip-path del contenedor deja visible
+     solo el sobresaliente superior y recorta el inferior. */
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -80px;
+  bottom: -40px;
+  z-index: 2;
+  padding: 3px;
+  border-radius: 46px;
+  /* Marco metálico: banda de titanio con reflejos, no un color plano. */
+  background: linear-gradient(155deg, #55585e 0%, #232427 10%, #0a0a0c 28%, #1a1b1e 55%, #3c3d41 82%, #19191b 100%);
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.35);
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+.calendar-phone:hover {
+  transform: translateY(-4px);
+}
+.calendar-phone:focus-visible {
+  outline: 2px solid #ffc800;
+  outline-offset: 4px;
+}
+
+/* Botones físicos, sobresaliendo ligeramente del marco */
+.calendar-phone__btn {
+  position: absolute;
+  z-index: 0;
+  background: linear-gradient(90deg, #232427 0%, #0a0a0c 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+.calendar-phone__btn--mute   { left: -2px; top: 92px;  width: 3px; height: 18px; }
+.calendar-phone__btn--vol-up { left: -2px; top: 122px; width: 3px; height: 32px; }
+.calendar-phone__btn--vol-down { left: -2px; top: 162px; width: 3px; height: 32px; }
+.calendar-phone__btn--power  { right: -2px; top: 130px; width: 3px; height: 46px; }
+
+.calendar-phone__bezel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 43px;
+  background: #000000;
+  padding: 3px;
+}
+
+.calendar-phone__island {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 18px;
+  border-radius: 10px;
+  background: #000000;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+.calendar-phone__camera {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #3a5a8a 0%, #0d1622 70%);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.calendar-phone__screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 40px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0d1a33 0%, #081226 100%);
+  padding: 34px 12px 14px;
+}
+
+/* Reflejo de cristal: franja diagonal muy sutil sobre la pantalla,
+   como el brillo del vidrio en una foto real de producto. */
+.calendar-phone__glass {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.09) 0%,
+    rgba(255, 255, 255, 0.03) 18%,
+    transparent 32%,
+    transparent 100%
+  );
+}
+
+/* Barra de estado iOS: hora + señal/wifi/batería, como en un iPhone real. */
+.calendar-phone__statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 14px;
+  color: #ffffff;
+}
+.calendar-phone__time {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.calendar-phone__status-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.calendar-phone__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+.calendar-phone__head h4 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.005em;
+  color: #ffffff;
+  margin: 0;
+}
+.calendar-phone__sync-btn {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+.calendar-phone__month {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 10px;
+}
+
+.calendar-phone__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.calendar-phone__match {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.calendar-phone__match:first-child {
+  border-top: none;
+}
+
+.calendar-phone__date {
+  flex-shrink: 0;
+  width: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+.calendar-phone__date-day {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.calendar-phone__date-mes {
+  font-family: var(--font-body);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.calendar-phone__info {
+  min-width: 0;
+}
+.calendar-phone__teams {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.calendar-phone__teams span {
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-top: 1px;
+}
+.calendar-phone__meta {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+/* -------- Widget flotante (estilo Live Activity) -------- */
+
+.calendar-widget {
+  position: relative;
+  z-index: 1;
+  overflow: hidden; /* el contenido nunca debe sobresalir de la tarjeta */
+  width: 100%;
+  min-width: 0;
+  max-width: 320px; /* se estira con el hueco disponible, sin desbordar */
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 20px;
+
+  background: rgba(20, 32, 58, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+.calendar-widget:hover {
+  transform: scale(1.02);
+}
+.calendar-widget:focus-visible {
+  outline: 2px solid #ffc800;
+  outline-offset: 4px;
+}
+
+.calendar-widget__crest {
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+}
+
+.calendar-widget__body {
+  min-width: 0;
+}
+.calendar-widget__app {
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0 0 3px;
+}
+.calendar-widget__title {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 3px;
+}
+.calendar-widget__match {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.calendar-widget__meta {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+/* -------- Responsive -------- */
+
+@media (max-width: 1024px) {
+  .calendar-section__container {
+    padding: 36px 40px;
+    gap: 20px;
+  }
+  .calendar-section__title { font-size: clamp(26px, 3.6vw, 34px); }
+  /* La columna de texto es demasiado estrecha en este rango (tablet)
+     para 4 columnas de beneficios legibles; pasa a una rejilla 2x2,
+     igual que en mobile, en vez de forzar 3-4 líneas por texto. */
+  .calendar-benefits { flex-wrap: wrap; row-gap: 20px; }
+  .calendar-benefit { flex: 0 1 calc(50% - 10px); }
+  .calendar-phone-stack {
+    width: 168px;
+  }
+  .calendar-phone {
+    top: -60px;
+    bottom: -28px;
+  }
+  .calendar-phone__screen { padding: 22px 10px 12px; }
+  .calendar-phone__island { width: 52px; height: 15px; top: 9px; }
+  .calendar-phone__statusbar { margin-bottom: 10px; }
+  .calendar-phone__time { font-size: 10px; }
+  .calendar-phone__head h4 { font-size: 14px; }
+  .calendar-phone__sync-btn { width: 20px; height: 20px; }
+  .calendar-phone__sync-btn svg { width: 11px; height: 11px; }
+  .calendar-phone__month { font-size: 8px; margin-bottom: 6px; }
+  .calendar-phone__match { padding: 7px 0; gap: 7px; }
+  .calendar-phone__date { width: 24px; }
+  .calendar-phone__date-day { font-size: 12px; }
+  .calendar-phone__date-mes { font-size: 6.5px; }
+  .calendar-phone__teams { font-size: 10px; }
+  .calendar-phone__teams span { font-size: 8.5px; }
+  .calendar-phone__meta { font-size: 8.5px; }
+  .calendar-widget {
+    max-width: 220px;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+  .calendar-widget__crest { width: 40px; height: 40px; }
+  .calendar-widget__app { font-size: 9px; }
+  .calendar-widget__title { font-size: 12px; }
+  .calendar-widget__match { font-size: 10.5px; }
+  .calendar-widget__meta { font-size: 9.5px; }
+}
+
+@media (max-width: 768px) {
+  .calendar-section { padding: 24px 20px 72px; }
+  .calendar-section__container {
+    flex-direction: column;
+    padding: 32px 24px 40px;
+  }
+  .calendar-section__text {
+    flex: none;
+    max-width: none;
+    text-align: center;
+  }
+  .calendar-section__title { white-space: normal; font-size: clamp(30px, 8vw, 40px); }
+  .calendar-section__desc { margin-left: auto; margin-right: auto; }
+  /* Aquí el texto pasa a ocupar el 100% del ancho (layout apilado),
+     mucho más espacio que el 45% de antes, así que las 4 columnas
+     vuelven a caber de sobra hasta bastante más estrecho: se
+     resetea explícitamente el wrap/50% heredado del breakpoint de
+     tablet (arriba). Solo por debajo de ~560px (ver siguiente media
+     query) se reajustan a una rejilla 2x2. */
+  .calendar-benefits { flex-wrap: nowrap; justify-content: center; }
+  .calendar-benefit { flex: 1 1 0; text-align: left; }
+
+  .calendar-section__visual {
+    align-self: auto;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 32px;
+  }
+  .calendar-phone-stack {
+    flex: 0 0 auto; /* evita que el flex-basis (210px) fije la altura en columna */
+    width: 220px;
+    height: auto;
+  }
+  .calendar-widget-slot {
+    flex: 0 0 auto;
+    width: 100%;
+    margin-top: 28px;
+  }
+  .calendar-phone {
+    position: relative;
+    inset: auto;
+    height: 420px;
+    margin-bottom: 28px;
+  }
+  .calendar-phone:hover {
+    transform: translateY(-4px);
+  }
+  .calendar-phone__screen { padding: 26px 12px 14px; }
+  .calendar-phone__island { width: 60px; height: 17px; top: 10px; }
+  .calendar-phone__statusbar { margin-bottom: 12px; }
+  .calendar-phone__head h4 { font-size: 16px; }
+  .calendar-phone__match { padding: 9px 0; }
+  .calendar-phone__date { width: 32px; }
+  .calendar-phone__date-day { font-size: 14px; }
+  .calendar-phone__date-mes { font-size: 8px; }
+  .calendar-phone__teams { font-size: 11.5px; }
+  .calendar-phone__teams span { font-size: 10px; }
+  .calendar-phone__meta { font-size: 10px; }
+  .calendar-widget {
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 560px) {
+  /* Por debajo de este ancho, 4 columnas en fila ya no dejan sitio
+     para un texto legible aunque se encojan (ver .calendar-benefits
+     base): mejor pasar a una rejilla 2x2. */
+  .calendar-benefits { flex-wrap: wrap; row-gap: 20px; }
+  .calendar-benefit { flex: 0 1 calc(50% - 13px); }
+}
+

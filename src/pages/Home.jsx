@@ -1,373 +1,124 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect, useRef } from 'react'
 import { Helmet } from 'react-helmet-async'
-import useLiveStream from '../hooks/useLiveStream'
+import useAuth from '../hooks/useAuth'
+import { ESCUDOS_CLUBS, fetchEscudoFallback } from '../lib/escudos'
+import HeroSection from '../components/HeroSection'
+import CommunityStats from '../components/CommunityStats'
+import ToolsSection from '../components/ToolsSection'
+import MarketCarousel from '../components/MarketCarousel'
+import CommunitySection from '../components/CommunitySection'
+import EditorialSection from '../components/EditorialSection'
+import CalendarSection from '../components/CalendarSection'
+import Footer from '../components/Footer'
 
-const TEAM_ID = 2815
-const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY
-const API_HOST = 'sportapi7.p.rapidapi.com'
+const STAT_ICON_PROPS = { width: 32, height: 32, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }
 
-const ESCUDOS_CLUBS = {
-  'Gimnàstic de Tarragona': '/escudos/Gimnastic_de_Tarragona_logo.svg',
-  'Nàstic': '/escudos/Gimnastic_de_Tarragona_logo.svg',
-  'Antequera CF': '/escudos/spain_antequera.football-logos.cc.svg',
-  'Antequera': '/escudos/spain_antequera.football-logos.cc.svg',
-  'FC Cartagena': '/escudos/spain_fc-cartagena.football-logos.cc.svg',
-  'Cartagena': '/escudos/spain_fc-cartagena.football-logos.cc.svg',
-  'UD Ibiza': '/escudos/UD_Ibiza_logo.svg',
-  'Ibiza': '/escudos/UD_Ibiza_logo.svg',
-  'CD Teruel': '/escudos/CD_Teruel_logo.svg',
-  'Teruel': '/escudos/CD_Teruel_logo.svg',
-  'Real Murcia CF': '/escudos/Real_Murcia_CF_logo.svg',
-  'Real Murcia': '/escudos/Real_Murcia_CF_logo.svg',
-  'Hércules de Alicante CF': '/escudos/Hercules_CF_crest.svg',
-  'Hércules': '/escudos/Hercules_CF_crest.svg',
-  'Algeciras CF': '/escudos/spain_algeciras.football-logos.cc.svg',
-  'Algeciras': '/escudos/spain_algeciras.football-logos.cc.svg',
-  'UE Sant Andreu': '/escudos/ue-sant-andreu-vector-logo.png',
-  'CF Rayo Majadahonda': '/escudos/Rayo_Majadahonda_(logo).svg',
-  'Rayo Majadahonda': '/escudos/Rayo_Majadahonda_(logo).svg',
-  'Real Jaén CF': '/escudos/spain_real-jaen-cf.football-logos.cc.svg',
-  'Real Jaén': '/escudos/spain_real-jaen-cf.football-logos.cc.svg',
-  'AD Alcorcón': '/escudos/AD_Alcorcon_logo.svg',
-  'Alcorcón': '/escudos/AD_Alcorcon_logo.svg',
-  'Real Madrid Castilla': '/escudos/Real_Madrid_CF.svg',
-  'Real Madrid B': '/escudos/Real_Madrid_CF.svg',
-  'Villarreal B': '/escudos/Villarreal_CF_logo-en.svg',
-  'Villarreal CF B': '/escudos/Villarreal_CF_logo-en.svg',
-  'SD Huesca': '/escudos/Logo_of_SD_Huesca.svg',
-  'Huesca': '/escudos/huesca.png',
-  'Athletic Club': '/escudos/Club_Athletic_Bilbao_logo (1).svg',
-  'Athletic': '/escudos/Club_Athletic_Bilbao_logo (1).svg',
-  'Bilbao Athletic': '/escudos/Club_Athletic_Bilbao_logo (1).svg',
-  'Atlético de Madrid': '/escudos/Atletico_Madrid_Logo_2024.svg',
-  'Atlético Madrid': '/escudos/Atletico_Madrid_Logo_2024.svg',
-  'Real Madrid': '/escudos/Real_Madrid_CF.svg',
-  'FC Barcelona': '/escudos/FC_Barcelona_(crest) (5).svg',
-  'Barcelona': '/escudos/FC_Barcelona_(crest) (5).svg',
-  'Real Sociedad': '/escudos/Real_Sociedad_logo.svg',
-  'Real Sociedad B': '/escudos/Real_Sociedad_logo.svg',
-  'Sevilla FC': '/escudos/Sevilla_FC_logo.svg',
-  'Sevilla': '/escudos/Sevilla_FC_logo.svg',
-  'Real Betis': '/escudos/Real_betis_logo (1).svg',
-  'Betis': '/escudos/Real_betis_logo (1).svg',
-  'Getafe CF': '/escudos/Getafe_logo.svg',
-  'Getafe': '/escudos/Getafe_logo.svg',
-  'Girona FC': '/escudos/Girona_FC_Logo.svg',
-  'Girona': '/escudos/Girona_FC_Logo.svg',
-  'Osasuna': '/escudos/CA_Osasuna_2024_crest.svg',
-  'CA Osasuna': '/escudos/CA_Osasuna_2024_crest.svg',
-  'Rayo Vallecano': '/escudos/Rayo_Vallecano_logo (1).svg',
-  'Levante': '/escudos/Levante_Unión_Deportiva,_S.A.D._logo.svg',
-  'Levante UD': '/escudos/Levante_Unión_Deportiva,_S.A.D._logo.svg',
-  'Deportivo Alavés': '/escudos/Deportivo_Alaves_logo_(2020).svg',
-  'Alavés': '/escudos/Deportivo_Alaves_logo_(2020).svg',
-  'Elche CF': '/escudos/Elche_CF_logo.svg',
-  'Elche': '/escudos/Elche_CF_logo.svg',
-  'Celta de Vigo': '/escudos/RC_Celta_de_Vigo_logo (1).svg',
-  'RC Celta': '/escudos/RC_Celta_de_Vigo_logo (1).svg',
-  'Espanyol': '/escudos/RCD_Espanyol_crest.svg',
-  'RCD Espanyol': '/escudos/RCD_Espanyol_crest.svg',
-  'Mallorca': '/escudos/Rcd_mallorca.svg',
-  'RCD Mallorca': '/escudos/Rcd_mallorca.svg',
-  'Real Valladolid': '/escudos/Real_Valladolid_CF_crest.svg',
-  'Valladolid': '/escudos/valladolid.png',
-  'Real Oviedo': '/escudos/Real_Oviedo_logo (1).svg',
-  'Oviedo': '/escudos/Real_Oviedo_logo (1).svg',
-  'Deportivo de La Coruña': '/escudos/RC_Deportivo_La_Coruña_logo (1).svg',
-  'Deportivo': '/escudos/Depor.png',
-  'Sporting de Gijón': '/escudos/Real_Sporting_de_Gijon (1).svg',
-  'Sporting': '/escudos/sporting.png',
-  'SD Eibar': '/escudos/SD_Eibar_logo_2016.svg',
-  'Eibar': '/escudos/eibar.png',
-  'Burgos CF': '/escudos/burgos-cf.svg',
-  'Burgos': '/escudos/burgos.png',
-  'Albacete': '/escudos/albacete.png',
-  'Albacete BP': '/escudos/Albacete_balompie.svg',
-  'Almería': '/escudos/almeria.png',
-  'UD Almería': '/escudos/UD_Almería_logo (1).svg',
-  'Cádiz': '/escudos/cadiz.png',
-  'Cádiz CF': '/escudos/Cádiz_CF_logo (1).svg',
-  'CD Castellón': '/escudos/CD Castellon.png',
-  'Castellón': '/escudos/Logo_of_CD_Castellón (1).svg',
-  'Córdoba CF': '/escudos/Cordoba CF.png',
-  'Córdoba': '/escudos/Córdoba_CF_logo.svg',
-  'Cultural Leonesa': '/escudos/Cultural leonesa.png',
-  'Cultural y Deportiva Leonesa': '/escudos/Logo_of_Cultural_y_Deportiva_Leonesa.svg',
-  'Granada CF': '/escudos/Logo_of_Granada_Club_de_Fútbol.svg',
-  'Granada': '/escudos/granada.png',
-  'Las Palmas': '/escudos/las palmas.png',
-  'UD Las Palmas': '/escudos/UD_Las_Palmas_logo (1).svg',
-  'Leganés': '/escudos/leganes.png',
-  'CD Leganés': '/escudos/Club_Deportivo_Leganés_logo.svg',
-  'Málaga CF': '/escudos/Malaga CF.png',
-  'Málaga': '/escudos/Málaga_CF (1).svg',
-  'Mirandés': '/escudos/mirandes.png',
-  'CD Mirandés': '/escudos/CD_Mirandés_logo.svg',
-  'Racing de Santander': '/escudos/Racing_de_Santander_logo.svg',
-  'Racing': '/escudos/racing.png',
-  'FC Andorra': '/escudos/Logo_FC_Andorra_-_2021 (1).svg',
-  'Andorra': '/escudos/Logo_FC_Andorra_-_2021 (1).svg',
-  'UD Barbastro': '/escudos/ud-barbastro-seeklogo.png',
-  'Barbastro': '/escudos/ud-barbastro-seeklogo.png',
-  'AD Ceuta': '/escudos/Logo_AD_Ceuta_FC.svg',
-  'Ceuta': '/escudos/ad ceuta.png',
-  'Valencia CF': '/escudos/Valenciacf (2).svg',
-  'Valencia': '/escudos/Valenciacf (2).svg',
-  'Villarreal CF': '/escudos/Villarreal CF.png',
-  'Venezia': '/escudos/venezia.cc.svg',
-  'UD Logroñés': '/escudos/spain_ud-logrones.football-logos.cc.svg',
-  'Logroñés': '/escudos/spain_ud-logrones.football-logos.cc.svg',
-  'Utebo': '/escudos/spain_utebo.football-logos.cc.svg',
-  'CD Numancia': '/escudos/spain_numancia.football-logos.cc.svg',
-  'Numancia': '/escudos/spain_numancia.football-logos.cc.svg',
-}
-
-const tsdbCache = {}
-
-async function fetchEscudoFromTSDB(club) {
-  if (!club) return null
-  if (tsdbCache[club] !== undefined) return tsdbCache[club]
-  try {
-    const res = await fetch(
-      `https://www.thesportsdb.com/api/v1/json/123/searchteams.php?t=${encodeURIComponent(club)}`
-    )
-    const data = await res.json()
-    const badge = data?.teams?.[0]?.strBadge || null
-    tsdbCache[club] = badge
-    return badge
-  } catch {
-    tsdbCache[club] = null
-    return null
-  }
-}
-
-function EscudoPartido({ rival, fallback }) {
-  const [src, setSrc] = useState(ESCUDOS_CLUBS[rival] || fallback || null)
-
-  useEffect(() => {
-    if (ESCUDOS_CLUBS[rival]) { setSrc(ESCUDOS_CLUBS[rival]); return }
-    if (tsdbCache[rival] !== undefined) { setSrc(tsdbCache[rival] || fallback); return }
-    fetchEscudoFromTSDB(rival).then(url => setSrc(url || fallback))
-  }, [rival, fallback])
-
-  if (!src) return <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>{rival[0]}</div>
-
-  return (
-    <img src={src} alt={rival} style={{ width: '36px', height: '36px', objectFit: 'contain', flexShrink: 0 }}
-      onError={e => { e.target.style.display = 'none' }} />
-  )
-}
-
-const PARTIDOS = [
-  { rival: 'Utebo', fecha: '29 Jul', sede: 'local', tipo: 'Amistoso', escudo: '/escudos/spain_utebo.football-logos.cc.svg' },
-  { rival: 'Barbastro', fecha: '1 Ago', sede: 'visitante', tipo: 'Amistoso', escudo: '/escudos/ud-barbastro-seeklogo.png' },
-  { rival: 'FC Andorra', fecha: '6 Ago', sede: 'local', tipo: 'Amistoso', escudo: '/escudos/Logo_FC_Andorra_-_2021 (1).svg' },
-  { rival: 'Real Sociedad B', fecha: '8 Ago', sede: 'local', tipo: 'Amistoso', escudo: '/escudos/Real_Sociedad_logo.svg' },
-  { rival: 'UD Logroñés', fecha: '14 Ago', sede: 'visitante', tipo: 'Amistoso', escudo: '/escudos/spain_ud-logrones.football-logos.cc.svg' },
-  { rival: 'Villarreal B', fecha: '15 Ago', sede: 'visitante', tipo: 'Amistoso', escudo: '/escudos/Villarreal_CF_logo-en.svg' },
-  { rival: 'Bilbao Athletic', fecha: '21 Ago', sede: 'local', tipo: 'Amistoso', escudo: '/escudos/Club_Athletic_Bilbao_logo (1).svg' },
-  { rival: 'CD Numancia', fecha: '22 Ago', sede: '', tipo: 'Amistoso', escudo: '/escudos/spain_numancia.football-logos.cc.svg' },
+const STATS = [
+  {
+    icon: (
+      <svg {...STAT_ICON_PROPS}>
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="M12 8.3l1.2 2.3 2.6.4-1.9 1.8.4 2.6-2.3-1.2-2.3 1.2.4-2.6-1.9-1.8 2.6-.4z" />
+      </svg>
+    ),
+    value: 'Todo', label: 'sobre el Zaragoza, en un solo sitio',
+  },
+  {
+    icon: (
+      <svg {...STAT_ICON_PROPS}>
+        <circle cx="12" cy="8" r="3.5" />
+        <path d="M5 20c0-3.87 3.13-7 7-7s7 3.13 7 7" />
+      </svg>
+    ),
+    value: 'XI', label: 'Crea tu once ideal y compártelo',
+  },
+  {
+    icon: (
+      <svg {...STAT_ICON_PROPS}>
+        <path d="M7 4h10v4a5 5 0 0 1-10 0V4z" />
+        <path d="M7 5H4a3 3 0 0 0 3 4" />
+        <path d="M17 5h3a3 3 0 0 1-3 4" />
+        <path d="M12 13v3" />
+        <path d="M9 20h6" />
+        <path d="M10 16h4l.4 4H9.6z" />
+      </svg>
+    ),
+    value: '100%', label: 'Gratis, sin anuncios',
+  },
 ]
 
-const DUPLICADOS = [...PARTIDOS, ...PARTIDOS, ...PARTIDOS]
+/* ============================================================
+   COMPONENTES PEQUEÑOS
+   ============================================================ */
+function EscudoImg({ nombre, fallback, size = 36 }) {
+  const [src, setSrc] = useState(ESCUDOS_CLUBS[nombre] || fallback || null)
 
-function useProximoPartido() {
-  const [partido, setPartido] = useState(null)
-  const [loading, setLoading] = useState(true)
   useEffect(() => {
-    async function fetchPartidos() {
-      try {
-        const res = await fetch(
-          `https://${API_HOST}/api/v1/team/${TEAM_ID}/events/next/0`,
-          { headers: { 'x-rapidapi-host': API_HOST, 'x-rapidapi-key': API_KEY } }
-        )
-        const data = await res.json()
-        const events = data?.events || []
-        if (events.length > 0) setPartido(events[0])
-      } catch (e) { console.error(e) }
-      finally { setLoading(false) }
-    }
-    fetchPartidos()
-  }, [])
-  return { partido, loading }
-}
+    if (ESCUDOS_CLUBS[nombre]) { setSrc(ESCUDOS_CLUBS[nombre]); return }
+    fetchEscudoFallback(nombre).then(url => setSrc(url || fallback))
+  }, [nombre, fallback])
 
-function usePartidoEnVivo() {
-  const [partido, setPartido] = useState(null)
-  useEffect(() => {
-    async function fetchLive() {
-      try {
-        const res = await fetch(
-          `https://${API_HOST}/api/v1/team/${TEAM_ID}/events/live`,
-          { headers: { 'x-rapidapi-host': API_HOST, 'x-rapidapi-key': API_KEY } }
-        )
-        if (!res.ok) return
-        const data = await res.json()
-        const events = data?.events || []
-        if (events.length > 0) setPartido(events[0])
-      } catch (e) { console.error(e) }
-    }
-    fetchLive()
-    const interval = setInterval(fetchLive, 60000)
-    return () => clearInterval(interval)
-  }, [])
-  return partido
-}
-
-function Countdown({ timestamp }) {
-  const [timeLeft, setTimeLeft] = useState('')
-  useEffect(() => {
-    function calcular() {
-      const diff = timestamp * 1000 - Date.now()
-      if (diff <= 0) { setTimeLeft('¡Ahora!'); return }
-      const d = Math.floor(diff / 86400000)
-      const h = Math.floor((diff % 86400000) / 3600000)
-      const m = Math.floor((diff % 3600000) / 60000)
-      if (d > 0) setTimeLeft(`${d}d ${h}h ${m}m`)
-      else if (h > 0) setTimeLeft(`${h}h ${m}m`)
-      else setTimeLeft(`${m}m`)
-    }
-    calcular()
-    const interval = setInterval(calcular, 60000)
-    return () => clearInterval(interval)
-  }, [timestamp])
-  return <span>{timeLeft}</span>
-}
-
-function PartidoWidget() {
-  const { partido: proximo, loading } = useProximoPartido()
-  const enVivo = usePartidoEnVivo()
-  const partido = enVivo || proximo
-
-  if (loading) return (
-    <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '16px', textAlign: 'center', maxWidth: '420px', width: '100%' }}>
-      <p style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif', fontSize: '13px' }}>Cargando partido...</p>
+  if (!src) return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%',
+      background: 'var(--rz-bg-3)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: 12, color: 'var(--rz-text-muted)', fontWeight: 700,
+    }}>
+      {nombre?.[0] || '?'}
     </div>
   )
-  if (!partido) return null
-
-  const esEnVivo = !!enVivo
-  const home = partido.homeTeam
-  const away = partido.awayTeam
-  const fecha = new Date(partido.startTimestamp * 1000)
-  const fechaStr = fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
-  const horaStr = fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
 
   return (
-    <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '16px 20px', maxWidth: '420px', width: '100%', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-        <span style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>
-          {esEnVivo ? '🔴 En directo' : 'Próximo partido'}
-        </span>
-        {!esEnVivo && partido.startTimestamp && (
-          <span style={{ color: '#f5c400', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '700' }}>
-            <Countdown timestamp={partido.startTimestamp} />
-          </span>
-        )}
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flex: 1 }}>
-          <img src={`https://images.fotmob.com/image_resources/logo/teamlogo/${home.id}_large.png`} alt={home.name} style={{ width: '40px', height: '40px', objectFit: 'contain' }} onError={e => { e.target.style.display = 'none' }} />
-          <span style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>{home.shortName || home.name}</span>
-        </div>
-        <div style={{ textAlign: 'center', flexShrink: 0 }}>
-          {esEnVivo ? (
-            <div>
-              <div style={{ color: 'white', fontFamily: 'Humane, sans-serif', fontSize: '36px', fontWeight: '700', lineHeight: 1 }}>{partido.homeScore?.current ?? 0} - {partido.awayScore?.current ?? 0}</div>
-              <div style={{ color: '#f5c400', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', marginTop: '4px' }}>{partido.time?.played || ''}′</div>
-            </div>
-          ) : (
-            <div>
-              <div style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '16px', fontWeight: '700' }}>VS</div>
-              <div style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'sans-serif', fontSize: '11px', marginTop: '4px' }}>{fechaStr} · {horaStr}</div>
-            </div>
-          )}
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flex: 1 }}>
-          <img src={`https://images.fotmob.com/image_resources/logo/teamlogo/${away.id}_large.png`} alt={away.name} style={{ width: '40px', height: '40px', objectFit: 'contain' }} onError={e => { e.target.style.display = 'none' }} />
-          <span style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>{away.shortName || away.name}</span>
-        </div>
-      </div>
-      {partido.tournament && (
-        <div style={{ textAlign: 'center', marginTop: '10px' }}>
-          <span style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif', fontSize: '11px' }}>{partido.tournament.name}</span>
-        </div>
-      )}
-    </div>
+    <img
+      src={src}
+      alt={nombre}
+      style={{ width: size, height: size, objectFit: 'contain', flexShrink: 0 }}
+      onError={e => { e.target.style.display = 'none' }}
+    />
   )
 }
 
-function LiveBanner({ live }) {
-  if (!live) return null
-  return (
-    <a href={`https://www.youtube.com/watch?v=${live.id}`} target="_blank" rel="noopener noreferrer"
-      style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,0,0,0.12)', border: '1px solid rgba(255,0,0,0.4)', borderRadius: '12px', padding: '12px 18px', maxWidth: '420px', width: '100%', textDecoration: 'none', backdropFilter: 'blur(10px)' }}
-    >
-      <span style={{ fontSize: '20px', animation: 'pulse-live 2s infinite' }}>🔴</span>
-      <div style={{ minWidth: 0 }}>
-        <div style={{ color: '#ff5555', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>RZ Hub en directo</div>
-        <div style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '600', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{live.titulo}</div>
-      </div>
-      <style>{`@keyframes pulse-live { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
-    </a>
-  )
-}
-
-function CarruselPartidos() {
-  const trackRef = useRef(null)
-  const posRef = useRef(0)
-  const rafRef = useRef(null)
-  const CARD_W = 200
-  const GAP = 10
-  const STEP = 0.4
-  const TOTAL_W = PARTIDOS.length * (CARD_W + GAP)
-
-  useEffect(() => {
-    const animate = () => {
-      posRef.current += STEP
-      if (posRef.current >= TOTAL_W) posRef.current -= TOTAL_W
-      if (trackRef.current) trackRef.current.style.transform = `translateX(-${posRef.current}px)`
-      rafRef.current = requestAnimationFrame(animate)
-    }
-    rafRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(rafRef.current)
-  }, [])
-
-  return (
-    <div style={{ width: '100%', paddingTop: '14px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-      <p style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '300', fontSize: '12px', letterSpacing: '2.5px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', margin: '0 0 10px', paddingLeft: '20px' }}>
-        Próximos partidos
-      </p>
-      <div style={{ width: '100%', overflow: 'hidden', position: 'relative' }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '60px', zIndex: 2, background: 'linear-gradient(to right, #0B4390, transparent)', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '60px', zIndex: 2, background: 'linear-gradient(to left, #0B4390, transparent)', pointerEvents: 'none' }} />
-        <div ref={trackRef} style={{ display: 'flex', gap: `${GAP}px`, willChange: 'transform', width: 'max-content' }}>
-          {DUPLICADOS.map((p, i) => (
-            <div key={i} style={{ width: `${CARD_W}px`, flexShrink: 0, backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '12px 14px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '12px' }}>
-              <EscudoPartido rival={p.rival} fallback={p.escudo} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
-                <div style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '700', fontSize: '13px', color: 'white', lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.rival}</div>
-                <div style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '300', fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>{p.fecha}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <div style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: p.sede === 'local' ? '#f5c400' : 'rgba(255,255,255,0.2)', flexShrink: 0 }} />
-                  <span style={{ fontSize: '10px', fontWeight: '300', color: 'rgba(255,255,255,0.35)', fontFamily: 'Archivo, sans-serif' }}>{p.sede === 'local' ? 'Local' : p.sede === 'visitante' ? 'Visitante' : 'Neutral'}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export default function Home() {
+/* ============================================================
+   FINAL CTA
+   ============================================================ */
+function FinalCTA() {
   const navigate = useNavigate()
-  const live = useLiveStream()
+  const { user, signInWithGoogle } = useAuth()
+
+  if (user) return null
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#0B4390', display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+    <section style={{
+      background: "linear-gradient(180deg, rgba(4, 18, 46, .94) 0%, rgba(7, 35, 88, .90) 35%, rgba(10, 68, 145, .82) 65%, rgba(4, 18, 46, .95) 100%), url('/images/estadio-comunidad.webp') center center / cover no-repeat",
+      padding: 'var(--space-20) 0',
+      textAlign: 'center',
+    }}>
+      <div className="rz-container">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-5)' }}>
+          <img src="/LOGO_RZHUB.png" alt="RZ Hub" style={{ height: 40 }} />
+        </div>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 8vw, 72px)', fontWeight: 700, letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 0.95, marginBottom: 'var(--space-4)' }}>
+          ¿Listo para vivir la<br />temporada como nunca?
+        </h2>
+        <p style={{ fontSize: 'var(--text-md)', color: 'rgba(255,255,255,0.60)', marginBottom: 'var(--space-8)' }}>
+          Crea tu cuenta gratis y únete a cientos de zaragocistas.
+        </p>
+        <button onClick={signInWithGoogle} className="rz-btn rz-btn--primary rz-btn--lg">
+          Regístrate gratis →
+        </button>
+      </div>
+    </section>
+  )
+}
+
+/* ============================================================
+   HOME — PÁGINA PRINCIPAL
+   ============================================================ */
+export default function Home() {
+  return (
+    <>
       <Helmet>
         <title>RZ Hub | Todo sobre el Real Zaragoza</title>
         <meta name="description" content="La plataforma fan del Real Zaragoza. Crea tu alineación, sigue el mercado, el calendario y mucho más." />
@@ -378,49 +129,37 @@ export default function Home() {
         <link rel="canonical" href="https://rzhub.es" />
       </Helmet>
 
-      <CarruselPartidos />
+      {/* ── HERO ─────────────────────────────────────────────── */}
+      <HeroSection />
 
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '24px', padding: '40px 20px', flex: 1 }}>
-        <img src="/LOGO_RZHUB.png" alt="RZ Hub - Real Zaragoza" style={{ width: '280px', maxWidth: '85vw' }} />
+      {/* ── COMMUNITY STATS ──────────────────────────────────── */}
+      <CommunityStats stats={STATS} />
 
-        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: 'clamp(14px, 4vw, 18px)', textAlign: 'center', maxWidth: '480px', margin: 0, fontFamily: 'sans-serif', lineHeight: '1.5' }}>
-          La web para todos los zaragocistas. Crea tu alineación, valora jugadores y mucho más.
-        </p>
+      {/* ── TOOLS ────────────────────────────────────────────── */}
+      <ToolsSection />
 
-        <LiveBanner live={live} />
+      {/* ── MERCADO + COMUNIDAD + CALENDARIO (bloque editorial, mismo fondo) ─ */}
+      <EditorialSection>
+        <MarketCarousel />
+        <CommunitySection />
+        <CalendarSection />
+      </EditorialSection>
 
-        <PartidoWidget />
+      {/* ── FINAL CTA ────────────────────────────────────────── */}
+      <FinalCTA />
 
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', width: '100%', maxWidth: '500px' }}>
-          <button onClick={() => navigate('/lineup')} className="home-btn home-btn-primary"
-            style={{ background: '#f5c400', color: '#0B4390', border: 'none', borderRadius: '8px', padding: '14px 20px', fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '700', cursor: 'pointer', flex: 1, minWidth: '130px', transition: 'transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease' }}>
-            Crear alineación
-          </button>
-          <button onClick={() => navigate('/mercado')} className="home-btn home-btn-outline"
-            style={{ background: 'transparent', color: '#ffffff', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '8px', padding: '14px 20px', fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600', cursor: 'pointer', flex: 1, minWidth: '130px', transition: 'transform 0.18s ease, background 0.18s ease, border-color 0.18s ease' }}>
-            Mercado
-          </button>
-          <button onClick={() => navigate('/rumores')} className="home-btn home-btn-outline"
-            style={{ background: 'transparent', color: '#ffffff', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '8px', padding: '14px 20px', fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600', cursor: 'pointer', flex: 1, minWidth: '130px', transition: 'transform 0.18s ease, background 0.18s ease, border-color 0.18s ease' }}>
-            Noticias
-          </button>
-          <button onClick={() => navigate('/on-tour')} className="home-btn home-btn-outline"
-            style={{ background: 'transparent', color: '#ffffff', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '8px', padding: '14px 20px', fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600', cursor: 'pointer', flex: 1, minWidth: '130px', transition: 'transform 0.18s ease, background 0.18s ease, border-color 0.18s ease' }}>
-            On Tour
-          </button>
-          <button onClick={() => navigate('/calendario')} className="home-btn home-btn-outline"
-            style={{ background: 'transparent', color: '#ffffff', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '8px', padding: '14px 20px', fontSize: 'clamp(13px, 3.5vw, 15px)', fontWeight: '600', cursor: 'pointer', flex: 1, minWidth: '130px', transition: 'transform 0.18s ease, background 0.18s ease, border-color 0.18s ease' }}>
-            Calendario
-          </button>
-        </div>
+      {/* ── FOOTER ───────────────────────────────────────────── */}
+      <Footer />
 
-        <style>{`
-          .home-btn-primary:hover { background: #ffd633; transform: scale(1.05); }
-          .home-btn-primary:active { transform: scale(1.02); }
-          .home-btn-outline:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.7); transform: scale(1.05); }
-          .home-btn-outline:active { transform: scale(1.02); }
-        `}</style>
-      </div>
-    </div>
+      {/* Mobile responsive */}
+      <style>{`
+        @media (max-width: 1024px) {
+          .home-footer-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 640px) {
+          .home-footer-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </>
   )
 }

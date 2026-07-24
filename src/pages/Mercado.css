@@ -1,0 +1,92 @@
+.mercado-page {
+  min-height: 100vh;
+}
+
+.mercado-page__body {
+  background: #03101f;
+  /* Sin padding-bottom: el Footer ya trae su propio espaciado
+     superior, y si no se dobla el hueco antes de él. */
+  padding: 32px 0 0;
+}
+
+.mercado-page__container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-inline: 32px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.mercado-page__listing {
+  min-height: 120px;
+}
+
+.mercado-page__state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-body);
+  font-size: 15px;
+}
+.mercado-page__state--error {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.mercado-page__retry {
+  margin-top: 14px;
+  height: 44px;
+  padding: 0 22px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease;
+}
+.mercado-page__retry:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+/* -------- Skeleton de carga -------- */
+.mercado-page__skeleton-heading {
+  width: 60px;
+  height: 12px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 14px;
+}
+.mercado-page__skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.mercado-page__skeleton-card {
+  height: 128px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  animation: mercado-skeleton-pulse 1.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mercado-page__skeleton-card { animation: none; opacity: 0.6; }
+}
+@keyframes mercado-skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 1024px) {
+  .mercado-page__skeleton-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .mercado-page__body { padding: 24px 0 0; }
+  .mercado-page__container { padding-inline: 20px; padding-bottom: 48px; gap: 20px; }
+}

@@ -20,7 +20,7 @@ import Mercado from './pages/Mercado'
 
 export default function App() {
   return (
-    <div style={{ minHeight: '100vh', background: '#ffffff', fontFamily: 'sans-serif' }}>
+    <div style={{ minHeight: '100vh' }}>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

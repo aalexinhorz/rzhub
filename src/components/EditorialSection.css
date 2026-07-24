@@ -1,0 +1,41 @@
+/* ============================================================
+   EDITORIAL SECTION — bloque que une Mercado de Fichajes + Comunidad
+   + Calendario bajo una única imagen panorámica de estadio/afición,
+   para que las tres secciones se perciban como una misma escena
+   continua (sin salto de fondo entre ellas). El fondo vive solo aquí:
+   los hijos son transparentes (la card de Calendario mantiene su
+   propio fondo sólido, pero flota sobre esta misma imagen).
+   ============================================================ */
+
+.editorial-section {
+  position: relative;
+  isolation: isolate;
+}
+
+/* La imagen + overlay viven en un pseudo-elemento absoluto en vez de en
+   `background` directo, para poder aplicarle `filter` (contraste/saturación
+   reducidos) sin afectar al contenido que va encima. */
+.editorial-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(4, 18, 46, 0.94) 0%,
+      rgba(7, 35, 88, 0.90) 35%,
+      rgba(10, 68, 145, 0.82) 65%,
+      rgba(4, 18, 46, 0.95) 100%
+    ),
+    url('/images/estadio-comunidad.webp') center center / cover no-repeat;
+
+  /* La foto actúa como textura ambiental, no como protagonista. */
+  filter: saturate(0.82) contrast(0.94);
+}
+
+.editorial-section > * {
+  position: relative;
+  z-index: 1;
+}

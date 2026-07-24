@@ -1,0 +1,103 @@
+.market-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.market-stats__card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  background: rgba(5, 27, 67, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+
+.market-stats__icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.market-stats__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.market-stats__value {
+  font-family: var(--font-body);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.market-stats__skeleton {
+  display: block;
+  width: 36px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  animation: market-stats-pulse 1.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .market-stats__skeleton { animation: none; opacity: 0.5; }
+}
+@keyframes market-stats-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.market-stats__label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* -------- Tablet -------- */
+@media (max-width: 1024px) and (min-width: 641px) {
+  .market-stats__card { padding: 14px 16px; }
+  .market-stats__value { font-size: 24px; }
+}
+
+/* -------- Mobile: 3 columnas siempre, nunca apiladas -------- */
+@media (max-width: 640px) {
+  .market-stats {
+    gap: 8px;
+  }
+  .market-stats__card {
+    flex-direction: column;
+    text-align: center;
+    gap: 6px;
+    padding: 12px 8px;
+  }
+  .market-stats__icon {
+    width: 32px;
+    height: 32px;
+  }
+  .market-stats__icon svg {
+    width: 16px;
+    height: 16px;
+  }
+  .market-stats__value {
+    font-size: 20px;
+  }
+  .market-stats__label {
+    font-size: 10px;
+  }
+}

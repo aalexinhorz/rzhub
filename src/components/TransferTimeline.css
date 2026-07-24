@@ -1,0 +1,292 @@
+.transfer-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.transfer-date-group__heading {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+  margin: 0 0 12px;
+}
+
+.transfer-date-group__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* ============================================================
+   TRANSFER CARD — lenguaje visual de las cards del carrusel
+   (fondo azul marino oscuro, acento cromático, radios de 14px)
+   adaptado a un formato horizontal con cabecera + ruta.
+   ============================================================ */
+
+.transfer-card {
+  min-width: 0;
+  background: linear-gradient(180deg, rgba(8, 27, 67, 0.96) 0%, rgba(5, 20, 50, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  padding: 16px 18px;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), border-color 200ms ease, box-shadow 200ms ease;
+}
+.transfer-card--signing { border-left: 2px solid #22c55e; }
+.transfer-card--departure { border-left: 2px solid #ef4444; }
+
+.transfer-card:hover {
+  transform: translateY(-3px);
+  /* border-top/right/bottom-color, no el shorthand border-color: ese
+     resetea los 4 lados y pisaría el verde/rojo de border-left que
+     ponen .transfer-card--signing/--departure. */
+  border-top-color: rgba(255, 255, 255, 0.18);
+  border-right-color: rgba(255, 255, 255, 0.18);
+  border-bottom-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.25);
+}
+
+.transfer-card__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.transfer-card__photo {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.transfer-card__who {
+  min-width: 0;
+  flex: 1;
+}
+
+.transfer-card__name {
+  margin: 0 0 4px;
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transfer-card__badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.transfer-card__badge {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 3px 8px;
+}
+
+.transfer-card__type {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.transfer-card__type--signing { color: #22c55e; }
+.transfer-card__type--departure { color: #ef4444; }
+
+.transfer-card__date {
+  flex-shrink: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
+.transfer-card__date-short { display: none; }
+
+/* Resumen grande (nombre + escudo + flecha + escudo + nombre) que
+   sustituye a la fecha en el hueco de la cabecera — solo en tablet
+   grande/desktop, ver media query más abajo. flex:1 + justify-content
+   centrado: ocupa todo el espacio que deja libre .transfer-card__who
+   (que deja de crecer) y centra su contenido dentro de ese hueco. */
+.transfer-card__header-route {
+  display: none;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.transfer-card__header-club-name {
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.transfer-card__header-crest {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+.transfer-card__header-arrow {
+  flex-shrink: 0;
+  transition: transform 200ms ease;
+}
+.transfer-card:hover .transfer-card__header-arrow {
+  transform: translateX(3px);
+}
+
+.transfer-card__route {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+.transfer-card__arrow {
+  flex-shrink: 0;
+  transition: transform 200ms ease;
+}
+.transfer-card:hover .transfer-card__arrow {
+  transform: translateX(3px);
+}
+
+.transfer-card__club {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.transfer-card__crest {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+.transfer-card__crest--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.transfer-card__club-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.transfer-card__club-name {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.transfer-card__club-country {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Diseño "grande" de la card (sin fecha, sin ruta detallada, foto/
+   nombre/badge más grandes): a partir de tablet (641px), no solo en
+   desktop — el número de cards por fila (1 en tablet, 2 en desktop)
+   lo decide el grid de abajo, es independiente de esto. */
+@media (min-width: 641px) {
+  .transfer-card__date {
+    display: none;
+  }
+  .transfer-card__header-route {
+    display: flex;
+  }
+  /* La ruta detallada (escudo + nombre + país) ya la resume el
+     escudo grande de la cabecera; se quita entera para dejar más
+     espacio a foto/nombre/posición. */
+  .transfer-card__route {
+    display: none;
+  }
+  .transfer-card__header {
+    margin-bottom: 0;
+  }
+  /* Deja de crecer: así .transfer-card__header-route recibe todo el
+     hueco libre y puede centrar su contenido dentro de él, en vez de
+     quedarse pegado al borde derecho. */
+  .transfer-card__who {
+    flex: 0 1 auto;
+  }
+
+  .transfer-card__photo {
+    width: 72px;
+    height: 72px;
+  }
+  .transfer-card__name {
+    font-size: 22px;
+  }
+  .transfer-card__badge {
+    font-size: 13px;
+    padding: 5px 12px;
+  }
+}
+
+/* -------- Tablet: una columna -------- */
+@media (max-width: 1024px) {
+  .transfer-date-group__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* -------- Mobile -------- */
+@media (max-width: 640px) {
+  .transfer-timeline { gap: 24px; }
+  .transfer-date-group__grid { gap: 12px; }
+
+  .transfer-card { padding: 12px 14px; }
+  .transfer-card__photo { width: 46px; height: 46px; }
+  .transfer-card__name { font-size: 15px; }
+  .transfer-card__club { justify-content: space-evenly; }
+  .transfer-card__club-country { display: none; }
+  .transfer-card__date-full { display: none; }
+  .transfer-card__date-short { display: inline; }
+  .transfer-card__crest { width: 24px; height: 24px; }
+  .transfer-card__route { gap: 8px; }
+}
+
+@media (max-width: 319px) {
+  .transfer-card__route {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    gap: 6px;
+  }
+  .transfer-card__arrow {
+    transform: rotate(90deg);
+    justify-self: center;
+  }
+}

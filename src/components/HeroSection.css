@@ -1,0 +1,372 @@
+/* ============================================================
+   HERO — replica pixel-perfect del diseño de referencia
+   ============================================================ */
+
+.hero {
+  background: linear-gradient(90deg, #06328a 0%, #05286d 50%, #041f5c 100%);
+  padding: 64px 0 100px;
+  overflow: hidden;
+}
+
+.hero__container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 32px;
+  display: grid;
+  /* minmax(0, Nfr) en vez de Nfr a secas: por defecto una pista fr
+     tiene un mínimo automático igual al min-content de su contenido
+     (aquí, el botón "Crear alineación" sin wrap y el texto del panel
+     de la porra), que en el rango ~1024-1227px superaba el reparto
+     fluido 2fr/3fr y dejaba un margen muerto sin rellenar a la
+     derecha. minmax(0, Nfr) fuerza a las columnas a encogerse según
+     la proporción real, dejando que el contenido interno haga wrap/
+     ellipsis en vez de imponer un ancho mínimo a la columna. */
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  column-gap: 80px;
+  align-items: stretch;
+}
+
+.hero__left {
+  display: flex;
+  flex-direction: column;
+}
+
+/* -------- Columna izquierda -------- */
+
+.hero__eyebrow {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 24px;
+}
+
+.hero__title {
+  font-family: var(--font-display);
+  font-size: 96px;
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 32px;
+}
+
+.hero__desc {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+  max-width: 550px;
+  margin-bottom: 40px;
+}
+
+.hero__benefits {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 48px;
+}
+
+.hero__benefit {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.hero__benefit-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffc61a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero__cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 40px;
+  /* wrap (no nowrap): los botones no encogen (flex-shrink:0, abajo) y
+     su ancho no depende del viewport, así que en el rango estrecho
+     del layout de 2 columnas (~1025-1170px) esta fila puede terminar
+     siendo más ancha que la columna izquierda y desbordar sobre
+     .hero__panel. Con wrap, si no cabe pasa a una segunda línea en
+     vez de pintarse encima del panel — igual que ya hacíamos en
+     mobile, ahora también aplicado en desktop estrecho. */
+  flex-wrap: wrap;
+}
+
+.hero__btn-primary,
+.hero__btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 56px;
+  padding: 0 24px;
+  border-radius: 14px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  text-decoration: none;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition: transform 250ms ease-out, box-shadow 250ms ease-out, background 250ms ease-out, border-color 250ms ease-out;
+}
+
+.hero__btn-primary {
+  background: #ffc61a;
+  color: #111111;
+  box-shadow: 0 8px 20px rgba(255, 198, 26, 0.22);
+}
+.hero__btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(255, 198, 26, 0.3);
+}
+
+.hero__btn-secondary {
+  background: transparent;
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+.hero__btn-secondary:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.hero__play-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.hero__play-circle svg {
+  display: block;
+}
+
+.hero__social-proof {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero__avatars {
+  display: flex;
+}
+
+.hero__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-left: -12px;
+  flex-shrink: 0;
+}
+.hero__avatar:first-child {
+  margin-left: 0;
+}
+
+.hero__social-text {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+}
+.hero__social-text strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* -------- Panel derecho -------- */
+
+.hero__panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: #071f54;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 28px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.hero__live-banner {
+  margin-bottom: 24px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   PORRA CARD — wrapper de layout del componente dinámico superior
+   (estado PRE_MATCH). El diseño visual vive en PredictionCard.css;
+   aquí solo se resuelve el reparto de alto dentro de .hero__panel.
+   ============================================================ */
+.porra-card {
+  display: flex;
+  /* Ocupa el 60% del alto disponible de .hero__panel (40% para
+     .lineup-teaser). flex-basis calculado (en vez de flex-grow 6:4
+     sobre base 0%) para que el reparto sea exactamente 60/40 del
+     alto disponible tras descontar el gap real entre ambas cards
+     (24px, definido en .hero__panel), en vez de una aproximación. */
+  flex: 1 1 calc((100% - 24px) * 0.6);
+  min-height: 0;
+}
+
+/* ============================================================
+   LINEUP TEASER — wrapper de layout del segundo bloque (estado
+   "Tu alineación"). El diseño visual vive en LineupCard.css; aquí
+   solo se resuelve el reparto de alto dentro de .hero__panel,
+   igual que .porra-card.
+   ============================================================ */
+.lineup-teaser {
+  display: flex;
+  /* Ocupa el 40% del alto disponible de .hero__panel (60% para
+     .porra-card); ver comentario de flex-basis en .porra-card. */
+  flex: 1 1 calc((100% - 24px) * 0.4);
+  min-height: 0;
+}
+
+/* ============================================================
+   HERO CTA — botón compartido por La Porra y Tu Alineación: mismo
+   degradado, misma animación, mismo hover/active. Vive aquí (no en
+   PredictionCard.css ni LineupCard.css) precisamente porque es el
+   único elemento visual que ambas cards deben compartir al 100%.
+   ============================================================ */
+.hero-cta {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #111111;
+  cursor: pointer;
+  /* Degradado simétrico (mismo tono al 0% y al 100%) para que la
+     animación de abajo pueda ir y volver sin ningún salto visible
+     en los extremos. */
+  background: linear-gradient(155deg, #ffc800 0%, #ffd740 50%, #ffc800 100%);
+  box-shadow: 0 10px 30px rgba(255, 200, 0, 0.35);
+  transition: filter 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+/* Degradado "vivo": solo se mueve si el usuario no ha pedido menos
+   movimiento — si lo ha pedido, se queda en el degradado estático de
+   arriba. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-cta {
+    background-size: 300% 100%;
+    animation: hero-cta-flow 9s linear infinite alternate;
+    will-change: background-position;
+  }
+}
+
+@keyframes hero-cta-flow {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+
+.hero-cta:hover:not(:disabled) {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(255, 200, 0, 0.45);
+}
+.hero-cta:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.hero-cta:disabled {
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.4);
+  box-shadow: none;
+  animation: none;
+}
+
+/* -------- Responsive -------- */
+@media (max-width: 1200px) {
+  .hero__title { font-size: 72px; }
+}
+
+@media (max-width: 1024px) {
+  .hero__container { grid-template-columns: minmax(0, 1fr); row-gap: 24px; padding: 0 24px; }
+  .hero__panel { height: auto; }
+  /* El reparto 50/50 (flex:1 1 0%) es cosa del layout de escritorio,
+     donde .hero__panel tiene una altura real (100%, igualada a la
+     columna izquierda) que repartir. Aquí .hero__panel es height:auto,
+     y forzar el mismo reparto encoge .porra-card por debajo de lo que
+     necesita su contenido real (con partido cargado, incluye la media
+     del estadio) y lo desborda por encima de .lineup-teaser. Volvemos
+     al alto por contenido. */
+  .porra-card, .lineup-teaser { flex: 0 1 auto; }
+
+  /* Menos espacio entre el título y la descripción, y entre la
+     descripción y la lista de beneficios, para aprovechar ese hueco
+     y poder mostrar 2 de los 5 puntos de beneficios (los otros 3 se
+     ocultan) en vez de quitarlos todos. */
+  .hero__title { margin-bottom: 12px; }
+  .hero__desc { margin-bottom: 8px; }
+
+  /* .hero__left no aporta estilos propios (solo flex-column de
+     layout), así que con display:contents sus hijos pasan a ser
+     items directos de la grid de .hero__container, y podemos
+     reordenarlos con `order` junto con .hero__panel. */
+  .hero__left { display: contents; }
+  .hero__benefits { margin-bottom: 8px; }
+  .hero__benefit:nth-child(n + 3) { display: none; }
+
+  .hero__eyebrow { order: 1; }
+  .hero__title { order: 2; }
+  .hero__desc { order: 3; }
+  .hero__benefits { order: 4; }
+  .hero__panel { order: 5; }
+  .hero__cta { order: 6; }
+  .hero__social-proof { order: 7; }
+}
+
+@media (max-width: 640px) {
+  .hero { padding: 40px 0 76px; }
+  .hero__container { padding: 0 20px; row-gap: 32px; }
+
+  .hero__eyebrow { font-size: 12px; margin-bottom: 16px; }
+  .hero__title { font-size: 40px; margin-bottom: 20px; }
+  .hero__desc { font-size: 16px; margin-bottom: 8px; }
+
+  .hero__benefits { gap: 12px; margin-bottom: 8px; }
+  .hero__benefit { font-size: 15px; gap: 12px; }
+
+  .hero__cta { flex-wrap: wrap; gap: 12px; margin-bottom: 32px; }
+  .hero__btn-primary, .hero__btn-secondary { width: 100%; height: 52px; }
+
+  .hero__social-proof { flex-wrap: wrap; row-gap: 8px; }
+
+  .hero__panel { padding: 20px; border-radius: 20px; gap: 16px; }
+  .hero__live-banner { margin-bottom: 0; }
+}

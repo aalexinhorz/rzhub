@@ -1,47 +1,71 @@
+@import './styles/tokens.css';
 @import '@fontsource/bebas-neue';
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400&display=swap');
 
-@font-face {
-  font-family: 'Humane';
-  src: url('/fonts/Humane-Thin.ttf') format('truetype');
-  font-weight: 100;
-}
-@font-face {
-  font-family: 'Humane';
-  src: url('/fonts/Humane-ExtraLight.ttf') format('truetype');
-  font-weight: 200;
-}
-@font-face {
-  font-family: 'Humane';
-  src: url('/fonts/Humane-Light.ttf') format('truetype');
-  font-weight: 300;
-}
-@font-face {
-  font-family: 'Humane';
-  src: url('/fonts/Humane-Regular.ttf') format('truetype');
-  font-weight: 400;
-}
-@font-face {
-  font-family: 'Humane';
-  src: url('/fonts/Humane-Medium.ttf') format('truetype');
-  font-weight: 500;
-}
-@font-face {
-  font-family: 'Humane';
-  src: url('/fonts/Humane-SemiBold.ttf') format('truetype');
-  font-weight: 600;
-}
-@font-face {
-  font-family: 'Humane';
-  src: url('/fonts/Humane-Bold.ttf') format('truetype');
-  font-weight: 700;
-}
+@font-face { font-family: 'Humane'; src: url('/fonts/Humane-Thin.ttf') format('truetype'); font-weight: 100; font-display: swap; }
+@font-face { font-family: 'Humane'; src: url('/fonts/Humane-ExtraLight.ttf') format('truetype'); font-weight: 200; font-display: swap; }
+@font-face { font-family: 'Humane'; src: url('/fonts/Humane-Light.ttf') format('truetype'); font-weight: 300; font-display: swap; }
+@font-face { font-family: 'Humane'; src: url('/fonts/Humane-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Humane'; src: url('/fonts/Humane-Medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Humane'; src: url('/fonts/Humane-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Humane'; src: url('/fonts/Humane-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body {
-  font-family: 'Archivo', sans-serif;
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  color: var(--rz-text-primary);
+  background: var(--rz-bg-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
-body {
-  background: #ffffff;
+
+img, video { max-width: 100%; display: block; }
+button { font-family: var(--font-body); cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+.rz-container { width: 100%; max-width: var(--max-width); margin: 0 auto; padding: 0 var(--padding-page); }
+
+.rz-eyebrow { font-size: var(--text-xs); font-weight: var(--weight-semibold); letter-spacing: 0.10em; text-transform: uppercase; color: var(--rz-text-muted); margin-bottom: var(--space-2); }
+.rz-eyebrow--yellow { color: var(--rz-yellow); }
+
+.rz-section-title { font-size: var(--text-3xl); font-weight: var(--weight-black); letter-spacing: -0.02em; color: var(--rz-text-primary); line-height: 1.1; margin-bottom: var(--space-8); }
+.rz-section { padding: var(--space-16) 0; }
+
+.rz-badge { display: inline-flex; align-items: center; gap: var(--space-1); font-size: var(--text-xs); font-weight: var(--weight-semibold); padding: 3px 10px; border-radius: var(--radius-full); letter-spacing: 0.04em; }
+.rz-badge--yellow { background: rgba(255,200,0,0.12); color: var(--rz-yellow); border: 1px solid rgba(255,200,0,0.20); }
+.rz-badge--green  { background: rgba(34,197,94,0.12); color: var(--rz-green); }
+.rz-badge--red    { background: rgba(239,68,68,0.12); color: var(--rz-red); }
+.rz-badge--live   { background: rgba(239,68,68,0.15); color: #EF4444; border: 1px solid rgba(239,68,68,0.25); }
+
+.rz-live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rz-green); animation: rz-pulse 2s ease-in-out infinite; }
+
+.rz-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); padding: 11px 22px; border-radius: var(--radius-md); font-size: var(--text-sm); font-weight: var(--weight-bold); font-family: var(--font-body); border: none; cursor: pointer; transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease; white-space: nowrap; text-decoration: none; }
+.rz-btn--primary { background: var(--rz-yellow); color: #060D1A; }
+.rz-btn--primary:hover { background: var(--rz-yellow-hover); transform: translateY(-1px); }
+.rz-btn--ghost { background: transparent; color: var(--rz-text-secondary); border: 1px solid var(--rz-border-md); }
+.rz-btn--ghost:hover { border-color: var(--rz-border-strong); color: var(--rz-text-primary); }
+.rz-btn--outline-yellow { background: transparent; color: var(--rz-yellow); border: 1px solid var(--rz-border-yellow); }
+.rz-btn--outline-yellow:hover { background: rgba(255,200,0,0.08); }
+.rz-btn--lg { padding: 13px 28px; font-size: var(--text-md); }
+
+.rz-card { background: var(--rz-bg-2); border: 1px solid var(--rz-border); border-radius: var(--radius-lg); overflow: hidden; }
+.rz-card--hover { transition: border-color 250ms ease, transform 250ms ease, box-shadow 250ms ease; }
+.rz-card--hover:hover { border-color: var(--rz-border-md); transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+.rz-skeleton { background: linear-gradient(90deg, var(--rz-bg-2) 25%, var(--rz-bg-3) 50%, var(--rz-bg-2) 75%); background-size: 200% 100%; animation: rz-shimmer 1.5s infinite; border-radius: var(--radius-sm); }
+
+:focus-visible { outline: 2px solid var(--rz-yellow); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+@keyframes rz-pulse   { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.85)} }
+@keyframes rz-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+@keyframes rz-fade-up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
