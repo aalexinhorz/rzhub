@@ -52,7 +52,7 @@ export default function Calendario() {
         <link rel="canonical" href="https://rzhub.es/calendario" />
       </Helmet>
 
-      <div style={{ backgroundColor: '#0B4390', padding: '60px 24px 50px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ background: 'linear-gradient(90deg, #06328a 0%, #05286d 50%, #041f5c 100%)', padding: '60px 24px 50px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(255,255,255,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <p style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '300', fontSize: 'clamp(12px, 2.5vw, 14px)', letterSpacing: '4px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', margin: '0 0 12px' }}>
           Real Zaragoza · 1ª RFEF 26/27
