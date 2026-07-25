@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuth, { supabase } from '../hooks/useAuth'
 import useLiveStream from '../hooks/useLiveStream'
+import useNextMatch from '../hooks/useNextMatch'
 import { ESCUDO_ZARAGOZA, getEscudo } from '../lib/escudos'
 import PredictionCard from './PredictionCard'
 import LineupCard from './LineupCard'
 import './HeroSection.css'
 
-// Editable a mano por jornada: todavía no existe un campo en Supabase
-// para "puntos en juego", así que se ajusta aquí directamente.
 const PORRA_REWARD_POINTS = 250
 
 const CHECKS = [
@@ -21,12 +20,6 @@ const CHECKS = [
 
 const AVATARS = ['JG', 'MR', 'AB', 'PL', '+']
 
-// Misma tabla de Supabase que ya usa la página Porra.jsx para este
-// mismo propósito — evita depender de la API externa (sportapi7),
-// cuya cuota mensual está agotada y no vuelve a resetearse sola.
-// "Próximo/en curso" = el partido no finalizado con el kickoff más
-// cercano. Trae de paso los participantes (nº de predicciones para
-// ese partido) y, si hay usuario logueado, su propio pronóstico.
 function usePorraData() {
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
@@ -49,10 +42,7 @@ function usePorraData() {
       if (cancelado) return
       setPartido(proximo)
 
-      if (!proximo) {
-        setLoading(false)
-        return
-      }
+      if (!proximo) { setLoading(false); return }
 
       const { count } = await supabase
         .from('porra_predicciones')
@@ -74,21 +64,12 @@ function usePorraData() {
       if (!cancelado) setLoading(false)
     }
     load()
-
     return () => { cancelado = true }
   }, [user])
 
   return { loading, partido, participants, prediction }
 }
 
-/* ============================================================
-   PORRA CARD — wrapper de datos del componente dinámico superior
-   del Hero Action Card. Estado PRE_MATCH: <PredictionCard>, ver
-   ese componente para la UI. El estado post-partido ("Ya puedes
-   puntuar") es un componente distinto que no vive aquí — como la
-   query ya excluye partidos finalizados, esta card simplemente
-   pasa al siguiente partido en cuanto uno se marca finalizado.
-   ============================================================ */
 function PorraCard({ navigate, loading, partido, participants, prediction }) {
   if (loading) {
     return (
@@ -98,9 +79,6 @@ function PorraCard({ navigate, loading, partido, participants, prediction }) {
     )
   }
 
-  // No hay ningún partido pendiente en la tabla (fin de temporada,
-  // o aún no se ha cargado el calendario): mostramos una alternativa
-  // útil en vez de dejar la card vacía.
   if (!partido) {
     return (
       <div className="porra-card">
@@ -142,21 +120,26 @@ function PorraCard({ navigate, loading, partido, participants, prediction }) {
   )
 }
 
-/* ============================================================
-   LINEUP SLOT — wrapper de layout del segundo bloque del Hero
-   Action Card (ver .lineup-teaser en HeroSection.css). El diseño
-   vive en LineupCard.css. Comparte el mismo partido que la Porra:
-   el plazo del editor cierra 1h antes del kickoff.
-   ============================================================ */
-function LineupSlot({ navigate, partido }) {
-  const closesAt = partido
-    ? new Date(new Date(partido.kickoff).getTime() - 60 * 60 * 1000).toISOString()
+function LineupSlot({ navigate, partido, nextMatch }) {
+  const kickoff = nextMatch?.date
+    ? nextMatch.date.toISOString()
+    : partido?.kickoff || null
+
+  const rival = nextMatch?.summary
+    ? nextMatch.summary.replace(/Real Zaragoza\s*[-vs]+\s*/i, '').replace(/\s*[-vs]+\s*Real Zaragoza/i, '').trim()
+    : partido?.rival || null
+
+  const closesAt = kickoff
+    ? new Date(new Date(kickoff).getTime() - 60 * 60 * 1000).toISOString()
     : null
+
+  console.log('nextMatch:', nextMatch)
+  console.log('closesAt:', closesAt)
 
   return (
     <div className="lineup-teaser">
       <LineupCard
-        rival={partido?.rival ?? null}
+        rival={rival}
         closesAt={closesAt}
         onCreateClick={() => navigate('/lineup')}
       />
@@ -169,22 +152,19 @@ export default function HeroSection() {
   const { user, signInWithGoogle } = useAuth()
   const live = useLiveStream()
   const { loading, partido, participants, prediction } = usePorraData()
+  const { nextMatch } = useNextMatch()
 
   return (
     <section className="hero">
       <div className="hero__container">
-        {/* Columna izquierda */}
         <div className="hero__left">
           <p className="hero__eyebrow">La web del zaragocista</p>
-
           <h1 className="hero__title">
             Vive el Real Zaragoza<br />Como Nunca Antes
           </h1>
-
           <p className="hero__desc">
             Todas las herramientas, datos y comunidad que necesitas para seguir al Real Zaragoza allá donde vayas.
           </p>
-
           <ul className="hero__benefits">
             {CHECKS.map(item => (
               <li key={item} className="hero__benefit">
@@ -197,7 +177,6 @@ export default function HeroSection() {
               </li>
             ))}
           </ul>
-
           <div className="hero__cta">
             {user ? (
               <button className="hero__btn-primary" onClick={() => navigate('/lineup')}>
@@ -217,7 +196,6 @@ export default function HeroSection() {
               </>
             )}
           </div>
-
           <div className="hero__social-proof">
             <div className="hero__avatars">
               {AVATARS.map((av, i) => (
@@ -232,7 +210,6 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Panel derecho */}
         <div className="hero__panel">
           {live && (
             <a href={live.url} target="_blank" rel="noopener noreferrer" className="hero__card hero__live-banner" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
@@ -240,7 +217,6 @@ export default function HeroSection() {
               <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 700, color: '#ffffff' }}>RZ Hub en directo — {live.titulo}</span>
             </a>
           )}
-
           <PorraCard
             navigate={navigate}
             loading={loading}
@@ -248,7 +224,7 @@ export default function HeroSection() {
             participants={participants}
             prediction={prediction}
           />
-          <LineupSlot navigate={navigate} partido={partido} />
+          <LineupSlot navigate={navigate} partido={partido} nextMatch={nextMatch} />
         </div>
       </div>
     </section>
