@@ -499,16 +499,22 @@
   .calendar-phone__teams { font-size: 10px; }
   .calendar-phone__teams span { font-size: 8.5px; }
   .calendar-phone__meta { font-size: 8.5px; }
+  /* En este rango .calendar-widget-slot es flex:1 compitiendo con el
+     teléfono (flex fijo): su ancho real no es el max-width de abajo,
+     sino lo que le deja el flex-shrink — llega a apretarse hasta
+     ~178px (medido) antes de que el layout pase a una columna en
+     768px. El tamaño de aquí está pensado para verse bien en ese
+     peor caso, no solo en los 220px del max-width. */
   .calendar-widget {
     max-width: 220px;
-    padding: 12px 14px;
-    gap: 10px;
+    padding: 10px 12px;
+    gap: 8px;
   }
-  .calendar-widget__crest { width: 40px; height: 40px; }
-  .calendar-widget__app { font-size: 9px; }
-  .calendar-widget__title { font-size: 12px; }
-  .calendar-widget__match { font-size: 10.5px; }
-  .calendar-widget__meta { font-size: 9.5px; }
+  .calendar-widget__crest { width: 32px; height: 32px; }
+  .calendar-widget__app { font-size: 8.5px; }
+  .calendar-widget__title { font-size: 11px; }
+  .calendar-widget__match { font-size: 10px; }
+  .calendar-widget__meta { font-size: 9px; }
 }
 
 @media (max-width: 768px) {

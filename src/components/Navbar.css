@@ -275,6 +275,13 @@
   .header__more-trigger { display: inline-flex; }
 }
 
+/* En el tramo bajo de ese mismo rango tablet (900–979px) el botón
+   "Más" y "Contáctanos" chocan: se oculta Contáctanos y se deja solo
+   "Regístrate gratis" hasta que vuelve a haber hueco. */
+@media (max-width: 979px) and (min-width: 900px) {
+  .header__login { display: none; }
+}
+
 /* Por debajo de 900px no cabe la navegación completa ni el grupo "Más":
    se pliega todo al menú hamburguesa (incluye el rango mobile de 767px). */
 @media (max-width: 899px) {
