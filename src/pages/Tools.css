@@ -1,0 +1,42 @@
+/* ============================================================
+   TOOLS PAGE — único entrypoint: el botón "Explorar todas las
+   herramientas" de ToolsSection. Mismo fondo oscuro y misma
+   .tool-card que esa sección; solo el grid es propio (8 items,
+   sin el hueco especial de tablet que tiene el teaser de 5).
+   ============================================================ */
+
+.tools-page {
+  min-height: 100vh;
+  background: #050c13;
+  padding: 56px 0 96px;
+}
+
+.tools-page__desc {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 520px;
+  margin: 16px auto 0;
+}
+
+.tools-page__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .tools-page__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tools-page { padding: 40px 0 64px; }
+  .tools-page__grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .tool-card { min-height: 0; }
+}
