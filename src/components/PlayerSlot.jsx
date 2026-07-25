@@ -304,7 +304,7 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
                   onKeyDown={e => { if (e.key === 'Enter' && results.length === 0 && search.trim().length >= 2) handleAddCustom(search) }}
                   style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #eee', fontSize: '14px', fontFamily: 'sans-serif', boxSizing: 'border-box', outline: 'none', background: '#f9f9f9' }} />
                 {player && search.length < 2 && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '10px', padding: '8px 12px', background: '#f0f0f0', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '10px', padding: '8px 12px', background: '#2a2a2a', borderRadius: '8px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: `2px solid ${player.isZaragoza ? '#0B4390' : '#f5c400'}` }}>
                       <PlayerPhoto src={player.photo} alt={player.name} />
                     </div>
