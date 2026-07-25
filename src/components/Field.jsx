@@ -80,18 +80,19 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
         <img src="/CAMPO_PARA_WEB.svg" alt="campo" crossOrigin="anonymous"
           style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'fill' }} />
 
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '10px 20px 0px 20px', zIndex: 10 }}>
+        {/* Título — padding generoso para no solapar cards */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '8px 16px 0px 16px', zIndex: 10 }}>
           {editingName ? (
             <input autoFocus value={teamName} onChange={e => setTeamName(e.target.value)}
               onBlur={() => setEditingName(false)} onKeyDown={e => e.key === 'Enter' && setEditingName(false)}
-              style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: 'clamp(32px, 7vw, 62px)', textTransform: 'uppercase', color: '#ffffff', border: 'none', borderBottom: '2px solid #ffffff', outline: 'none', background: 'transparent', width: '100%', letterSpacing: '0px', lineHeight: '0.85' }} />
+              style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: 'clamp(24px, 5vw, 44px)', textTransform: 'uppercase', color: '#ffffff', border: 'none', borderBottom: '2px solid #ffffff', outline: 'none', background: 'transparent', width: '100%', letterSpacing: '0px', lineHeight: '0.9' }} />
           ) : (
             <h2 onClick={() => setEditingName(true)} title="Clic para editar"
-              style={{ color: '#ffffff', fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: 'clamp(32px, 7vw, 62px)', textTransform: 'uppercase', margin: 0, letterSpacing: '0px', cursor: 'text', userSelect: 'none', lineHeight: '0.85' }}>
+              style={{ color: '#ffffff', fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: 'clamp(24px, 5vw, 44px)', textTransform: 'uppercase', margin: 0, letterSpacing: '0px', cursor: 'text', userSelect: 'none', lineHeight: '0.9' }}>
               {teamName}
             </h2>
           )}
-          <div style={{ display: 'inline-block', background: '#FFC800', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '2px 10px', borderRadius: '4px', marginTop: '6px', fontFamily: 'sans-serif' }}>
+          <div style={{ display: 'inline-block', background: '#FFC800', color: '#060D1A', fontSize: '10px', fontWeight: '800', padding: '2px 8px', borderRadius: '4px', marginTop: '4px', fontFamily: 'Archivo, sans-serif' }}>
             {formation}
           </div>
         </div>
@@ -118,8 +119,8 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
       {/* Modal guardar */}
       {showModal && (
         <div onClick={() => setShowModal(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', width: '90%', maxWidth: '420px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.6)' }}>
-            <div style={{ background: '#0B4390', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#0A1628', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', width: '90%', maxWidth: '420px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.6)' }}>
+            <div style={{ background: '#0D4491', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ color: 'white', fontWeight: '700', fontSize: '16px', fontFamily: 'Archivo, sans-serif' }}>Guardar alineación</span>
               <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '20px', cursor: 'pointer' }}>✕</button>
             </div>
@@ -132,10 +133,11 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
                 value={nombreGuardado}
                 onChange={e => setNombreGuardado(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && confirmarGuardar()}
+                style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: '#152445', color: '#fff', fontSize: '15px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none' }}
               />
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '16px', padding: '10px 12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#ffc800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#0B4390' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#FFC800', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ fontSize: '11px', fontWeight: '700', color: '#060D1A' }}>
                     {nombreUsuario.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
                   </span>
                 </div>
@@ -147,7 +149,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
                 <button onClick={() => setShowModal(false)} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'rgba(255,255,255,0.5)', fontSize: '14px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer' }}>
                   Cancelar
                 </button>
-                <button onClick={confirmarGuardar} disabled={guardando || !nombreGuardado.trim()} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: '#ffc800', color: '#0a0a0a', fontSize: '14px', fontFamily: 'Archivo, sans-serif', fontWeight: '700', cursor: guardando ? 'default' : 'pointer', opacity: guardando ? 0.7 : 1 }}>
+                <button onClick={confirmarGuardar} disabled={guardando || !nombreGuardado.trim()} style={{ flex: 1, padding: '12px', borderRadius: '8px', border: 'none', background: '#FFC800', color: '#060D1A', fontSize: '14px', fontFamily: 'Archivo, sans-serif', fontWeight: '700', cursor: guardando ? 'default' : 'pointer', opacity: guardando ? 0.7 : 1 }}>
                   {guardando ? 'Guardando...' : '💾 Publicar'}
                 </button>
               </div>
