@@ -146,7 +146,7 @@ export function getEscudo(club) {
   return ESCUDOS_CLUBS[club] || null
 }
 
-const AGENTE_LIBRE_ICON = '/escudos/agentelibre.svg'
+const AGENTE_LIBRE_ICON = '/escudos/agentelibre.png'
 
 // Hook compartido por cualquier card que necesite el escudo de un club
 // (estático si está en ESCUDOS_CLUBS, si no vía fallback de TheSportsDB).
