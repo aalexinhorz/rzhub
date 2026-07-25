@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { to: '/calendario', label: 'Calendario' },
   { to: '/porra', label: 'Porra' },
   { to: '/on-tour', label: 'On Tour', overflow: true },
-  { to: '/noticias', label: 'Noticias' },
+  { to: '/rumores', label: 'Noticias' },
   { to: '/tierlist', label: 'TierMaker', overflow: true },
   { to: '/comunidad', label: 'Comunidad', overflow: true },
 ]

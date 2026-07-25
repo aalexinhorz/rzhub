@@ -177,13 +177,13 @@ export default function Lineup() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <p style={{ fontFamily: 'sans-serif', fontSize: '18px', color: '#666' }}>Cargando plantilla...</p>
+    <div style={{ minHeight: 'calc(100vh - 72px)', background: '#060D1A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ fontFamily: 'Archivo, sans-serif', fontSize: '18px', color: 'rgba(255,255,255,0.4)' }}>Cargando plantilla...</p>
     </div>
   )
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#ffffff', fontFamily: 'sans-serif' }}>
+    <div style={{ minHeight: 'calc(100vh - 72px)', background: '#060D1A', fontFamily: 'Archivo, sans-serif' }}>
       <Helmet>
         <title>Alineación del Real Zaragoza | Crea tu XI | RZ Hub</title>
         <meta name="description" content="Crea tu alineación ideal del Real Zaragoza. Elige formación, coloca los jugadores de la plantilla y comparte tu XI con otros zaragocistas." />
@@ -194,7 +194,20 @@ export default function Lineup() {
         <link rel="canonical" href="https://rzhub.es/lineup" />
       </Helmet>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '1300px', margin: '0 auto', padding: '16px', gap: '24px' }}>
+      {/* Header de página */}
+      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '28px clamp(16px,4vw,40px) 24px', maxWidth: '1200px', margin: '0 auto' }}>
+        <p style={{ color: '#FFC800', fontFamily: 'Archivo, sans-serif', fontSize: '11px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', margin: '0 0 6px' }}>
+          REAL ZARAGOZA · TEMPORADA 26/27
+        </p>
+        <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: 'clamp(56px, 10vw, 96px)', color: '#ffffff', textTransform: 'uppercase', margin: 0, lineHeight: 0.85, letterSpacing: '-1px' }}>
+          LINE-UP
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'Archivo, sans-serif', fontSize: '14px', margin: '12px 0 0' }}>
+          Crea tu once ideal y compártelo con la comunidad.
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '1200px', margin: '0 auto', padding: '24px clamp(16px,4vw,40px)', gap: '24px' }}>
         <DndContext collisionDetection={closestCenter}>
           <Field
             slotsLayout={slotsLayout}
