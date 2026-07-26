@@ -10,16 +10,21 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
 
+  async function capturarCanvas() {
+    const img = fieldRef.current.querySelector('img')
+    img.src = '/CAMPO_PARA_WEB.png'
+    await new Promise(r => setTimeout(r, 300))
+    const canvas = await html2canvas(fieldRef.current, {
+      scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false,
+    })
+    img.src = '/CAMPO_PARA_WEB.svg'
+    return canvas
+  }
+
   async function handleDownload() {
     if (!fieldRef.current) return
     try {
-      const img = fieldRef.current.querySelector('img')
-      img.src = '/CAMPO_PARA_WEB.png'
-      await new Promise(r => setTimeout(r, 300))
-      const canvas = await html2canvas(fieldRef.current, {
-        scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false,
-      })
-      img.src = '/CAMPO_PARA_WEB.svg'
+      const canvas = await capturarCanvas()
       const link = document.createElement('a')
       link.download = `${teamName || 'alineacion'}.png`
       link.href = canvas.toDataURL('image/png')
@@ -28,6 +33,94 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
       console.error('Error al descargar:', error)
       const img = fieldRef.current?.querySelector('img')
       if (img) img.src = '/CAMPO_PARA_WEB.svg'
+    }
+  }
+
+  function abrirCompositorMobile(texto, urlWeb) {
+    // No hay forma de saber desde el navegador si la app de X está
+    // instalada: probamos su esquema nativo y, si la pestaña sigue visible
+    // pasado un margen (la app no se abrió), caemos a la versión web.
+    const urlApp = `twitter://post?message=${texto}`
+    let volvioAlNavegador = false
+    const marcarVuelta = () => { if (document.hidden) volvioAlNavegador = true }
+    document.addEventListener('visibilitychange', marcarVuelta)
+    window.location.href = urlApp
+    setTimeout(() => {
+      document.removeEventListener('visibilitychange', marcarVuelta)
+      if (!volvioAlNavegador) window.location.href = urlWeb
+    }, 1500)
+  }
+
+  async function handleCompartirX() {
+    if (!fieldRef.current) return
+    // X no permite adjuntar imágenes vía intent link, solo texto: abrimos
+    // el compositor con el texto listo y copiamos la imagen al
+    // portapapeles para que el usuario solo tenga que pegarla (Ctrl/Cmd+V).
+    //
+    // Safari (y cada vez más Chrome) exige que clipboard.write() se llame
+    // de forma SÍNCRONA dentro del gesto de clic, sin ningún await previo;
+    // por eso el ClipboardItem recibe la promesa del blob directamente en
+    // vez de esperar a que html2canvas termine antes de invocar write().
+    const esMobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent)
+    const soportaImagen = !!(navigator.clipboard?.write && window.ClipboardItem)
+
+    const copiaPromise = soportaImagen
+      ? navigator.clipboard
+          .write([
+            new ClipboardItem({
+              'image/png': capturarCanvas().then(canvas => new Promise(resolve => canvas.toBlob(resolve, 'image/png'))),
+            }),
+          ])
+          .then(() => true)
+          .catch(e => {
+            console.error('No se pudo copiar la imagen al portapapeles:', e)
+            return false
+          })
+      : Promise.resolve(false)
+
+    const texto = encodeURIComponent(`Mi alineación ideal: ${teamName || 'El XI del Real Zaragoza'} ⚽💙\n#RealZaragoza #RZHub\n(Alineación Copiada 📋​) Pégala aquí 👇 `)
+    const urlWeb = `https://twitter.com/intent/tweet?text=${texto}`
+
+    function abrirCompositor() {
+      // En escritorio no abrimos la pestaña de X hasta tener la copia
+      // confirmada: nada de pestaña en blanco esperando de antemano.
+      if (esMobile) abrirCompositorMobile(texto, urlWeb)
+      else window.open(urlWeb, '_blank')
+    }
+
+    // En mobile, si el permiso ya estaba concedido de antes, no hace falta
+    // esperar a que termine de generarse/copiarse la imagen para saber que
+    // va a funcionar. En desktop SIEMPRE esperamos a la confirmación real
+    // de la copia antes de redirigir, para no abrir X antes de que el
+    // usuario acepte el permiso del portapapeles.
+    let yaAceptado = false
+    if (esMobile) {
+      try {
+        const estado = await navigator.permissions.query({ name: 'clipboard-write' })
+        yaAceptado = estado.state === 'granted'
+      } catch {
+        // Permissions API no soporta 'clipboard-write' (Safari/Firefox).
+      }
+    }
+
+    if (yaAceptado) {
+      abrirCompositor()
+      const copiada = await copiaPromise
+      if (!copiada) {
+        alert('No se pudo copiar la imagen al portapapeles. Descárgala con el botón "Descargar" y adjúntala tú mismo en el tweet.')
+      }
+      return
+    }
+
+    // No se redirige a X hasta que el usuario haya aceptado copiar la
+    // imagen al portapapeles: si no se acepta/consigue, nos quedamos en la
+    // página y avisamos, en vez de mandarlo a X sin la imagen lista.
+    const copiada = await copiaPromise
+
+    if (copiada) {
+      abrirCompositor()
+    } else {
+      alert('No se pudo copiar la imagen al portapapeles, así que no te llevamos a X. Descárgala con el botón "Descargar" y adjúntala tú mismo en el tweet.')
     }
   }
 
@@ -52,7 +145,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
     <div style={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '620px', flexShrink: 0 }}>
 
       {/* Botones encima del campo */}
-      <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '12px', gap: '8px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', marginBottom: '12px', gap: '8px' }}>
         {guardado ? (
           <div style={{ display: 'flex', alignItems: 'center', padding: '9px 18px', borderRadius: '8px', background: 'rgba(39,174,96,0.15)', color: '#27ae60', fontWeight: '700', fontSize: '13px', fontFamily: 'Archivo, sans-serif', border: '1px solid rgba(39,174,96,0.3)' }}>
             ✅ ¡Guardado en la comunidad!
@@ -73,6 +166,12 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
             ⬇ Descargar
           </button>
         )}
+        <button onClick={handleCompartirX} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 18px', borderRadius: '8px', border: '1px solid rgba(29,155,240,0.4)', background: 'rgba(29,155,240,0.08)', color: '#1da1f2', fontWeight: '700', fontSize: '13px', fontFamily: 'Archivo, sans-serif', cursor: 'pointer', transition: 'all 0.15s' }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(29,155,240,0.15)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(29,155,240,0.08)'}
+        >
+          𝕏 Compartir
+        </button>
       </div>
 
       {/* Campo */}
