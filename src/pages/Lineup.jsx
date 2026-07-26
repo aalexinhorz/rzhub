@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
+import SEO, { SITE_URL } from '../components/SEO'
 import { DndContext, closestCenter } from '@dnd-kit/core'
 import Field from '../components/Field'
 import SidePanel from '../components/SidePanel'
@@ -184,15 +184,22 @@ export default function Lineup() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 72px)', background: '#060D1A', fontFamily: 'Archivo, sans-serif' }}>
-      <Helmet>
-        <title>Alineación del Real Zaragoza | Crea tu XI | RZ Hub</title>
-        <meta name="description" content="Crea tu alineación ideal del Real Zaragoza. Elige formación, coloca los jugadores de la plantilla y comparte tu XI con otros zaragocistas." />
-        <meta property="og:title" content="Alineación del Real Zaragoza | Crea tu XI | RZ Hub" />
-        <meta property="og:description" content="Crea tu alineación ideal del Real Zaragoza. Elige formación, coloca los jugadores y comparte tu XI." />
-        <meta property="og:url" content="https://rzhub.es/lineup" />
-        <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://rzhub.es/lineup" />
-      </Helmet>
+      <SEO
+        title="Alineación del Real Zaragoza | Crea tu XI | RZ Hub"
+        description="Crea tu alineación ideal del Real Zaragoza. Elige formación, coloca a los jugadores de la plantilla y comparte tu XI con otros zaragocistas."
+        keywords="alineación Real Zaragoza, crear XI Real Zaragoza, once titular Real Zaragoza, formación Real Zaragoza, plantilla Real Zaragoza 26/27"
+        path="/lineup"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          name: 'Alineación del Real Zaragoza | RZ Hub',
+          url: `${SITE_URL}/lineup`,
+          applicationCategory: 'SportsApplication',
+          operatingSystem: 'Web',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+          description: 'Herramienta para crear y compartir tu alineación ideal del Real Zaragoza eligiendo formación y jugadores de la plantilla.',
+        }}
+      />
 
       {/* Header de página */}
       <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '28px clamp(16px,4vw,40px) 24px', maxWidth: '1200px', margin: '0 auto' }}>

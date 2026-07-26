@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import SEO, { SITE_URL } from '../components/SEO'
 import { supabase } from '../hooks/useAuth'
 
 function formatFecha(dateStr) {
@@ -30,6 +31,20 @@ export default function Noticias() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f8f9fa' }}>
+      <SEO
+        title="Noticias del Real Zaragoza | Actualidad Zaragocista | RZ Hub"
+        description="Las últimas noticias del Real Zaragoza: fichajes, resultados, entrevistas y actualidad del club, actualizadas cada día."
+        keywords="noticias Real Zaragoza, actualidad Real Zaragoza, prensa Real Zaragoza, última hora Real Zaragoza, hemeroteca Real Zaragoza"
+        path="/noticias"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Noticias del Real Zaragoza',
+          url: `${SITE_URL}/noticias`,
+          description: 'Últimas noticias y actualidad del Real Zaragoza publicadas en RZ Hub.',
+          isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
+        }}
+      />
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 20px' }}>
 
         <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: 'clamp(56px, 10vw, 96px)', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: '0 0 8px' }}>

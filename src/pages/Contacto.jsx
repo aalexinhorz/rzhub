@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Helmet } from 'react-helmet-async'
+import SEO from '../components/SEO'
 import emailjs from '@emailjs/browser'
 
 const SERVICE_ID = 'service_yu2o009'
@@ -47,15 +47,12 @@ export default function Contacto() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', color: 'white', fontFamily: 'Archivo, sans-serif', paddingBottom: '80px' }}>
-      <Helmet>
-        <title>Contacto | RZ Hub - Real Zaragoza</title>
-        <meta name="description" content="¿Tienes alguna sugerencia o idea para RZ Hub? Escríbenos. La plataforma fan del Real Zaragoza hecha por y para zaragocistas." />
-        <meta property="og:title" content="Contacto | RZ Hub - Real Zaragoza" />
-        <meta property="og:description" content="¿Tienes alguna sugerencia o idea para RZ Hub? Escríbenos." />
-        <meta property="og:url" content="https://rzhub.es/contacto" />
-        <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://rzhub.es/contacto" />
-      </Helmet>
+      <SEO
+        title="Contacto | RZ Hub - Real Zaragoza"
+        description="¿Tienes alguna sugerencia o idea para RZ Hub? Escríbenos. La plataforma fan del Real Zaragoza hecha por y para zaragocistas."
+        keywords="contacto RZ Hub, sugerencias RZ Hub, Real Zaragoza contacto"
+        path="/contacto"
+      />
 
       <div style={{ backgroundColor: '#0B4390', padding: '60px 24px 50px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(255,255,255,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />

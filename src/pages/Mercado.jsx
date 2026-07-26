@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import SEO, { SITE_URL } from '../components/SEO'
 import useMarketData, { CURRENT_SEASON } from '../hooks/useMarketData'
 import MarketHero from '../components/MarketHero'
 import MarketFilters from '../components/MarketFilters'
@@ -64,6 +65,20 @@ export default function Mercado() {
 
   return (
     <div className="mercado-page">
+      <SEO
+        title="Mercado de Fichajes del Real Zaragoza 26/27 | Altas y Bajas | RZ Hub"
+        description="Sigue en directo todos los fichajes y salidas del Real Zaragoza en la temporada 26/27. Altas, bajas y movimientos de mercado actualizados al minuto."
+        keywords="mercado fichajes Real Zaragoza, altas Real Zaragoza, bajas Real Zaragoza, fichajes Real Zaragoza 26/27, traspasos Real Zaragoza"
+        path="/mercado"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Mercado de Fichajes del Real Zaragoza',
+          url: `${SITE_URL}/mercado`,
+          description: 'Listado de altas y bajas del Real Zaragoza en la temporada 26/27.',
+          isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
+        }}
+      />
       <MarketHero
         season={season}
         onSeasonChange={handleSeasonChange}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import SEO, { SITE_URL } from '../components/SEO'
 
 const CUENTAS = [
   { usuario: 'MBlanquillo1932', nombre: 'Mundo Blanquillo', color: '#1da1f2' },
@@ -112,6 +113,20 @@ export default function Rumores() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5', padding: '24px' }}>
+      <SEO
+        title="Rumores de Fichajes del Real Zaragoza | RZ Hub"
+        description="Todos los rumores de fichajes del Real Zaragoza recopilados en tiempo real desde redes sociales. Mantente al día del mercado zaragocista."
+        keywords="rumores Real Zaragoza, rumores fichajes Real Zaragoza, mercado rumores Real Zaragoza, fichajes 26/27"
+        path="/rumores"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Rumores de Fichajes del Real Zaragoza',
+          url: `${SITE_URL}/rumores`,
+          description: 'Recopilación de rumores de fichajes del Real Zaragoza desde redes sociales, actualizada automáticamente.',
+          isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
+        }}
+      />
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
 
         <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: '72px', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: '0 0 8px 0' }}>

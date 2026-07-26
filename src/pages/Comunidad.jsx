@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import SEO, { SITE_URL } from '../components/SEO'
 import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
 
@@ -136,6 +137,20 @@ export default function Comunidad() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5', padding: '24px' }}>
+      <SEO
+        title="Comunidad RZ Hub | Alineaciones y Tier Lists de Aficionados | RZ Hub"
+        description="Descubre las alineaciones y tier lists creadas por otros aficionados del Real Zaragoza. Comparte las tuyas con la comunidad zaragocista."
+        keywords="comunidad Real Zaragoza, aficionados Real Zaragoza, alineaciones comunidad, tier list comunidad, zaragocistas"
+        path="/comunidad"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Comunidad RZ Hub',
+          url: `${SITE_URL}/comunidad`,
+          description: 'Alineaciones y tier lists del Real Zaragoza compartidas por la comunidad de RZ Hub.',
+          isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
+        }}
+      />
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
         <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: '72px', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: '0 0 24px 0' }}>

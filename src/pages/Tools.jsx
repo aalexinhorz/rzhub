@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
+import SEO from '../components/SEO'
 import { TOOLS } from '../lib/tools'
 import { ToolCard } from '../components/ToolsSection'
 import '../components/ToolsSection.css'
@@ -18,10 +18,12 @@ export default function Tools() {
 
   return (
     <>
-      <Helmet>
-        <title>Todas las herramientas | RZ Hub</title>
-        <meta name="description" content="Todas las herramientas de RZ Hub para seguir al Real Zaragoza: alineación, mercado, calendario, porra, noticias, tier list y comunidad." />
-      </Helmet>
+      <SEO
+        title="Todas las Herramientas | RZ Hub"
+        description="Todas las herramientas de RZ Hub para seguir al Real Zaragoza: alineación, mercado, calendario, porra, noticias, tier list y comunidad."
+        keywords="herramientas RZ Hub, herramientas Real Zaragoza, apps Real Zaragoza"
+        path="/herramientas"
+      />
 
       <section className="tools-page">
         <div className="tools-section__container">

@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import SEO, { SITE_URL } from '../components/SEO'
 import { DndContext, closestCenter, DragOverlay, useDroppable, useDraggable } from '@dnd-kit/core'
 import usePlayers from '../hooks/usePlayers'
 import useAuth from '../hooks/useAuth'
@@ -238,6 +239,22 @@ export default function Tierlist() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5', padding: isMobile ? '16px 12px' : '24px' }}>
+      <SEO
+        title="Tier List del Real Zaragoza | Valora a la Plantilla | RZ Hub"
+        description="Crea tu tier list de la plantilla del Real Zaragoza. Clasifica a los jugadores por nivel y compártela con la comunidad zaragocista."
+        keywords="tier list Real Zaragoza, valorar jugadores Real Zaragoza, plantilla Real Zaragoza, ranking jugadores Real Zaragoza 26/27"
+        path="/tierlist"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          name: 'Tier List del Real Zaragoza | RZ Hub',
+          url: `${SITE_URL}/tierlist`,
+          applicationCategory: 'SportsApplication',
+          operatingSystem: 'Web',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+          description: 'Herramienta para clasificar y valorar a los jugadores de la plantilla del Real Zaragoza en una tier list.',
+        }}
+      />
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px', flexWrap: 'wrap' }}>

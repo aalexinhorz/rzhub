@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import SEO, { SITE_URL } from '../components/SEO'
 import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
 
@@ -158,6 +159,22 @@ export default function Porra() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', color: 'white', fontFamily: 'Archivo, sans-serif', paddingBottom: '80px' }}>
+      <SEO
+        title="La Porra del Real Zaragoza | Pronósticos y Ranking | RZ Hub"
+        description="Predice los resultados del Real Zaragoza, suma puntos por acertar el marcador y los goleadores, y compite en el ranking de la comunidad zaragocista."
+        keywords="porra Real Zaragoza, quiniela Real Zaragoza, pronósticos Real Zaragoza, predicciones Real Zaragoza, ranking porra Real Zaragoza"
+        path="/porra"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          name: 'La Porra del Real Zaragoza | RZ Hub',
+          url: `${SITE_URL}/porra`,
+          applicationCategory: 'GameApplication',
+          operatingSystem: 'Web',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+          description: 'Juego de pronósticos de los partidos del Real Zaragoza con ranking de la comunidad.',
+        }}
+      />
 
       {/* HERO */}
       <div style={{ backgroundColor: '#0B4390', padding: '40px 24px 32px', position: 'relative', overflow: 'hidden' }}>

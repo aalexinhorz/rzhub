@@ -1,3 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /perfil
+Disallow: /redaccion
+Disallow: /login
+
 Sitemap: https://rzhub.es/sitemap.xml

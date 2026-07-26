@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
+import SEO, { SITE_URL } from '../components/SEO'
 
 const ICS_URL = 'https://rzhub.es/calendario.ics'
 const ICS_WEBCAL = ICS_URL.replace('https://', 'webcal://')
@@ -42,15 +42,20 @@ export default function Calendario() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', color: 'white', fontFamily: 'Archivo, sans-serif', paddingBottom: '80px' }}>
-      <Helmet>
-        <title>Calendario Real Zaragoza 26/27 | RZ Hub</title>
-        <meta name="description" content="Añade todos los partidos del Real Zaragoza a tu calendario. Compatible con Apple Calendar, Google Calendar y Outlook. Se actualiza automáticamente." />
-        <meta property="og:title" content="Calendario Real Zaragoza 26/27 | RZ Hub" />
-        <meta property="og:description" content="Añade todos los partidos del Real Zaragoza a tu calendario. Compatible con Apple Calendar, Google Calendar y Outlook." />
-        <meta property="og:url" content="https://rzhub.es/calendario" />
-        <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://rzhub.es/calendario" />
-      </Helmet>
+      <SEO
+        title="Calendario del Real Zaragoza 26/27 | Próximos Partidos | RZ Hub"
+        description="Añade todos los partidos del Real Zaragoza a tu calendario. Compatible con Apple Calendar, Google Calendar y Outlook. Se actualiza automáticamente con cada jornada."
+        keywords="calendario Real Zaragoza, partidos Real Zaragoza, próximo partido Real Zaragoza, horarios Real Zaragoza 26/27, jornada Real Zaragoza"
+        path="/calendario"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'Calendario del Real Zaragoza 26/27',
+          url: `${SITE_URL}/calendario`,
+          description: 'Calendario completo de partidos del Real Zaragoza en la temporada 26/27, sincronizable con Apple Calendar, Google Calendar y Outlook.',
+          isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
+        }}
+      />
 
       <div style={{ background: 'linear-gradient(90deg, #06328a 0%, #05286d 50%, #041f5c 100%)', padding: '60px 24px 50px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(255,255,255,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />

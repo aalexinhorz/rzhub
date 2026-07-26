@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
+import SEO, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/SEO'
 import useAuth from '../hooks/useAuth'
 import { ESCUDOS_CLUBS, fetchEscudoFallback } from '../lib/escudos'
 import HeroSection from '../components/HeroSection'
@@ -119,15 +119,26 @@ function FinalCTA() {
 export default function Home() {
   return (
     <>
-      <Helmet>
-        <title>RZ Hub | Todo sobre el Real Zaragoza</title>
-        <meta name="description" content="La plataforma fan del Real Zaragoza. Crea tu alineación, sigue el mercado, el calendario y mucho más." />
-        <meta property="og:title" content="RZ Hub | La web del Real Zaragoza" />
-        <meta property="og:description" content="La plataforma fan del Real Zaragoza. Crea tu alineación, sigue el mercado, el calendario y mucho más." />
-        <meta property="og:url" content="https://rzhub.es" />
-        <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://rzhub.es" />
-      </Helmet>
+      <SEO
+        title="RZ Hub | La plataforma fan del Real Zaragoza 26/27"
+        description="Todo sobre el Real Zaragoza en un solo sitio: crea tu alineación, sigue el mercado de fichajes, el calendario, la porra y las últimas noticias. La comunidad zaragocista online."
+        keywords="Real Zaragoza, RZ Hub, noticias Real Zaragoza, mercado de fichajes Real Zaragoza, alineación Real Zaragoza, calendario Real Zaragoza, La Romareda, 1ª RFEF"
+        path="/"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'RZ Hub',
+          alternateName: 'RZ Hub | Real Zaragoza',
+          url: SITE_URL,
+          description: 'La plataforma fan del Real Zaragoza: alineaciones, mercado de fichajes, calendario, porra, noticias y comunidad zaragocista.',
+          inLanguage: 'es-ES',
+          publisher: {
+            '@type': 'Organization',
+            name: 'RZ Hub',
+            logo: { '@type': 'ImageObject', url: DEFAULT_OG_IMAGE },
+          },
+        }}
+      />
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <HeroSection />

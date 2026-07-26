@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Helmet } from 'react-helmet-async'
+import SEO, { SITE_URL } from '../components/SEO'
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -79,15 +79,20 @@ export default function OnTour() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5' }}>
-      <Helmet>
-        <title>On Tour · Desplazamientos Real Zaragoza 26/27 | RZ Hub</title>
-        <meta name="description" content={`Todos los desplazamientos del Real Zaragoza en la temporada 26/27. ${D.length} viajes, hasta ${total.toLocaleString()} km en total. Planifica tu viaje con Google Maps.`} />
-        <meta property="og:title" content="On Tour · Desplazamientos Real Zaragoza 26/27 | RZ Hub" />
-        <meta property="og:description" content={`Mapa interactivo con todos los desplazamientos del Real Zaragoza esta temporada. ${D.length} viajes de visitante.`} />
-        <meta property="og:url" content="https://rzhub.es/on-tour" />
-        <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://rzhub.es/on-tour" />
-      </Helmet>
+      <SEO
+        title="On Tour · Desplazamientos del Real Zaragoza 26/27 | RZ Hub"
+        description={`Todos los desplazamientos del Real Zaragoza en la temporada 26/27. ${D.length} viajes, hasta ${total.toLocaleString()} km en total. Planifica tu viaje con Google Maps.`}
+        keywords="desplazamientos Real Zaragoza, viajes afición Real Zaragoza, afición visitante Real Zaragoza, kilómetros Real Zaragoza 26/27, on tour Real Zaragoza"
+        path="/on-tour"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'On Tour · Desplazamientos del Real Zaragoza',
+          url: `${SITE_URL}/on-tour`,
+          description: `Mapa interactivo con los ${D.length} desplazamientos de la afición visitante del Real Zaragoza en la temporada 26/27.`,
+          isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
+        }}
+      />
 
       <div style={{ background: '#0B4390', padding: '32px 24px 24px', color: 'white' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
