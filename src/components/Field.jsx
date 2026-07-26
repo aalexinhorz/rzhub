@@ -81,30 +81,13 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
     const texto = encodeURIComponent(`Mi alineación ideal: ${teamName || 'El XI del Real Zaragoza'} ⚽💙\n#RealZaragoza #RZHub\n(Alineación Copiada 📋​) Pégala aquí 👇 `)
     const urlWeb = `https://twitter.com/intent/tweet?text=${texto}`
 
-    function abrirCompositor() {
-      // En escritorio no abrimos la pestaña de X hasta tener la copia
-      // confirmada: nada de pestaña en blanco esperando de antemano.
-      if (esMobile) abrirCompositorMobile(texto, urlWeb)
-      else window.open(urlWeb, '_blank')
-    }
-
-    // En mobile, si el permiso ya estaba concedido de antes, no hace falta
-    // esperar a que termine de generarse/copiarse la imagen para saber que
-    // va a funcionar. En desktop SIEMPRE esperamos a la confirmación real
-    // de la copia antes de redirigir, para no abrir X antes de que el
-    // usuario acepte el permiso del portapapeles.
-    let yaAceptado = false
     if (esMobile) {
-      try {
-        const estado = await navigator.permissions.query({ name: 'clipboard-write' })
-        yaAceptado = estado.state === 'granted'
-      } catch {
-        // Permissions API no soporta 'clipboard-write' (Safari/Firefox).
-      }
-    }
-
-    if (yaAceptado) {
-      abrirCompositor()
+      // El salto a la app por esquema personalizado (twitter://) solo
+      // funciona si se dispara de forma SÍNCRONA dentro del toque del
+      // usuario, sin ningún await antes: si esperamos aunque sea a
+      // comprobar el permiso, el móvil lo bloquea y el primer toque no
+      // hace nada. Por eso aquí no se espera a la copia antes de saltar.
+      abrirCompositorMobile(texto, urlWeb)
       const copiada = await copiaPromise
       if (!copiada) {
         alert('No se pudo copiar la imagen al portapapeles. Descárgala con el botón "Descargar" y adjúntala tú mismo en el tweet.')
@@ -112,13 +95,12 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
       return
     }
 
-    // No se redirige a X hasta que el usuario haya aceptado copiar la
-    // imagen al portapapeles: si no se acepta/consigue, nos quedamos en la
-    // página y avisamos, en vez de mandarlo a X sin la imagen lista.
+    // Desktop: sí esperamos la confirmación real de la copia antes de
+    // abrir la pestaña, para no llevar al usuario a X sin la imagen lista.
     const copiada = await copiaPromise
 
     if (copiada) {
-      abrirCompositor()
+      window.open(urlWeb, '_blank')
     } else {
       alert('No se pudo copiar la imagen al portapapeles, así que no te llevamos a X. Descárgala con el botón "Descargar" y adjúntala tú mismo en el tweet.')
     }
