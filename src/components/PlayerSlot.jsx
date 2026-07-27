@@ -112,6 +112,13 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
   const [resultsSub2, setResultsSub2] = useState([])
   const { setNodeRef, isOver } = useDroppable({ id: slot.id })
 
+  // Bloquea el scroll de la página de fondo mientras el modal está abierto.
+  useEffect(() => {
+    if (!showModal) return
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [showModal])
+
   useEffect(() => {
     if (search.length < 2) { setResults([]); return }
     setResults(allPlayers.filter(p => p.name.toLowerCase().includes(search.toLowerCase())))

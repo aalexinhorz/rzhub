@@ -230,6 +230,17 @@ export async function drawLineupCanvas({ slotsLayout, slots, subs, teamName, for
   ctx.textBaseline = 'top'
   ctx.fillText(nameText, margin, 8)
 
+  // Marca de la web: su final cuadra con la esquina superior derecha del
+  // rectángulo de juego (997.409/1080 x, 179/1350 y del PNG del campo).
+  const pitchTopY = H * (179 / 1350)
+  const pitchRightX = W * (997.409 / 1080)
+  ctx.fillStyle = '#ffffff'
+  ctx.font = '700 11px Archivo, sans-serif'
+  ctx.textAlign = 'right'
+  ctx.textBaseline = 'bottom'
+  ctx.fillText('rzhub.es', pitchRightX, pitchTopY - 8)
+  ctx.textAlign = 'left'
+
   const badgeX = sameLine ? margin + nameW + gap : margin
   const badgeY = sameLine ? 15 : 52
 

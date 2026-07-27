@@ -72,7 +72,13 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
       const link = document.createElement('a')
       link.download = `${teamName || 'alineacion'}.png`
       link.href = dataUrl
+      // Safari (sobre todo en iOS) no dispara la descarga si el <a> no
+      // está insertado en el DOM al hacer click(): hay que añadirlo,
+      // pulsarlo y quitarlo, aunque en Chrome/Firefox "funcionara" igual
+      // sin este paso.
+      document.body.appendChild(link)
       link.click()
+      document.body.removeChild(link)
     } catch (error) {
       console.error('Error al descargar:', error)
     }
@@ -226,6 +232,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
             {formation}
           </div>
         </div>
+
 
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 5 }}>
           {slotsLayout.map(slot => (

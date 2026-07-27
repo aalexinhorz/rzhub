@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import emailjs from '@emailjs/browser'
 import { formationsList } from '../pages/Lineup'
 
@@ -23,6 +23,13 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
   const [peticion, setPeticion] = useState('')
   const [peticionEnviada, setPeticionEnviada] = useState(false)
   const [enviando, setEnviando] = useState(false)
+
+  // Bloquea el scroll de la página de fondo mientras algún modal está abierto.
+  useEffect(() => {
+    if (!showModalVenta && !showModalFichaje) return
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [showModalVenta, showModalFichaje])
 
   const totalVentas = ventas.reduce((sum, p) => sum + (parseFloat(p.valor) || 0), 0)
   const totalFichajes = fichajes.reduce((sum, p) => sum + (parseFloat(p.valor) || 0), 0)
