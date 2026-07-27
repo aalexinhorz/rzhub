@@ -21,10 +21,20 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
       img.onerror = reject
       img.src = '/CAMPO_PARA_WEB.png'
     })
-    // Sin esto, html2canvas puede capturar antes de que las fuentes
-    // personalizadas (Archivo/Humane) terminen de cargar y usa una
-    // fuente de sistema con métricas distintas, descuadrando los
-    // textos de las cards.
+    // 'Archivo' se carga vía @import de Google Fonts: document.fonts.ready
+    // por sí solo no basta, porque puede resolverse antes de que el
+    // navegador haya empezado siquiera a pedir el peso concreto que usan
+    // las cards (700/900), y html2canvas capturaba con la fuente de
+    // sistema (métricas distintas → texto descuadrado sobre "+ suplente").
+    // document.fonts.load() fuerza la descarga real de cada peso antes
+    // de seguir.
+    await Promise.all([
+      document.fonts.load('400 16px Archivo'),
+      document.fonts.load('600 16px Archivo'),
+      document.fonts.load('700 16px Archivo'),
+      document.fonts.load('900 16px Archivo'),
+      document.fonts.load('700 16px Humane'),
+    ])
     await document.fonts.ready
     const canvas = await html2canvas(fieldRef.current, {
       scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false,
