@@ -7,7 +7,9 @@ const DEFAULT_PHOTO = 'https://assets.laliga.com/squad/2025/t190/default/512x512
 const card = { background: '#0F1E38', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px' }
 // Mismo look que .tool-card de la landing (ToolsSection.css)
 const toolCard = { background: 'linear-gradient(180deg, #0f214f 0%, #0c1c46 100%)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px' }
-const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)', background: '#0A1628', color: '#ffffff', fontSize: '14px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none' }
+// fontSize 16px (no 14px) para que Safari/iOS no haga zoom automático al
+// enfocar estos campos (pasa con cualquier input por debajo de 16px).
+const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)', background: '#0A1628', color: '#ffffff', fontSize: '16px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none' }
 const labelStyle = { fontSize: '11px', color: '#ffffff', fontFamily: 'Archivo, sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '8px' }
 
 export default function SidePanel({ formation, setFormation, teamName, setTeamName, slots, setSlots, setSubs, players, fichajes, setFichajes, ventas, setVentas }) {
@@ -178,7 +180,7 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
                   </div>
                   <span style={{ flex: 1, fontFamily: 'Archivo, sans-serif', fontWeight: '600', fontSize: '13px', color: 'rgba(255,255,255,0.85)' }}>{p.name}</span>
                   {editingValor === p.id ? (
-                    <input autoFocus type="number" defaultValue={p.valor} onBlur={e => { setVentas(prev => prev.map(v => v.id === p.id ? { ...v, valor: parseFloat(e.target.value) || 0 } : v)); setEditingValor(null) }} style={{ width: '60px', padding: '3px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '4px', fontSize: '12px', background: '#0A1628', color: '#fff', outline: 'none' }} />
+                    <input autoFocus type="number" defaultValue={p.valor} onBlur={e => { setVentas(prev => prev.map(v => v.id === p.id ? { ...v, valor: parseFloat(e.target.value) || 0 } : v)); setEditingValor(null) }} style={{ width: '64px', padding: '3px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '4px', fontSize: '16px', background: '#0A1628', color: '#fff', outline: 'none' }} />
                   ) : (
                     <span onClick={() => setEditingValor(p.id)} style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '700', fontSize: '12px', color: '#27ae60', cursor: 'pointer' }}>+{p.valor}M€</span>
                   )}
@@ -203,7 +205,7 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
                   </div>
                   <span style={{ flex: 1, fontFamily: 'Archivo, sans-serif', fontWeight: '600', fontSize: '13px', color: 'rgba(255,255,255,0.85)' }}>{p.name}</span>
                   {editingValor === p.id ? (
-                    <input autoFocus type="number" defaultValue={p.valor} onBlur={e => { setFichajes(prev => prev.map(f => f.id === p.id ? { ...f, valor: parseFloat(e.target.value) || 0 } : f)); setEditingValor(null) }} style={{ width: '60px', padding: '3px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '4px', fontSize: '12px', background: '#0A1628', color: '#fff', outline: 'none' }} />
+                    <input autoFocus type="number" defaultValue={p.valor} onBlur={e => { setFichajes(prev => prev.map(f => f.id === p.id ? { ...f, valor: parseFloat(e.target.value) || 0 } : f)); setEditingValor(null) }} style={{ width: '64px', padding: '3px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '4px', fontSize: '16px', background: '#0A1628', color: '#fff', outline: 'none' }} />
                   ) : (
                     <span onClick={() => setEditingValor(p.id)} style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '700', fontSize: '12px', color: '#EF4444', cursor: 'pointer' }}>-{p.valor}M€</span>
                   )}
@@ -232,7 +234,7 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
                   <img src={selectedPlayer.photo || DEFAULT_PHOTO} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 15%' }} />
                 </div>
                 <span style={{ flex: 1, fontFamily: 'Archivo, sans-serif', fontWeight: '600', color: '#fff' }}>{selectedPlayer.name}</span>
-                <input type="number" placeholder="M€" value={valor} onChange={e => setValor(e.target.value)} style={{ width: '80px', padding: '8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '14px', fontFamily: 'Archivo, sans-serif', background: '#152445', color: '#fff', outline: 'none' }} />
+                <input type="number" placeholder="M€" value={valor} onChange={e => setValor(e.target.value)} style={{ width: '80px', padding: '8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '16px', fontFamily: 'Archivo, sans-serif', background: '#152445', color: '#fff', outline: 'none' }} />
                 <button onClick={addVenta} style={{ background: '#27ae60', color: 'white', border: 'none', borderRadius: '6px', padding: '8px 14px', cursor: 'pointer', fontFamily: 'Archivo, sans-serif', fontWeight: '700' }}>Añadir</button>
               </div>
             )}
@@ -274,7 +276,7 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
                   <img src={selectedPlayer.photo || DEFAULT_PHOTO} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 15%' }} />
                 </div>
                 <span style={{ flex: 1, fontFamily: 'Archivo, sans-serif', fontWeight: '600', color: '#fff' }}>{selectedPlayer.name}</span>
-                <input type="number" placeholder="M€" value={valor} onChange={e => setValor(e.target.value)} style={{ width: '80px', padding: '8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '14px', fontFamily: 'Archivo, sans-serif', background: '#152445', color: '#fff', outline: 'none' }} />
+                <input type="number" placeholder="M€" value={valor} onChange={e => setValor(e.target.value)} style={{ width: '80px', padding: '8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '16px', fontFamily: 'Archivo, sans-serif', background: '#152445', color: '#fff', outline: 'none' }} />
                 <button onClick={addFichaje} style={{ background: '#0D4491', color: 'white', border: 'none', borderRadius: '6px', padding: '8px 14px', cursor: 'pointer', fontFamily: 'Archivo, sans-serif', fontWeight: '700' }}>Añadir</button>
               </div>
             )}
