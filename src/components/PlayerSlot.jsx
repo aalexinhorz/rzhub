@@ -209,7 +209,10 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
         display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2,
       }}>
         {player ? (
-          <div data-card-container onClick={openModal} style={{
+          <div data-card-container onClick={openModal}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.05)'; e.currentTarget.style.boxShadow = '0 10px 24px rgba(0,0,0,0.4)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)' }}
+            style={{
             width: cardW,
             borderRadius: '6px',
             border: `2px solid ${borderColor}`,
@@ -221,6 +224,7 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
             display: 'flex',
             flexDirection: 'column',
             background: cardBg,
+            transition: 'transform 150ms ease, box-shadow 150ms ease',
           }}>
             {/* Foto */}
             <div data-card-photo style={{
@@ -284,7 +288,10 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
             ))}
           </div>
         ) : (
-          <div onClick={openModal} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+          <div onClick={openModal}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.12)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', transition: 'transform 150ms ease' }}>
             <div style={{
               width: plusSize, height: plusSize, borderRadius: '50%',
               background: isOver ? '#1A5BB8' : 'rgba(10,22,40,0.75)',

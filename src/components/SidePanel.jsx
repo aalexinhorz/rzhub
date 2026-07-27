@@ -5,8 +5,10 @@ import { formationsList } from '../pages/Lineup'
 const DEFAULT_PHOTO = 'https://assets.laliga.com/squad/2025/t190/default/512x512/default_t190_2025_1_003_000.png'
 
 const card = { background: '#0F1E38', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px' }
+// Mismo look que .tool-card de la landing (ToolsSection.css)
+const toolCard = { background: 'linear-gradient(180deg, #0f214f 0%, #0c1c46 100%)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '20px' }
 const inputStyle = { width: '100%', padding: '10px 12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)', background: '#0A1628', color: '#ffffff', fontSize: '14px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none' }
-const labelStyle = { fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontFamily: 'Archivo, sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '8px' }
+const labelStyle = { fontSize: '11px', color: '#ffffff', fontFamily: 'Archivo, sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '8px' }
 
 export default function SidePanel({ formation, setFormation, teamName, setTeamName, slots, setSlots, setSubs, players, fichajes, setFichajes, ventas, setVentas }) {
   const [activeTab, setActiveTab] = useState('ajustes')
@@ -73,18 +75,21 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
   return (
     <div style={{ flex: 1, minWidth: '280px', width: '100%' }}>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.07)', marginBottom: '20px' }}>
-        {['ajustes', 'mercado', 'salarios'].map(tab => (
+      {/* Tabs — mismo estilo píldora que .market-filters de Mercado */}
+      <div style={{ display: 'flex', gap: '6px', background: 'rgba(4,20,50,0.72)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '999px', padding: '6px', marginBottom: '20px' }}>
+        {['ajustes', 'mercado'].map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)} style={{
-            flex: 1, padding: '12px 8px', border: 'none', background: 'transparent',
-            color: activeTab === tab ? '#FFC800' : 'rgba(255,255,255,0.35)',
-            fontWeight: activeTab === tab ? '700' : '400',
-            fontSize: '12px', cursor: 'pointer',
-            borderBottom: activeTab === tab ? '2px solid #FFC800' : '2px solid transparent',
+            flex: 1, minHeight: '44px', padding: '0 12px', border: 'none', borderRadius: '999px',
+            background: activeTab === tab ? 'linear-gradient(90deg, #ffc800, #ffd740)' : 'transparent',
+            color: activeTab === tab ? '#111111' : 'rgba(255,255,255,0.7)',
+            fontWeight: '600', fontSize: '13px', cursor: 'pointer',
+            boxShadow: activeTab === tab ? '0 8px 22px rgba(255,200,0,0.28)' : 'none',
             fontFamily: 'Archivo, sans-serif', textTransform: 'uppercase', letterSpacing: '1px',
-            transition: 'all 0.15s',
-          }}>
+            transition: 'background 200ms ease, color 200ms ease, box-shadow 200ms ease',
+          }}
+            onMouseEnter={e => { if (activeTab !== tab) e.currentTarget.style.color = '#ffffff' }}
+            onMouseLeave={e => { if (activeTab !== tab) e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
+          >
             {tab}
           </button>
         ))}
@@ -93,29 +98,29 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
       {/* AJUSTES */}
       {activeTab === 'ajustes' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div style={{ ...card, padding: '16px' }}>
+          <div style={{ ...toolCard, padding: '16px' }}>
             <label style={labelStyle}>Nombre del equipo</label>
             <input value={teamName} onChange={e => setTeamName(e.target.value)} style={inputStyle} />
           </div>
-          <div style={{ ...card, padding: '16px' }}>
+          <div style={{ ...toolCard, padding: '16px' }}>
             <label style={labelStyle}>Formación</label>
             <select value={formation} onChange={e => setFormation(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
               {formationsList.map(f => <option key={f} value={f} style={{ background: '#0A1628' }}>{f}</option>)}
             </select>
           </div>
           <button onClick={() => { setSlots({}); setSubs({}) }}
-            style={{ width: '100%', padding: '10px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.07)', background: 'transparent', color: 'rgba(255,255,255,0.35)', fontSize: '13px', cursor: 'pointer', fontFamily: 'Archivo, sans-serif', transition: 'all 0.15s' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.color = 'rgba(255,255,255,0.35)' }}
+            style={{ width: '100%', padding: '9px 18px', borderRadius: '8px', border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.08)', color: '#ef4444', fontWeight: '700', fontSize: '13px', cursor: 'pointer', fontFamily: 'Archivo, sans-serif', transition: 'all 0.15s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)' }}
           >
             🗑 Limpiar campo
           </button>
 
           {/* Panel peticiones */}
-          <div style={{ ...card, padding: '16px', marginTop: '4px' }}>
+          <div style={{ ...toolCard, padding: '16px', marginTop: '4px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
               <span style={{ fontSize: '14px' }}>✉️</span>
-              <span style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '600', fontSize: '12px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '1px' }}>Solicita jugadores que faltan</span>
+              <span style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '600', fontSize: '12px', color: '#ffffff', textTransform: 'uppercase', letterSpacing: '1px' }}>Solicita jugadores que faltan</span>
             </div>
             <textarea
               value={peticion}
@@ -145,13 +150,13 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1px', background: 'rgba(255,255,255,0.07)', borderRadius: '14px', overflow: 'hidden' }}>
             {[
-              { label: 'BALANCE', value: balance, color: balance >= 0 ? '#22C55E' : '#EF4444' },
-              { label: 'SALIDAS', value: totalVentas, color: '#22C55E' },
+              { label: 'BALANCE', value: balance, color: balance >= 0 ? '#27ae60' : '#EF4444' },
+              { label: 'SALIDAS', value: totalVentas, color: '#27ae60' },
               { label: 'FICHAJES', value: totalFichajes, color: '#EF4444' },
             ].map(stat => (
               <div key={stat.label} style={{ background: '#0F1E38', padding: '14px 8px', textAlign: 'center' }}>
-                <div style={{ fontSize: '22px', fontWeight: '900', color: stat.color, fontFamily: 'Humane, sans-serif', lineHeight: 1 }}>
-                  {balance < 0 && stat.label === 'BALANCE' ? '-' : ''}{Math.abs(stat.value)}<span style={{ fontSize: '13px' }}>M€</span>
+                <div style={{ fontSize: '20px', fontWeight: '800', color: stat.color, fontFamily: 'Archivo, sans-serif', lineHeight: 1 }}>
+                  {balance < 0 && stat.label === 'BALANCE' ? '-' : ''}{Math.abs(stat.value)}<span style={{ fontSize: '12px', fontWeight: '700' }}>M€</span>
                 </div>
                 <div style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(255,255,255,0.35)', fontFamily: 'Archivo, sans-serif', marginTop: '4px', letterSpacing: '1px' }}>{stat.label}</div>
               </div>
@@ -160,8 +165,8 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
 
           {/* Ventas */}
           <div style={{ ...card, overflow: 'hidden' }}>
-            <div style={{ background: '#22C55E', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ color: 'white', fontFamily: 'Humane, sans-serif', fontSize: '18px', letterSpacing: '1px' }}>VENTAS</span>
+            <div style={{ background: '#27ae60', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ color: 'white', fontFamily: 'Archivo, sans-serif', fontWeight: '700', fontSize: '14px', letterSpacing: '0.5px' }}>VENTAS</span>
               <button onClick={() => { setShowModalVenta(true); setSearch('') }} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
             </div>
             <div style={{ padding: '6px', minHeight: '50px' }}>
@@ -175,7 +180,7 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
                   {editingValor === p.id ? (
                     <input autoFocus type="number" defaultValue={p.valor} onBlur={e => { setVentas(prev => prev.map(v => v.id === p.id ? { ...v, valor: parseFloat(e.target.value) || 0 } : v)); setEditingValor(null) }} style={{ width: '60px', padding: '3px', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '4px', fontSize: '12px', background: '#0A1628', color: '#fff', outline: 'none' }} />
                   ) : (
-                    <span onClick={() => setEditingValor(p.id)} style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '700', fontSize: '12px', color: '#22C55E', cursor: 'pointer' }}>+{p.valor}M€</span>
+                    <span onClick={() => setEditingValor(p.id)} style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '700', fontSize: '12px', color: '#27ae60', cursor: 'pointer' }}>+{p.valor}M€</span>
                   )}
                   <button onClick={() => setVentas(prev => prev.filter(v => v.id !== p.id))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.25)', fontSize: '14px' }}>✕</button>
                 </div>
@@ -186,7 +191,7 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
           {/* Fichajes */}
           <div style={{ ...card, overflow: 'hidden' }}>
             <div style={{ background: '#0D4491', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ color: 'white', fontFamily: 'Humane, sans-serif', fontSize: '18px', letterSpacing: '1px' }}>FICHAJES</span>
+              <span style={{ color: 'white', fontFamily: 'Archivo, sans-serif', fontWeight: '700', fontSize: '14px', letterSpacing: '0.5px' }}>FICHAJES</span>
               <button onClick={() => { setShowModalFichaje(true); setSearch('') }} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', borderRadius: '50%', width: '24px', height: '24px', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
             </div>
             <div style={{ padding: '6px', minHeight: '50px' }}>
@@ -210,19 +215,11 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
         </div>
       )}
 
-      {/* SALARIOS */}
-      {activeTab === 'salarios' && (
-        <div style={{ ...card, padding: '40px 24px', textAlign: 'center' }}>
-          <p style={{ fontSize: '36px', margin: 0 }}>💶</p>
-          <p style={{ fontFamily: 'Archivo, sans-serif', fontSize: '14px', marginTop: '12px', color: 'rgba(255,255,255,0.3)' }}>Sección de salarios — próximamente</p>
-        </div>
-      )}
-
       {/* Modal Venta */}
       {showModalVenta && (
         <div onClick={() => { setShowModalVenta(false); setSelectedPlayer(null) }} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#0A1628', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', width: '90%', maxWidth: '400px', maxHeight: '580px', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.7)' }}>
-            <div style={{ background: '#22C55E', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ background: '#27ae60', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ color: 'white', fontWeight: '700', fontSize: '16px', fontFamily: 'Archivo, sans-serif' }}>Añadir venta</span>
               <button onClick={() => { setShowModalVenta(false); setSelectedPlayer(null) }} style={{ background: 'none', border: 'none', color: 'white', fontSize: '20px', cursor: 'pointer' }}>✕</button>
             </div>
@@ -236,13 +233,13 @@ export default function SidePanel({ formation, setFormation, teamName, setTeamNa
                 </div>
                 <span style={{ flex: 1, fontFamily: 'Archivo, sans-serif', fontWeight: '600', color: '#fff' }}>{selectedPlayer.name}</span>
                 <input type="number" placeholder="M€" value={valor} onChange={e => setValor(e.target.value)} style={{ width: '80px', padding: '8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '14px', fontFamily: 'Archivo, sans-serif', background: '#152445', color: '#fff', outline: 'none' }} />
-                <button onClick={addVenta} style={{ background: '#22C55E', color: 'white', border: 'none', borderRadius: '6px', padding: '8px 14px', cursor: 'pointer', fontFamily: 'Archivo, sans-serif', fontWeight: '700' }}>Añadir</button>
+                <button onClick={addVenta} style={{ background: '#27ae60', color: 'white', border: 'none', borderRadius: '6px', padding: '8px 14px', cursor: 'pointer', fontFamily: 'Archivo, sans-serif', fontWeight: '700' }}>Añadir</button>
               </div>
             )}
             <div style={{ overflowY: 'auto', flex: 1, padding: '8px' }}>
               {search.length < 2 && <div style={{ textAlign: 'center', padding: '30px', color: 'rgba(255,255,255,0.25)', fontFamily: 'Archivo, sans-serif', fontSize: '13px' }}>🔍 Busca un jugador del Zaragoza</div>}
               {filteredVenta.map(p => (
-                <div key={p.id} onClick={() => setSelectedPlayer(p)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer', background: selectedPlayer?.id === p.id ? 'rgba(34,197,94,0.12)' : 'transparent' }}
+                <div key={p.id} onClick={() => setSelectedPlayer(p)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer', background: selectedPlayer?.id === p.id ? 'rgba(39,174,96,0.12)' : 'transparent' }}
                   onMouseEnter={e => { if (selectedPlayer?.id !== p.id) e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
                   onMouseLeave={e => { if (selectedPlayer?.id !== p.id) e.currentTarget.style.background = 'transparent' }}
                 >

@@ -3,6 +3,7 @@ import SEO, { SITE_URL } from '../components/SEO'
 import { DndContext, closestCenter } from '@dnd-kit/core'
 import Field from '../components/Field'
 import SidePanel from '../components/SidePanel'
+import Footer from '../components/Footer'
 import usePlayers from '../hooks/usePlayers'
 import useAuth from '../hooks/useAuth'
 import { supabase } from '../hooks/useAuth'
@@ -183,7 +184,14 @@ export default function Lineup() {
   )
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 72px)', background: '#060D1A', fontFamily: 'Archivo, sans-serif' }}>
+    <div style={{ position: 'relative', isolation: 'isolate', minHeight: 'calc(100vh - 72px)', background: '#060D1A', fontFamily: 'Archivo, sans-serif' }}>
+      {/* Misma imagen panorámica de estadio/afición que usa .editorial-section */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 0,
+        background: `linear-gradient(180deg, rgba(4, 18, 46, 0.94) 0%, rgba(7, 35, 88, 0.90) 35%, rgba(10, 68, 145, 0.82) 65%, rgba(4, 18, 46, 0.95) 100%), url('/images/estadio-comunidad.webp') center center / cover no-repeat`,
+        filter: 'saturate(0.82) contrast(0.94)',
+      }} />
+      <div style={{ position: 'relative', zIndex: 1 }}>
       <SEO
         title="Alineación del Real Zaragoza | Crea tu XI | RZ Hub"
         description="Crea tu alineación ideal del Real Zaragoza. Elige formación, coloca a los jugadores de la plantilla y comparte tu XI con otros zaragocistas."
@@ -214,7 +222,7 @@ export default function Lineup() {
         </p>
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '1200px', margin: '0 auto', padding: '24px clamp(16px,4vw,40px)', gap: '24px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '1200px', margin: '0 auto', padding: '24px clamp(16px,4vw,40px) 64px', gap: '24px' }}>
         <DndContext collisionDetection={closestCenter}>
           <Field
             slotsLayout={slotsLayout}
@@ -251,6 +259,8 @@ export default function Lineup() {
             setVentas={setVentas}
           />
         </DndContext>
+      </div>
+      <Footer />
       </div>
     </div>
   )

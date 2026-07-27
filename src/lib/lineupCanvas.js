@@ -201,23 +201,45 @@ export async function drawLineupCanvas({ slotsLayout, slots, subs, teamName, for
   ])
   await document.fonts.ready
 
+  // El PNG del campo es transparente fuera del rectángulo de juego (para
+  // que en pantalla se vea el fondo panorámico de la página). En la
+  // imagen exportada no hay esa página detrás, así que rellenamos antes
+  // con el mismo color de fondo oscuro de la web para que no quede
+  // transparente/a cuadros.
+  ctx.fillStyle = '#060D1A'
+  ctx.fillRect(0, 0, W, H)
   const bg = await loadImage('/CAMPO_PARA_WEB.png')
   if (bg) ctx.drawImage(bg, 0, 0, W, H)
-  else { ctx.fillStyle = '#0a1628'; ctx.fillRect(0, 0, W, H) }
+
+  // Nombre y formación van en la misma fila si caben; si el nombre del
+  // equipo no deja hueco, la formación baja a una segunda línea (mismo
+  // comportamiento que el flex-wrap del overlay en pantalla).
+  const nameText = (teamName || '').toUpperCase()
+  ctx.font = '700 40px Humane, sans-serif'
+  const nameW = ctx.measureText(nameText).width
+
+  ctx.font = '800 10px Archivo, sans-serif'
+  const badgeW = ctx.measureText(formation).width + 16
+  const badgeH = 18
+  const gap = 12
+  const margin = 16
+  const sameLine = margin + nameW + gap + badgeW <= W - margin
 
   ctx.fillStyle = '#ffffff'
   ctx.font = '700 40px Humane, sans-serif'
   ctx.textBaseline = 'top'
-  ctx.fillText((teamName || '').toUpperCase(), 16, 8)
+  ctx.fillText(nameText, margin, 8)
+
+  const badgeX = sameLine ? margin + nameW + gap : margin
+  const badgeY = sameLine ? 15 : 52
 
   ctx.font = '800 10px Archivo, sans-serif'
-  const badgeW = ctx.measureText(formation).width + 16
   ctx.fillStyle = '#FFC800'
-  roundRect(ctx, 16, 52, badgeW, 18, 4)
+  roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 4)
   ctx.fill()
   ctx.fillStyle = '#060D1A'
   ctx.textBaseline = 'middle'
-  ctx.fillText(formation, 24, 61.5)
+  ctx.fillText(formation, badgeX + 8, badgeY + badgeH / 2 + 0.5)
 
   for (const slot of slotsLayout) {
     await drawSlot(ctx, slot, slots[slot.id] || null, subs[slot.id]?.[0] || null, subs[slot.id]?.[1] || null)
