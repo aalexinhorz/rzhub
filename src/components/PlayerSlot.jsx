@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useDroppable } from '@dnd-kit/core'
 
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'
@@ -300,7 +301,7 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
         )}
       </div>
 
-      {showModal && !capturing && (
+      {showModal && !capturing && createPortal(
         <div onClick={handleClose} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflowY: 'auto', paddingTop: '20px', paddingBottom: '20px' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#0A1628', borderRadius: '16px', width: '90%', maxWidth: '480px', margin: 'auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.6)', maxHeight: '90vh', border: '1px solid rgba(255,255,255,0.08)' }}>
             <div style={{ background: '#0D4491', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
@@ -377,7 +378,8 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
