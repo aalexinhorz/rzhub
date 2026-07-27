@@ -193,11 +193,11 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
   // Calculados en JS a partir del ancho real del campo (no vw/clamp CSS):
   // html2canvas no siempre resuelve "vw" igual que el navegador real al
   // exportar la alineación como imagen, y descuadraba cards y título.
-  const slotW = `${scaleByFieldWidth(fieldWidth, 48, 78)}px`
+  const slotW = `${scaleByFieldWidth(fieldWidth, 38, 78)}px`
   const cardW = '100%'
-  const cardH = `${scaleByFieldWidth(fieldWidth, 50, 80)}px`
-  const plusSize = `${scaleByFieldWidth(fieldWidth, 26, 44)}px`
-  const plusFontSize = `${scaleByFieldWidth(fieldWidth, 13, 20)}px`
+  const cardH = `${scaleByFieldWidth(fieldWidth, 40, 80)}px`
+  const plusSize = `${scaleByFieldWidth(fieldWidth, 22, 44)}px`
+  const plusFontSize = `${scaleByFieldWidth(fieldWidth, 11, 20)}px`
   const subFontSize = '7px'
   const nameFontSize = '9px'
 
