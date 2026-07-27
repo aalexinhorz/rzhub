@@ -60,7 +60,7 @@ function SubSearch({ label, pending, search, results, onSearchChange, onSelect, 
     <div style={{ background: '#0F1E38', borderRadius: '12px', padding: '16px', border: '1px solid rgba(255,255,255,0.07)' }}>
       <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontFamily: 'Archivo, sans-serif', marginBottom: '8px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</div>
       <input placeholder="Buscar suplente..." value={search} onChange={e => onSearchChange(e.target.value)}
-        style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '14px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none', background: '#0A1628', color: '#fff' }}
+        style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '16px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none', background: '#0A1628', color: '#fff' }}
         onKeyDown={e => { if (e.key === 'Enter' && results.length === 0 && search.trim().length >= 2) onAddCustom(search) }}
       />
       {pending && search.length < 2 && (
@@ -323,7 +323,7 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
                 <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontFamily: 'Archivo, sans-serif', marginBottom: '8px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>Jugador — {slot.label}</div>
                 <input autoFocus placeholder="Buscar jugador..." value={search} onChange={e => setSearch(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' && results.length === 0 && search.trim().length >= 2) handleAddCustom(search) }}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '14px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none', background: '#0A1628', color: '#fff' }} />
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '16px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none', background: '#0A1628', color: '#fff' }} />
                 {player && search.length < 2 && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '10px', padding: '8px 12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: `2px solid ${player.isZaragoza ? '#0D4491' : '#FFC800'}` }}>
