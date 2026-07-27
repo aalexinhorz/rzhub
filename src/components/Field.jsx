@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react'
-import html2canvas from 'html2canvas'
 import PlayerSlot from './PlayerSlot'
+import { drawLineupCanvas } from '../lib/lineupCanvas'
 
 // Interpola linealmente entre [min, max] según el ancho real del campo
 // (no del viewport). clamp(min, Xvw, max) parecía razonable en pantalla,
@@ -33,51 +33,37 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
 
   const titleFontSize = scaleByFieldWidth(fieldWidth, 24, 44)
 
+  // html2canvas y dom-to-image-more "capturan" el DOM reimplementando (o
+  // delegando a un <foreignObject> SVG) su propio layout/texto, y ambas
+  // se comportan de forma distinta e inconsistente entre Chrome, Safari
+  // de escritorio y Safari de iPhone — nunca coincidía de forma fiable
+  // con lo que ya se veía en pantalla. drawLineupCanvas dibuja la
+  // alineación a mano con Canvas 2D (drawImage/fillText/arc), que sí es
+  // consistente entre navegadores.
   async function capturarCanvas() {
-    const img = fieldRef.current.querySelector('img')
-    // Esperar el evento real de carga del PNG en vez de un timeout fijo:
-    // con conexiones lentas 300ms no bastan y html2canvas capturaba el
-    // fondo del campo en blanco (y el título en blanco encima quedaba
-    // invisible sobre ese fondo).
-    await new Promise((resolve, reject) => {
-      img.onload = resolve
-      img.onerror = reject
-      img.src = '/CAMPO_PARA_WEB.png'
-    })
-    // 'Archivo' se carga vía @import de Google Fonts: document.fonts.ready
-    // por sí solo no basta, porque puede resolverse antes de que el
-    // navegador haya empezado siquiera a pedir el peso concreto que usan
-    // las cards (700/900), y html2canvas capturaba con la fuente de
-    // sistema (métricas distintas → texto descuadrado sobre "+ suplente").
-    // document.fonts.load() fuerza la descarga real de cada peso antes
-    // de seguir.
-    await Promise.all([
-      document.fonts.load('400 16px Archivo'),
-      document.fonts.load('600 16px Archivo'),
-      document.fonts.load('700 16px Archivo'),
-      document.fonts.load('900 16px Archivo'),
-      document.fonts.load('700 16px Humane'),
-    ])
-    await document.fonts.ready
-    const canvas = await html2canvas(fieldRef.current, {
-      scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false,
-    })
-    img.src = '/CAMPO_PARA_WEB.svg'
-    return canvas
+    return drawLineupCanvas({ slotsLayout, slots, subs, teamName, formation })
+  }
+
+  async function capturarPNG() {
+    const canvas = await capturarCanvas()
+    return canvas.toDataURL('image/png')
+  }
+
+  async function capturarBlob() {
+    const canvas = await capturarCanvas()
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
   }
 
   async function handleDownload() {
     if (!fieldRef.current) return
     try {
-      const canvas = await capturarCanvas()
+      const dataUrl = await capturarPNG()
       const link = document.createElement('a')
       link.download = `${teamName || 'alineacion'}.png`
-      link.href = canvas.toDataURL('image/png')
+      link.href = dataUrl
       link.click()
     } catch (error) {
       console.error('Error al descargar:', error)
-      const img = fieldRef.current?.querySelector('img')
-      if (img) img.src = '/CAMPO_PARA_WEB.svg'
     }
   }
 
@@ -105,7 +91,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
     // Safari (y cada vez más Chrome) exige que clipboard.write() se llame
     // de forma SÍNCRONA dentro del gesto de clic, sin ningún await previo;
     // por eso el ClipboardItem recibe la promesa del blob directamente en
-    // vez de esperar a que html2canvas termine antes de invocar write().
+    // vez de esperar a que termine la captura antes de invocar write().
     const esMobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent)
     const soportaImagen = !!(navigator.clipboard?.write && window.ClipboardItem)
 
@@ -113,7 +99,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
       ? navigator.clipboard
           .write([
             new ClipboardItem({
-              'image/png': capturarCanvas().then(canvas => new Promise(resolve => canvas.toBlob(resolve, 'image/png'))),
+              'image/png': capturarBlob(),
             }),
           ])
           .then(() => true)
