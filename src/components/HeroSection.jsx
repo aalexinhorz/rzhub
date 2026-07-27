@@ -126,7 +126,7 @@ function LineupSlot({ navigate, partido, nextMatch }) {
     : partido?.kickoff || null
 
   const rival = nextMatch?.summary
-    ? nextMatch.summary.replace(/Real Zaragoza\s*[-vs]+\s*/i, '').replace(/\s*[-vs]+\s*Real Zaragoza/i, '').trim()
+    ? nextMatch.summary.replace(/Real Zaragoza\s*[-vs]+\s*/i, '').replace(/\s*[-vs]+\s*Real Zaragoza/i, '').replace(/\s*\([^)]*\)\s*$/, '').trim()
     : partido?.rival || null
 
   const closesAt = kickoff
@@ -217,6 +217,7 @@ export default function HeroSection() {
               <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 700, color: '#ffffff' }}>RZ Hub en directo — {live.titulo}</span>
             </a>
           )}
+          <LineupSlot navigate={navigate} partido={partido} nextMatch={nextMatch} />
           <PorraCard
             navigate={navigate}
             loading={loading}
@@ -224,7 +225,6 @@ export default function HeroSection() {
             participants={participants}
             prediction={prediction}
           />
-          <LineupSlot navigate={navigate} partido={partido} nextMatch={nextMatch} />
         </div>
       </div>
     </section>

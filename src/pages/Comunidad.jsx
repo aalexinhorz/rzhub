@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import SEO, { SITE_URL } from '../components/SEO'
 import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
+import '../components/HeroSection.css'
 
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'
 
@@ -14,18 +15,18 @@ function LineupCard({ lineup, onDelete, isOwner }) {
   const jugadores = Object.values(slots).filter(Boolean)
 
   return (
-    <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #e0e0e0' }}>
-      <div style={{ background: '#0B4390', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div style={{ background: '#09215F', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #FFC800' }}>
+      <div style={{ background: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <div style={{ color: 'white', fontFamily: 'Humane, sans-serif', fontSize: '28px', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1.1' }}>
+          <div style={{ color: '#09215F', fontFamily: 'Humane, sans-serif', fontSize: '28px', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1.1' }}>
             {lineup.team_name}
           </div>
-          <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.2)', color: 'white', fontSize: '11px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px', marginTop: '4px', fontFamily: 'sans-serif' }}>
+          <div style={{ display: 'inline-block', background: 'rgba(9,33,95,0.1)', color: '#09215F', fontSize: '11px', fontWeight: 'bold', padding: '2px 8px', borderRadius: '4px', marginTop: '4px', fontFamily: 'sans-serif' }}>
             {formation}
           </div>
         </div>
         {isOwner && (
-          <button onClick={() => onDelete(lineup.id)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '13px' }}>🗑</button>
+          <button onClick={() => onDelete(lineup.id)} style={{ background: 'rgba(9,33,95,0.1)', border: 'none', color: '#09215F', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '13px' }}>🗑</button>
         )}
       </div>
       <div style={{ padding: '12px 16px' }}>
@@ -42,11 +43,11 @@ function LineupCard({ lineup, onDelete, isOwner }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#f5c400', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: '10px', fontWeight: '700', color: '#0B4390' }}>{iniciales}</span>
+              <span style={{ fontSize: '10px', fontWeight: '700', color: '#09215F' }}>{iniciales}</span>
             </div>
-            <span style={{ fontSize: '12px', fontFamily: 'sans-serif', color: '#666' }}>{nombre}</span>
+            <span style={{ fontSize: '12px', fontFamily: 'sans-serif', color: 'rgba(255,255,255,0.7)' }}>{nombre}</span>
           </div>
-          <span style={{ fontSize: '11px', fontFamily: 'sans-serif', color: '#aaa' }}>{fecha}</span>
+          <span style={{ fontSize: '11px', fontFamily: 'sans-serif', color: 'rgba(255,255,255,0.4)' }}>{fecha}</span>
         </div>
       </div>
     </div>
@@ -61,13 +62,13 @@ function TierlistCard({ tierlist, onDelete, isOwner }) {
   const fecha = new Date(tierlist.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
 
   return (
-    <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #e0e0e0' }}>
-      <div style={{ background: '#0B4390', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ color: 'white', fontFamily: 'Humane, sans-serif', fontSize: '28px', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1.1' }}>
+    <div style={{ background: '#09215F', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #FFC800' }}>
+      <div style={{ background: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ color: '#09215F', fontFamily: 'Humane, sans-serif', fontSize: '28px', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1.1' }}>
           {tierlist.title || 'Tier List'}
         </div>
         {isOwner && (
-          <button onClick={() => onDelete(tierlist.id)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', color: 'white', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '13px' }}>🗑</button>
+          <button onClick={() => onDelete(tierlist.id)} style={{ background: 'rgba(9,33,95,0.1)', border: 'none', color: '#09215F', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '13px' }}>🗑</button>
         )}
       </div>
       <div style={{ padding: '12px 16px' }}>
@@ -81,7 +82,7 @@ function TierlistCard({ tierlist, onDelete, isOwner }) {
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                 {players.map((p, i) => (
-                  <div key={i} style={{ width: '28px', height: '28px', borderRadius: '4px', overflow: 'hidden', border: '2px solid #0B4390' }}>
+                  <div key={i} style={{ width: '28px', height: '28px', borderRadius: '4px', overflow: 'hidden', border: '2px solid #FFC800' }}>
                     <img src={p.photo || DEFAULT_PHOTO} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 15%' }} onError={e => { e.target.src = DEFAULT_PHOTO }} />
                   </div>
                 ))}
@@ -92,11 +93,11 @@ function TierlistCard({ tierlist, onDelete, isOwner }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#f5c400', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: '10px', fontWeight: '700', color: '#0B4390' }}>{iniciales}</span>
+              <span style={{ fontSize: '10px', fontWeight: '700', color: '#09215F' }}>{iniciales}</span>
             </div>
-            <span style={{ fontSize: '12px', fontFamily: 'sans-serif', color: '#666' }}>{nombre}</span>
+            <span style={{ fontSize: '12px', fontFamily: 'sans-serif', color: 'rgba(255,255,255,0.7)' }}>{nombre}</span>
           </div>
-          <span style={{ fontSize: '11px', fontFamily: 'sans-serif', color: '#aaa' }}>{fecha}</span>
+          <span style={{ fontSize: '11px', fontFamily: 'sans-serif', color: 'rgba(255,255,255,0.4)' }}>{fecha}</span>
         </div>
       </div>
     </div>
@@ -136,7 +137,7 @@ export default function Comunidad() {
   }
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5', padding: '24px' }}>
+    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#060D1A', padding: '24px' }}>
       <SEO
         title="Comunidad RZ Hub | Alineaciones y Tier Lists de Aficionados | RZ Hub"
         description="Descubre las alineaciones y tier lists creadas por otros aficionados del Real Zaragoza. Comparte las tuyas con la comunidad zaragocista."
@@ -153,18 +154,18 @@ export default function Comunidad() {
       />
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
-        <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: '72px', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: '0 0 24px 0' }}>
+        <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: '72px', textTransform: 'uppercase', color: '#FFFFFF', lineHeight: '1', margin: '0 0 24px 0' }}>
           Comunidad
         </h1>
 
         <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
           {['lineups', 'tierlists'].map(t => (
-            <button key={t} onClick={() => setTab(t)} style={{
-              padding: '10px 24px', borderRadius: '24px', border: 'none', cursor: 'pointer',
-              background: tab === t ? '#0B4390' : 'white',
-              color: tab === t ? 'white' : '#333',
+            <button key={t} onClick={() => setTab(t)} className={tab === t ? 'hero-cta' : undefined} style={{
+              width: 'auto', padding: '10px 24px', borderRadius: '24px', border: 'none', cursor: 'pointer',
+              background: tab === t ? undefined : 'white',
+              color: tab === t ? undefined : '#333',
               fontFamily: 'sans-serif', fontWeight: '600', fontSize: '14px',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+              boxShadow: tab === t ? undefined : '0 1px 4px rgba(0,0,0,0.1)',
             }}>
               {t === 'lineups' ? '⚽ Alineaciones' : '📊 Tier Lists'}
             </button>

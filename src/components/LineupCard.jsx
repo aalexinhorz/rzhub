@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useEscudo } from '../lib/escudos'
 import './LineupCard.css'
 
 // Geometría del rectángulo del mini-campo dentro del viewBox 600x400
@@ -72,6 +73,7 @@ function useDeadline(closesAt) {
  */
 export default function LineupCard({ rival, closesAt, onCreateClick }) {
   const deadline = useDeadline(closesAt)
+  const rivalEscudo = useEscudo(rival)
 
   return (
     <div className="lineup-card">
@@ -85,6 +87,15 @@ export default function LineupCard({ rival, closesAt, onCreateClick }) {
           </h3>
           <p className="lineup-card__subtitle">Crea tu once y compártelo con la comunidad.</p>
         </div>
+        {rivalEscudo && (
+          <span className="lineup-card__rival-icon" aria-hidden="true">
+            <img
+              src={rivalEscudo}
+              alt=""
+              onError={e => { e.target.parentElement.style.display = 'none' }}
+            />
+          </span>
+        )}
       </div>
 
       <div className="lineup-card__main">
@@ -106,7 +117,7 @@ export default function LineupCard({ rival, closesAt, onCreateClick }) {
                   <span className="lineup-card__countdown-unit">{deadline.secondaryUnit}</span>
                 </span>
               </div>
-              <span className="lineup-card__countdown-caption">para cerrar tu alineación</span>
+              <span className="lineup-card__countdown-caption">para crear tu alineación</span>
             </>
           ) : (
             <span className="lineup-card__countdown-caption">Aún no hay un próximo partido programado.</span>

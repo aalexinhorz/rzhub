@@ -1,9 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 import fetch from 'node-fetch'
 
+if (!process.env.VITE_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
+  console.error('Faltan variables de entorno. Ejecuta con: node --env-file=.env.local scripts/upload-photos.js')
+  process.exit(1)
+}
+
 const supabase = createClient(
-  'https://gqslryreaiqmvnyyhwzf.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdxc2xyeXJlYWlxbXZueXlod3pmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDgyMDI2OSwiZXhwIjoyMDk2Mzk2MjY5fQ.xJBpcZd2-Dx38HD_zjzQGE7yO-E3erzq-q7QONPQylQ'
+  process.env.VITE_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
 )
 
 async function uploadPhotos() {

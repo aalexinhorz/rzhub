@@ -67,6 +67,27 @@
 
 .lineup-card__heading {
   min-width: 0;
+  flex: 1;
+}
+
+.lineup-card__rival-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: #0d1b4b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), inset 0 0 14px rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+}
+
+.lineup-card__rival-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .lineup-card__title {
