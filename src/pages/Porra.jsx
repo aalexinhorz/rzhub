@@ -338,7 +338,7 @@ export default function Porra() {
                     </div>
                   ) : (
                     <div style={{ textAlign: 'center', padding: '16px', background: '#1a1a1a', borderRadius: '10px' }}>
-                      <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px', margin: 0 }}>No participaste en este partido</p>
+                      <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px', margin: 0 }}>Participación no disponible</p>
                     </div>
                   )
                 ) : (
