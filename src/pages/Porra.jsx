@@ -188,13 +188,13 @@ export default function Porra() {
       />
 
       {/* HERO */}
-      <div style={{ backgroundColor: '#0B4390', padding: '40px 24px 32px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ backgroundColor: '#09215F', padding: '40px 24px 32px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(255,255,255,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <h1 style={{ fontFamily: 'Humane, sans-serif', fontSize: 'clamp(60px, 15vw, 120px)', fontWeight: '700', lineHeight: 0.9, margin: '0 0 8px', letterSpacing: '4px', textTransform: 'uppercase' }}>
           LA PORRA
         </h1>
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 20px', fontWeight: '300' }}>
-          Real Zaragoza · 1ª RFEF 26/27
+          Participa cada jornada y gana premios a final de temporada.
         </p>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           {[['5 PTS', 'Resultado exacto'], ['3 PTS', 'Todos los goleadores']].map(([pts, label]) => (

@@ -4,6 +4,8 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import '../components/HeroSection.css'
+import useNextAwayMatch from '../hooks/useNextAwayMatch'
+import { useEscudo } from '../lib/escudos'
 
 const D = [
   { num: 1,  club: 'SD Huesca',             ciudad: 'Huesca',            km: 74,  lat: 42.1318883, lng: -0.4247182, escudo: '/escudos/Logo_of_SD_Huesca.svg',                            color: '#2ECC71', label: 'Corto' },
@@ -38,6 +40,33 @@ function getMapsUrl(lat, lng) {
   return 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng
 }
 
+// Alias para filiales cuyo nombre en el calendario no coincide con el
+// del listado de desplazamientos (p. ej. "Atleti B" vs el nombre
+// oficial "Atlético Madrileño" que usa el .ics).
+const RIVAL_ALIASES = {
+  'atletico madrileno': 'atleti b',
+  'real madrid castilla': 'real madrid b',
+}
+
+function normalizeRival(name) {
+  return name
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\b(cf|fc|ud|sd|cd|ce|ad|de)\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function findTrip(rivalName) {
+  if (!rivalName) return null
+  const norm = normalizeRival(rivalName)
+  const aliased = RIVAL_ALIASES[norm] || norm
+  return D.find(d => {
+    const dNorm = normalizeRival(d.club)
+    return dNorm.includes(aliased) || aliased.includes(dNorm)
+  }) || null
+}
+
 function MapSizeFix() {
   const map = useMap()
 
@@ -63,6 +92,9 @@ function MapSizeFix() {
 export default function OnTour() {
   const [sel, setSel] = useState(null)
   const total = D.reduce((a, d) => a + d.km, 0)
+  const { match: nextAway } = useNextAwayMatch()
+  const nextAwayEscudo = useEscudo(nextAway?.rival)
+  const nextTrip = findTrip(nextAway?.rival)
 
   const linkStyle = {
     display: 'block',
@@ -100,13 +132,39 @@ export default function OnTour() {
             {[
               { valor: D.length, label: 'Desplazamientos' },
               { valor: total.toLocaleString(), label: 'km totales (ida)' },
-              { valor: '900', label: 'km max · Algeciras' },
             ].map((s, i) => (
               <div key={i} style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px 20px', textAlign: 'center' }}>
                 <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '40px', fontWeight: '700', lineHeight: 1 }}>{s.valor}</div>
                 <div style={{ fontFamily: 'sans-serif', fontSize: '11px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '1px' }}>{s.label}</div>
               </div>
             ))}
+            <div
+              onClick={nextTrip ? () => window.open(getMapsUrl(nextTrip.lat, nextTrip.lng), '_blank') : undefined}
+              className={nextTrip ? 'hero-cta' : undefined}
+              style={{
+                background: nextTrip ? undefined : 'rgba(255,255,255,0.1)',
+                width: 'auto', borderRadius: '10px', padding: '12px 20px',
+                display: 'flex', alignItems: 'center', gap: '10px',
+                cursor: nextTrip ? 'pointer' : 'default',
+              }}
+            >
+              {nextAwayEscudo && (
+                <img
+                  src={nextAwayEscudo}
+                  alt=""
+                  style={{ width: '36px', height: '36px', objectFit: 'contain', background: 'white', borderRadius: '50%', padding: '3px', flexShrink: 0 }}
+                  onError={e => { e.target.style.display = 'none' }}
+                />
+              )}
+              <div>
+                <div style={{ fontFamily: 'Archivo, sans-serif', fontSize: '16px', fontWeight: '700', lineHeight: 1.1, color: nextTrip ? '#111111' : 'white' }}>
+                  {nextAway ? nextAway.rival : 'Sin datos'}
+                </div>
+                <div style={{ fontFamily: 'sans-serif', fontSize: '11px', color: nextTrip ? 'rgba(17,17,17,0.7)' : 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '2px' }}>
+                  Próximo desplazamiento{nextAway ? ' · ' + nextAway.date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) : ''}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
