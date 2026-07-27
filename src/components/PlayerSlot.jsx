@@ -93,7 +93,13 @@ function SubSearch({ label, pending, search, results, onSearchChange, onSelect, 
   )
 }
 
-export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer, capturing }) {
+function scaleByFieldWidth(fieldWidth, min, max, refMin = 320, refMax = 620) {
+  if (!fieldWidth) return max
+  const t = Math.min(1, Math.max(0, (fieldWidth - refMin) / (refMax - refMin)))
+  return min + (max - min) * t
+}
+
+export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer, capturing, fieldWidth }) {
   const [showModal, setShowModal] = useState(false)
   const [search, setSearch] = useState('')
   const [results, setResults] = useState([])
@@ -183,12 +189,14 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
     ? 'linear-gradient(180deg, #c5d8f0 0%, #ddeaf8 40%, #eef4fc 70%, #f5f8fd 100%)'
     : 'linear-gradient(180deg, #f5e6b0 0%, #faf0cc 40%, #fdf7e8 70%, #fefcf3 100%)'
 
-  // Tamaños fijos en px para que html2canvas los renderice bien
-  const slotW = 'clamp(48px, 11vw, 78px)'
+  // Calculados en JS a partir del ancho real del campo (no vw/clamp CSS):
+  // html2canvas no siempre resuelve "vw" igual que el navegador real al
+  // exportar la alineación como imagen, y descuadraba cards y título.
+  const slotW = `${scaleByFieldWidth(fieldWidth, 48, 78)}px`
   const cardW = '100%'
-  const cardH = 'clamp(50px, 12vw, 80px)'
-  const plusSize = 'clamp(26px, 6.5vw, 44px)'
-  const plusFontSize = 'clamp(13px, 3.2vw, 20px)'
+  const cardH = `${scaleByFieldWidth(fieldWidth, 50, 80)}px`
+  const plusSize = `${scaleByFieldWidth(fieldWidth, 26, 44)}px`
+  const plusFontSize = `${scaleByFieldWidth(fieldWidth, 13, 20)}px`
   const subFontSize = '7px'
   const nameFontSize = '9px'
 

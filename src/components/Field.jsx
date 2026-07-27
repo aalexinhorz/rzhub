@@ -1,6 +1,17 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import html2canvas from 'html2canvas'
 import PlayerSlot from './PlayerSlot'
+
+// Interpola linealmente entre [min, max] según el ancho real del campo
+// (no del viewport). clamp(min, Xvw, max) parecía razonable en pantalla,
+// pero html2canvas no siempre resuelve "vw" igual que el navegador real
+// al capturar la alineación como imagen, descuadrando cards y título.
+// Con un número en px ya resuelto en JS no hay nada que reinterpretar.
+function scaleByFieldWidth(fieldWidth, min, max, refMin = 320, refMax = 620) {
+  if (!fieldWidth) return max
+  const t = Math.min(1, Math.max(0, (fieldWidth - refMin) / (refMax - refMin)))
+  return min + (max - min) * t
+}
 
 export default function Field({ slotsLayout, slots, subs, teamName, setTeamName, formation, allPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer, onGuardar, user }) {
   const fieldRef = useRef(null)
@@ -9,6 +20,18 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
   const [nombreGuardado, setNombreGuardado] = useState('')
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
+  const [fieldWidth, setFieldWidth] = useState(0)
+
+  useEffect(() => {
+    if (!fieldRef.current) return
+    const observer = new ResizeObserver(entries => {
+      setFieldWidth(entries[0].contentRect.width)
+    })
+    observer.observe(fieldRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  const titleFontSize = scaleByFieldWidth(fieldWidth, 24, 44)
 
   async function capturarCanvas() {
     const img = fieldRef.current.querySelector('img')
@@ -188,14 +211,14 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
           {editingName ? (
             <input autoFocus value={teamName} onChange={e => setTeamName(e.target.value)}
               onBlur={() => setEditingName(false)} onKeyDown={e => e.key === 'Enter' && setEditingName(false)}
-              style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: 'clamp(24px, 5vw, 44px)', textTransform: 'uppercase', color: '#ffffff', border: 'none', borderBottom: '2px solid #ffffff', outline: 'none', background: 'transparent', width: '100%', letterSpacing: '0px', lineHeight: '0.9' }} />
+              style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: `${titleFontSize}px`, textTransform: 'uppercase', color: '#ffffff', border: 'none', borderBottom: '2px solid #ffffff', outline: 'none', background: 'transparent', width: '100%', letterSpacing: '0px', lineHeight: '0.9' }} />
           ) : (
             <h2 onClick={() => setEditingName(true)} title="Clic para editar"
-              style={{ color: '#ffffff', fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: 'clamp(24px, 5vw, 44px)', textTransform: 'uppercase', margin: 0, letterSpacing: '0px', cursor: 'text', userSelect: 'none', lineHeight: '0.9' }}>
+              style={{ color: '#ffffff', fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: `${titleFontSize}px`, textTransform: 'uppercase', margin: 0, letterSpacing: '0px', cursor: 'text', userSelect: 'none', lineHeight: '0.9' }}>
               {teamName}
             </h2>
           )}
-          <div style={{ display: 'inline-block', background: '#FFC800', color: '#060D1A', fontSize: '10px', fontWeight: '800', padding: '2px 8px', borderRadius: '4px', marginTop: '4px', fontFamily: 'Archivo, sans-serif' }}>
+          <div style={{ display: 'inline-block', background: '#FFC800', color: '#060D1A', fontSize: '10px', fontWeight: '800', padding: '2px 8px', borderRadius: '4px', marginTop: '10px', fontFamily: 'Archivo, sans-serif' }}>
             {formation}
           </div>
         </div>
@@ -214,6 +237,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
               onSelectSub={onSelectSub}
               onRemoveSub={onRemoveSub}
               onAddCustomPlayer={onAddCustomPlayer}
+              fieldWidth={fieldWidth}
             />
           ))}
         </div>
