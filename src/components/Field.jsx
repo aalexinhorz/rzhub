@@ -12,8 +12,20 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
 
   async function capturarCanvas() {
     const img = fieldRef.current.querySelector('img')
-    img.src = '/CAMPO_PARA_WEB.png'
-    await new Promise(r => setTimeout(r, 300))
+    // Esperar el evento real de carga del PNG en vez de un timeout fijo:
+    // con conexiones lentas 300ms no bastan y html2canvas capturaba el
+    // fondo del campo en blanco (y el título en blanco encima quedaba
+    // invisible sobre ese fondo).
+    await new Promise((resolve, reject) => {
+      img.onload = resolve
+      img.onerror = reject
+      img.src = '/CAMPO_PARA_WEB.png'
+    })
+    // Sin esto, html2canvas puede capturar antes de que las fuentes
+    // personalizadas (Archivo/Humane) terminen de cargar y usa una
+    // fuente de sistema con métricas distintas, descuadrando los
+    // textos de las cards.
+    await document.fonts.ready
     const canvas = await html2canvas(fieldRef.current, {
       scale: 2, useCORS: true, allowTaint: false, backgroundColor: '#ffffff', logging: false,
     })

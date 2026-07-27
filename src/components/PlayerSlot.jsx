@@ -3,11 +3,22 @@ import { useDroppable } from '@dnd-kit/core'
 
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'
 
-function PlayerPhoto({ src, alt }) {
+// Usa background-image en vez de <img objectFit> porque html2canvas no
+// respeta bien object-fit/object-position al exportar la alineación
+// como imagen: las fotos salían estiradas y descentradas.
+function PlayerPhoto({ src, alt, position = '50% 15%' }) {
+  const [bg, setBg] = useState(src || DEFAULT_PHOTO)
+
+  useEffect(() => { setBg(src || DEFAULT_PHOTO) }, [src])
+
   return (
-    <img crossOrigin="anonymous" src={src || DEFAULT_PHOTO} alt={alt}
-      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 15%', display: 'block' }}
-      onError={e => { e.target.src = DEFAULT_PHOTO }} />
+    <div role="img" aria-label={alt} style={{
+      width: '100%', height: '100%', backgroundColor: '#152445',
+      backgroundImage: `url("${bg}")`, backgroundSize: 'cover', backgroundPosition: position,
+    }}>
+      <img crossOrigin="anonymous" src={bg} alt="" style={{ display: 'none' }}
+        onError={() => setBg(DEFAULT_PHOTO)} />
+    </div>
   )
 }
 
@@ -17,9 +28,7 @@ function SubRow({ player, onClick }) {
   return (
     <div onClick={onClick} title="Clic para quitar" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px', padding: '2px 3px', background: bgColor, width: '100%', boxSizing: 'border-box' }}>
       <div style={{ width: '16px', height: '16px', flexShrink: 0, overflow: 'hidden', background: 'rgba(0,0,0,0.2)' }}>
-        <img crossOrigin="anonymous" src={player.photo || DEFAULT_PHOTO} alt={player.name}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 10%', display: 'block' }}
-          onError={e => { e.target.src = DEFAULT_PHOTO }} />
+        <PlayerPhoto src={player.photo} alt={player.name} position="50% 10%" />
       </div>
       <span style={{ fontSize: '7px', fontFamily: 'Archivo, sans-serif', fontWeight: '600', color: textColor, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }}>
         {player.shortName || player.name}
@@ -175,7 +184,7 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
     : 'linear-gradient(180deg, #f5e6b0 0%, #faf0cc 40%, #fdf7e8 70%, #fefcf3 100%)'
 
   // Tamaños fijos en px para que html2canvas los renderice bien
-  const slotW = 'clamp(58px, 14vw, 96px)'
+  const slotW = 'clamp(48px, 11vw, 78px)'
   const cardW = '100%'
   const cardH = 'clamp(50px, 12vw, 80px)'
   const plusSize = 'clamp(26px, 6.5vw, 44px)'
