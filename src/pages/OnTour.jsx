@@ -3,27 +3,28 @@ import SEO, { SITE_URL } from '../components/SEO'
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import '../components/HeroSection.css'
 
 const D = [
-  { num: 1,  club: 'SD Huesca',             ciudad: 'Huesca',            km: 74,  lat: 42.1318883, lng: -0.4247182, escudo: '/escudos/Logo_of_SD_Huesca.svg',                            color: '#27ae60', label: 'Corto' },
-  { num: 2,  club: 'CD Teruel',             ciudad: 'Teruel',            km: 185, lat: 40.332743,  lng: -1.1065112, escudo: '/escudos/CD_Teruel_logo.svg',                                color: '#27ae60', label: 'Corto' },
-  { num: 3,  club: 'Nastic Tarragona',      ciudad: 'Tarragona',         km: 235, lat: 41.127051,  lng: 1.272851,   escudo: '/escudos/Gimnastic_de_Tarragona_logo.svg',                   color: '#f5c400', label: 'Medio' },
-  { num: 4,  club: 'UE Sant Andreu',        ciudad: 'Barcelona',         km: 295, lat: 41.4288822, lng: 2.1930871,  escudo: '/escudos/ue-sant-andreu-vector-logo.png',                    color: '#f5c400', label: 'Medio' },
-  { num: 5,  club: 'CE Europa',             ciudad: 'Barcelona',         km: 295, lat: 41.438057,  lng: 2.183797,   escudo: '/escudos/Club_Esportiu_Europa.svg',                          color: '#f5c400', label: 'Medio' },
-  { num: 6,  club: 'Villarreal B',          ciudad: 'Villarreal',        km: 295, lat: 39.9394068, lng: -0.1167347, escudo: '/escudos/Villarreal_CF_logo-en.svg',                         color: '#f5c400', label: 'Medio' },
-  { num: 7,  club: 'Rayo Majadahonda',      ciudad: 'Majadahonda',       km: 310, lat: 40.4575422, lng: -3.8602657, escudo: '/escudos/Rayo_Majadahonda_(logo).svg',                       color: '#f5c400', label: 'Medio' },
-  { num: 8,  club: 'AD Alcorcon',           ciudad: 'Alcorcon',          km: 315, lat: 40.3388592, lng: -3.8404714, escudo: '/escudos/AD_Alcorcon_logo.svg',                              color: '#f5c400', label: 'Medio' },
-  { num: 9,  club: 'Atleti B',              ciudad: 'Alcala Henares',    km: 320, lat: 40.5082172, lng: -3.3609447, escudo: '/escudos/Atletico_Madrid_Logo_2024.svg',                     color: '#f5c400', label: 'Medio' },
-  { num: 10, club: 'Real Madrid B',         ciudad: 'Valdebebas',        km: 325, lat: 40.47693,   lng: -3.6142698, escudo: '/escudos/Real_Madrid_CF.svg',                                color: '#f5c400', label: 'Medio' },
-  { num: 11, club: 'Hercules',              ciudad: 'Alicante',          km: 470, lat: 38.3573154, lng: -0.4926576, escudo: '/escudos/Hercules_CF_crest.svg',                             color: '#e67e22', label: 'Largo' },
-  { num: 12, club: 'UD Ibiza',              ciudad: 'Ibiza',             km: 480, lat: 38.9139282, lng: 1.4157596,  escudo: '/escudos/UD_Ibiza_logo.svg',                                 color: '#e67e22', label: 'Largo', nota: 'Valencia ~330 + ferry ~150' },
-  { num: 13, club: 'Real Murcia',           ciudad: 'Murcia',            km: 535, lat: 38.0422688, lng: -1.1452422, escudo: '/escudos/Real_Murcia_CF_logo.svg',                           color: '#e67e22', label: 'Largo' },
-  { num: 14, club: 'Cartagena',             ciudad: 'Cartagena',         km: 560, lat: 37.6097329, lng: -0.9960535, escudo: '/escudos/spain_fc-cartagena.football-logos.cc.svg',           color: '#e67e22', label: 'Largo' },
-  { num: 15, club: 'Aguilas FC',            ciudad: 'Aguilas',           km: 620, lat: 37.4037154, lng: -1.5907668, escudo: '/escudos/logo.svg',                                          color: '#c0392b', label: 'Epico' },
-  { num: 16, club: 'Real Jaen',             ciudad: 'Jaen',              km: 630, lat: 37.7753883, lng: -3.7673872, escudo: '/escudos/spain_real-jaen-cf.football-logos.cc.svg',           color: '#c0392b', label: 'Epico' },
-  { num: 17, club: 'Antequera',             ciudad: 'Antequera',         km: 840, lat: 37.0205922, lng: -4.5718066, escudo: '/escudos/spain_antequera.football-logos.cc.svg',              color: '#c0392b', label: 'Epico' },
-  { num: 18, club: 'Juventud Torremolinos', ciudad: 'Torremolinos',      km: 870, lat: 36.62132,   lng: -4.5099324, escudo: '/escudos/spain_juventud-torremolinos.football-logos.cc.svg',  color: '#c0392b', label: 'Epico' },
-  { num: 19, club: 'Algeciras',             ciudad: 'Algeciras',         km: 900, lat: 36.1630173, lng: -5.4651517, escudo: '/escudos/spain_algeciras.football-logos.cc.svg',              color: '#c0392b', label: 'Epico' },
+  { num: 1,  club: 'SD Huesca',             ciudad: 'Huesca',            km: 74,  lat: 42.1318883, lng: -0.4247182, escudo: '/escudos/Logo_of_SD_Huesca.svg',                            color: '#2ECC71', label: 'Corto' },
+  { num: 2,  club: 'CD Teruel',             ciudad: 'Teruel',            km: 185, lat: 40.332743,  lng: -1.1065112, escudo: '/escudos/CD_Teruel_logo.svg',                                color: '#2ECC71', label: 'Corto' },
+  { num: 3,  club: 'Nastic Tarragona',      ciudad: 'Tarragona',         km: 235, lat: 41.127051,  lng: 1.272851,   escudo: '/escudos/Gimnastic_de_Tarragona_logo.svg',                   color: '#FFC800', label: 'Medio' },
+  { num: 4,  club: 'UE Sant Andreu',        ciudad: 'Barcelona',         km: 295, lat: 41.4288822, lng: 2.1930871,  escudo: '/escudos/ue-sant-andreu-vector-logo.png',                    color: '#FFC800', label: 'Medio' },
+  { num: 5,  club: 'CE Europa',             ciudad: 'Barcelona',         km: 295, lat: 41.438057,  lng: 2.183797,   escudo: '/escudos/Club_Esportiu_Europa.svg',                          color: '#FFC800', label: 'Medio' },
+  { num: 6,  club: 'Villarreal B',          ciudad: 'Villarreal',        km: 295, lat: 39.9394068, lng: -0.1167347, escudo: '/escudos/Villarreal_CF_logo-en.svg',                         color: '#FFC800', label: 'Medio' },
+  { num: 7,  club: 'Rayo Majadahonda',      ciudad: 'Majadahonda',       km: 310, lat: 40.4575422, lng: -3.8602657, escudo: '/escudos/Rayo_Majadahonda_(logo).svg',                       color: '#FFC800', label: 'Medio' },
+  { num: 8,  club: 'AD Alcorcon',           ciudad: 'Alcorcon',          km: 315, lat: 40.3388592, lng: -3.8404714, escudo: '/escudos/AD_Alcorcon_logo.svg',                              color: '#FFC800', label: 'Medio' },
+  { num: 9,  club: 'Atleti B',              ciudad: 'Alcala Henares',    km: 320, lat: 40.5082172, lng: -3.3609447, escudo: '/escudos/Atletico_Madrid_Logo_2024.svg',                     color: '#FFC800', label: 'Medio' },
+  { num: 10, club: 'Real Madrid B',         ciudad: 'Valdebebas',        km: 325, lat: 40.47693,   lng: -3.6142698, escudo: '/escudos/Real_Madrid_CF.svg',                                color: '#FFC800', label: 'Medio' },
+  { num: 11, club: 'Hercules',              ciudad: 'Alicante',          km: 470, lat: 38.3573154, lng: -0.4926576, escudo: '/escudos/Hercules_CF_crest.svg',                             color: '#FF9F1A', label: 'Largo' },
+  { num: 12, club: 'UD Ibiza',              ciudad: 'Ibiza',             km: 480, lat: 38.9139282, lng: 1.4157596,  escudo: '/escudos/UD_Ibiza_logo.svg',                                 color: '#FF9F1A', label: 'Largo', nota: 'Valencia ~330 + ferry ~150' },
+  { num: 13, club: 'Real Murcia',           ciudad: 'Murcia',            km: 535, lat: 38.0422688, lng: -1.1452422, escudo: '/escudos/Real_Murcia_CF_logo.svg',                           color: '#FF9F1A', label: 'Largo' },
+  { num: 14, club: 'Cartagena',             ciudad: 'Cartagena',         km: 560, lat: 37.6097329, lng: -0.9960535, escudo: '/escudos/spain_fc-cartagena.football-logos.cc.svg',           color: '#FF9F1A', label: 'Largo' },
+  { num: 15, club: 'Aguilas FC',            ciudad: 'Aguilas',           km: 620, lat: 37.4037154, lng: -1.5907668, escudo: '/escudos/logo.svg',                                          color: '#FF4D4D', label: 'Extremo' },
+  { num: 16, club: 'Real Jaen',             ciudad: 'Jaen',              km: 630, lat: 37.7753883, lng: -3.7673872, escudo: '/escudos/spain_real-jaen-cf.football-logos.cc.svg',           color: '#FF4D4D', label: 'Extremo' },
+  { num: 17, club: 'Antequera',             ciudad: 'Antequera',         km: 840, lat: 37.0205922, lng: -4.5718066, escudo: '/escudos/spain_antequera.football-logos.cc.svg',              color: '#FF4D4D', label: 'Extremo' },
+  { num: 18, club: 'Juventud Torremolinos', ciudad: 'Torremolinos',      km: 870, lat: 36.62132,   lng: -4.5099324, escudo: '/escudos/spain_juventud-torremolinos.football-logos.cc.svg',  color: '#FF4D4D', label: 'Extremo' },
+  { num: 19, club: 'Algeciras',             ciudad: 'Algeciras',         km: 900, lat: 36.1630173, lng: -5.4651517, escudo: '/escudos/spain_algeciras.football-logos.cc.svg',              color: '#FF4D4D', label: 'Extremo' },
 ]
 
 function icono(escudo, color) {
@@ -66,19 +67,12 @@ export default function OnTour() {
   const linkStyle = {
     display: 'block',
     marginTop: '16px',
-    background: '#0B4390',
-    color: 'white',
-    borderRadius: '8px',
-    padding: '10px',
-    fontFamily: 'sans-serif',
-    fontSize: '13px',
-    fontWeight: '600',
     textDecoration: 'none',
     textAlign: 'center',
   }
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5' }}>
+    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#060D1A' }}>
       <SEO
         title="On Tour · Desplazamientos del Real Zaragoza 26/27 | RZ Hub"
         description={`Todos los desplazamientos del Real Zaragoza en la temporada 26/27. ${D.length} viajes, hasta ${total.toLocaleString()} km en total. Planifica tu viaje con Google Maps.`}
@@ -94,7 +88,7 @@ export default function OnTour() {
         }}
       />
 
-      <div style={{ background: '#0B4390', padding: '32px 24px 24px', color: 'white' }}>
+      <div style={{ background: '#09215F', padding: '32px 24px 24px', color: 'white' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: 'clamp(52px,10vw,96px)', textTransform: 'uppercase', lineHeight: 1, margin: '0 0 8px 0' }}>
             On Tour
@@ -130,30 +124,30 @@ export default function OnTour() {
 
         <div className="ontour-sidebar" style={{ width: '320px', flexShrink: 0 }}>
           {sel ? (
-            <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
+            <div style={{ background: '#0B4390', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.12)' }}>
               <div style={{ background: sel.color, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <img src={sel.escudo} alt={sel.club} style={{ width: '48px', height: '48px', objectFit: 'contain', background: 'white', borderRadius: '50%', padding: '4px' }} />
                 <div>
-                  <div style={{ fontFamily: 'sans-serif', fontSize: '11px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase' }}>
+                  <div style={{ fontFamily: 'sans-serif', fontSize: '11px', color: '#0B4390', textTransform: 'uppercase' }}>
                     {'#' + sel.num + ' · ' + sel.ciudad}
                   </div>
-                  <div style={{ fontFamily: 'Archivo, sans-serif', fontSize: '18px', fontWeight: '700', color: 'white', textTransform: 'uppercase' }}>
+                  <div style={{ fontFamily: 'Archivo, sans-serif', fontSize: '18px', fontWeight: '700', color: '#0B4390', textTransform: 'uppercase' }}>
                     {sel.club}
                   </div>
                 </div>
               </div>
               <div style={{ padding: '16px 20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                  <span style={{ fontFamily: 'sans-serif', fontSize: '13px', color: '#666' }}>Distancia desde Zaragoza</span>
-                  <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '32px', fontWeight: '700', color: sel.color }}>{sel.km} km</span>
+                  <span style={{ fontFamily: 'sans-serif', fontSize: '13px', color: '#FFC800' }}>Distancia desde Zaragoza</span>
+                  <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '32px', fontWeight: '700', color: '#FFC800' }}>{sel.km} km</span>
                 </div>
-                <span style={{ background: sel.color, color: 'white', borderRadius: '4px', padding: '3px 10px', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700' }}>
+                <span style={{ background: sel.color, color: '#0B4390', borderRadius: '4px', padding: '3px 10px', fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700' }}>
                   {sel.label}
                 </span>
                 {sel.nota && (
-                  <div style={{ fontFamily: 'sans-serif', fontSize: '11px', color: '#999', marginTop: '8px' }}>{sel.nota}</div>
+                  <div style={{ fontFamily: 'sans-serif', fontSize: '11px', color: '#FFC800', marginTop: '8px' }}>{sel.nota}</div>
                 )}
-                <a href={getMapsUrl(sel.lat, sel.lng)} target="_blank" rel="noopener noreferrer" style={linkStyle}>
+                <a href={getMapsUrl(sel.lat, sel.lng)} target="_blank" rel="noopener noreferrer" className="hero-cta" style={linkStyle}>
                   Cómo llegar al estadio
                 </a>
               </div>
@@ -172,27 +166,27 @@ export default function OnTour() {
             <div
               key={d.num}
               onClick={() => window.open(getMapsUrl(d.lat, d.lng), '_blank')}
-              style={{ background: 'white', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', borderLeft: '4px solid ' + d.color }}
+              style={{ background: '#0B4390', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', borderLeft: '4px solid ' + d.color }}
             >
               <div style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <img src={d.escudo} alt={d.club} style={{ width: '44px', height: '44px', objectFit: 'contain', flexShrink: 0 }} onError={e => { e.target.style.display = 'none' }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: 'sans-serif', fontSize: '10px', color: '#999', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <div style={{ fontFamily: 'sans-serif', fontSize: '10px', color: '#FFC800', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     {'#' + d.num + ' · ' + d.ciudad}
                   </div>
-                  <div style={{ fontFamily: 'Archivo, sans-serif', fontSize: '15px', fontWeight: '700', color: '#0B4390', textTransform: 'uppercase', lineHeight: 1.1, margin: '2px 0 4px' }}>
+                  <div style={{ fontFamily: 'Archivo, sans-serif', fontSize: '15px', fontWeight: '700', color: '#FFC800', textTransform: 'uppercase', lineHeight: 1.1, margin: '2px 0 4px' }}>
                     {d.club}
                   </div>
-                  <span style={{ background: d.color, color: 'white', borderRadius: '4px', padding: '2px 7px', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '700' }}>
+                  <span style={{ background: d.color, color: '#0B4390', borderRadius: '4px', padding: '2px 7px', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '700' }}>
                     {d.label}
                   </span>
                   {d.nota && (
-                    <div style={{ fontFamily: 'sans-serif', fontSize: '9px', color: '#aaa', marginTop: '3px' }}>{d.nota}</div>
+                    <div style={{ fontFamily: 'sans-serif', fontSize: '9px', color: '#FFC800', marginTop: '3px' }}>{d.nota}</div>
                   )}
                 </div>
-                <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '40px', fontWeight: '700', color: d.color, lineHeight: 1, flexShrink: 0, textAlign: 'right' }}>
+                <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '40px', fontWeight: '700', color: '#FFC800', lineHeight: 1, flexShrink: 0, textAlign: 'right' }}>
                   {d.km}
-                  <div style={{ fontSize: '11px', fontFamily: 'sans-serif', fontWeight: '400', color: '#aaa' }}>km</div>
+                  <div style={{ fontSize: '11px', fontFamily: 'sans-serif', fontWeight: '400', color: '#FFC800' }}>km</div>
                 </div>
               </div>
             </div>

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import SEO, { SITE_URL } from '../components/SEO'
 import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
+import '../components/HeroSection.css'
 
 const ESCUDOS = {
   'Gimnàstic de Tarragona': '/escudos/Gimnastic_de_Tarragona_logo.svg',
@@ -37,11 +38,17 @@ function formatHora(kickoff) {
   return d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
 }
 
-function isCerrada(kickoff) {
+function haEmpezado(kickoff) {
   return new Date() >= new Date(kickoff)
 }
 
+function isCerrada(partido) {
+  return !partido.abierto || haEmpezado(partido.kickoff)
+}
+
 function getPartidoActivo(partidos) {
+  const abierto = partidos.find(p => p.abierto)
+  if (abierto) return abierto
   const ahora = new Date()
   const proximos = partidos.filter(p => new Date(p.kickoff) > ahora)
   if (proximos.length > 0) return proximos[0]
@@ -50,7 +57,7 @@ function getPartidoActivo(partidos) {
 }
 
 export default function Porra() {
-  const { user, profile } = useAuth()
+  const { user, profile, signInWithGoogle } = useAuth()
   const [partidos, setPartidos] = useState([])
   const [predicciones, setPredicciones] = useState({})
   const [ranking, setRanking] = useState([])
@@ -100,7 +107,10 @@ export default function Porra() {
   }, [partidoActivo, predicciones])
 
   async function fetchPartidos() {
-    const { data } = await supabase.from('porra_partidos').select('*').order('kickoff', { ascending: true })
+    const { data } = await supabase
+      .from('porra_partidos')
+      .select('*')
+      .order('kickoff', { ascending: true })
     setPartidos(data || [])
     setLoading(false)
   }
@@ -145,7 +155,8 @@ export default function Porra() {
     setTimeout(() => setGuardado(false), 2000)
   }
 
-  const cerrada = partidoActivo ? isCerrada(partidoActivo.kickoff) : false
+  const cerrada = partidoActivo ? isCerrada(partidoActivo) : false
+  const empezado = partidoActivo ? haEmpezado(partidoActivo.kickoff) : false
   const pred = partidoActivo ? predicciones[partidoActivo.id] : null
   const escudoRival = partidoActivo ? (ESCUDOS[partidoActivo.rival] || null) : null
 
@@ -200,7 +211,7 @@ export default function Porra() {
         <div ref={carruselRef} style={{ display: 'flex', gap: '0', minWidth: 'max-content' }}>
           {partidos.map((p, i) => {
             const activo = partidoActivo?.id === p.id
-            const cerradaP = isCerrada(p.kickoff)
+            const cerradaP = isCerrada(p)
             const tienePred = !!predicciones[p.id]
             return (
               <button key={p.id} onClick={() => setPartidoActivo(p)} style={{
@@ -209,6 +220,7 @@ export default function Porra() {
                 background: activo ? '#0B4390' : 'transparent',
                 border: 'none', borderBottom: activo ? '3px solid #f5c400' : '3px solid transparent',
                 position: 'relative', transition: 'all 0.15s',
+                opacity: cerradaP && !activo ? 0.5 : 1,
               }}>
                 {tienePred && !cerradaP && (
                   <div style={{ position: 'absolute', top: '6px', right: '6px', width: '6px', height: '6px', borderRadius: '50%', background: '#27ae60' }} />
@@ -220,7 +232,7 @@ export default function Porra() {
                 )}
                 <div style={{ width: '36px', height: '36px', marginTop: !cerradaP && activo ? '12px' : '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {ESCUDOS[p.rival] ? (
-                    <img src={ESCUDOS[p.rival]} alt={p.rival} style={{ width: '32px', height: '32px', objectFit: 'contain', opacity: cerradaP && !activo ? 0.4 : 1 }} onError={e => { e.target.style.display = 'none' }} />
+                    <img src={ESCUDOS[p.rival]} alt={p.rival} style={{ width: '32px', height: '32px', objectFit: 'contain' }} onError={e => { e.target.style.display = 'none' }} />
                   ) : (
                     <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#666', fontWeight: '700' }}>
                       {p.rival[0]}
@@ -242,6 +254,12 @@ export default function Porra() {
         {/* PANEL IZQUIERDO — Partido activo */}
         <div style={{ flex: '1', minWidth: '280px' }}>
           {loading && <p style={{ color: 'rgba(255,255,255,0.4)' }}>Cargando...</p>}
+
+          {!loading && partidos.length === 0 && (
+            <div style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', padding: '32px', textAlign: 'center' }}>
+              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', margin: 0 }}>No hay jornadas abiertas en este momento</p>
+            </div>
+          )}
 
           {partidoActivo && (
             <div style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', overflow: 'hidden' }}>
@@ -276,7 +294,7 @@ export default function Porra() {
                       </div>
                       <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '4px' }}>Resultado final</div>
                     </div>
-                  ) : cerrada ? (
+                  ) : empezado ? (
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '52px', fontWeight: '700', lineHeight: 1, color: 'rgba(255,255,255,0.3)' }}>? - ?</div>
                       <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '4px' }}>En juego</div>
@@ -298,7 +316,9 @@ export default function Porra() {
                 {/* Formulario o predicción */}
                 {!user ? (
                   <div style={{ textAlign: 'center', padding: '16px', background: '#1a1a1a', borderRadius: '10px' }}>
-                    <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', margin: 0 }}>Inicia sesión para participar</p>
+                    <button onClick={signInWithGoogle} className="hero-cta">
+                      Inicia sesión para participar
+                    </button>
                   </div>
                 ) : cerrada ? (
                   pred ? (
@@ -451,7 +471,7 @@ export default function Porra() {
                 ) : (
                   partidos.filter(p => predicciones[p.id]).map((p, i, arr) => {
                     const pred = predicciones[p.id]
-                    const cerradaP = isCerrada(p.kickoff)
+                    const cerradaP = isCerrada(p)
                     return (
                       <div key={p.id} onClick={() => setPartidoActivo(p)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderBottom: i < arr.length - 1 ? '1px solid #1a1a1a' : 'none', cursor: 'pointer', background: partidoActivo?.id === p.id ? 'rgba(11,67,144,0.15)' : 'transparent' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

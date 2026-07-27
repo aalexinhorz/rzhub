@@ -63,7 +63,7 @@ function TierRow({ tier, players, onLabelChange, onDelete, small, isDeletable })
   const minH = small ? '70px' : '100px'
 
   return (
-    <div style={{ display: 'flex', marginBottom: '4px', minHeight: minH, background: 'white', borderRadius: '4px', overflow: 'hidden', border: '1px solid #e0e0e0', position: 'relative' }}>
+    <div style={{ display: 'flex', marginBottom: '4px', minHeight: minH, background: '#060D1A', borderRadius: '4px', overflow: 'hidden', border: '1px solid #1a2436', position: 'relative' }}>
       <div style={{ width: labelW, minWidth: labelW, background: tier.color, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', cursor: 'pointer', position: 'relative' }} onClick={() => setEditing(true)}>
         {editing ? (
           <input autoFocus value={label} onChange={e => setLabel(e.target.value)}
@@ -74,7 +74,7 @@ function TierRow({ tier, players, onLabelChange, onDelete, small, isDeletable })
           <span style={{ color: 'white', fontFamily: 'sans-serif', fontWeight: '700', fontSize: labelFontSize, textAlign: 'center', lineHeight: '1.3' }}>{label}</span>
         )}
       </div>
-      <div ref={setNodeRef} style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '8px', alignItems: 'center', background: isOver ? '#f0f4ff' : 'white', transition: 'background 0.15s', minHeight: minH }}>
+      <div ref={setNodeRef} style={{ flex: 1, display: 'flex', flexWrap: 'wrap', gap: '6px', padding: '8px', alignItems: 'center', background: isOver ? '#132241' : '#060D1A', transition: 'background 0.15s', minHeight: minH }}>
         {players.map(p => <DraggableTierCard key={p.id} player={p} small={small} />)}
       </div>
       {isDeletable && (
@@ -92,7 +92,7 @@ function TierRow({ tier, players, onLabelChange, onDelete, small, isDeletable })
 function PoolZone({ primerEquipo, cantera, small }) {
   const { setNodeRef, isOver } = useDroppable({ id: 'pool' })
   return (
-    <div ref={setNodeRef} style={{ background: isOver ? '#f0f4ff' : '#f5f5f5', borderRadius: '8px', padding: '12px', transition: 'background 0.15s' }}>
+    <div ref={setNodeRef} style={{ background: isOver ? '#132241' : '#060D1A', borderRadius: '8px', padding: '12px', transition: 'background 0.15s' }}>
       {primerEquipo.length > 0 && (
         <div style={{ marginBottom: '16px' }}>
           <p style={{ fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', color: '#999', marginBottom: '10px', letterSpacing: '1px' }}>PRIMER EQUIPO</p>
@@ -187,7 +187,7 @@ export default function Tierlist() {
   async function handleDownload() {
     if (!tierlistRef.current) return
     try {
-      const canvas = await html2canvas(tierlistRef.current, { scale: 2, useCORS: true, backgroundColor: '#f5f5f5', logging: false })
+      const canvas = await html2canvas(tierlistRef.current, { scale: 2, useCORS: true, backgroundColor: '#060D1A', logging: false })
       const link = document.createElement('a')
       link.download = 'tierlist-zaragoza.png'
       link.href = canvas.toDataURL('image/png')
@@ -238,7 +238,7 @@ export default function Tierlist() {
   )
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5', padding: isMobile ? '16px 12px' : '24px' }}>
+    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#060D1A', padding: isMobile ? '16px 12px' : '24px' }}>
       <SEO
         title="Tier List del Real Zaragoza | Valora a la Plantilla | RZ Hub"
         description="Crea tu tier list de la plantilla del Real Zaragoza. Clasifica a los jugadores por nivel y compártela con la comunidad zaragocista."
@@ -258,7 +258,7 @@ export default function Tierlist() {
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px', flexWrap: 'wrap' }}>
-          <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: isMobile ? '52px' : '72px', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: 0 }}>
+          <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: isMobile ? '52px' : '72px', textTransform: 'uppercase', color: 'white', lineHeight: '1', margin: 0 }}>
             Tier List
           </h1>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -281,7 +281,7 @@ export default function Tierlist() {
         </div>
 
         <DndContext collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div ref={tierlistRef} style={{ padding: isMobile ? '8px' : '16px', background: '#f5f5f5', borderRadius: '8px' }}>
+          <div ref={tierlistRef} style={{ padding: isMobile ? '8px' : '16px', background: '#060D1A', borderRadius: '8px' }}>
             {tiers.map(tier => (
               <TierRow
                 key={tier.id}

@@ -112,7 +112,7 @@ export default function Rumores() {
     : ''
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5', padding: '24px' }}>
+    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#060D1A', padding: '24px' }}>
       <SEO
         title="Rumores de Fichajes del Real Zaragoza | RZ Hub"
         description="Todos los rumores de fichajes del Real Zaragoza recopilados en tiempo real desde redes sociales. Mantente al día del mercado zaragocista."
@@ -129,7 +129,7 @@ export default function Rumores() {
       />
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
 
-        <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: '72px', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: '0 0 8px 0' }}>
+        <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: '72px', textTransform: 'uppercase', color: 'white', lineHeight: '1', margin: '0 0 8px 0' }}>
           Últimas Noticias
         </h1>
         <p style={{ fontFamily: 'sans-serif', fontSize: '13px', color: '#999', marginBottom: '24px' }}>
