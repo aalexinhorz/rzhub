@@ -236,16 +236,19 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
             {/* Nombre — altura fija para que todas las cards sean iguales */}
             <div style={{
               background: nameBarBg,
-              padding: '3px 4px',
+              padding: '0 4px',
               textAlign: 'center',
               width: '100%',
               boxSizing: 'border-box',
               flexShrink: 0,
               height: '18px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              lineHeight: '18px',
+              overflow: 'hidden',
             }}>
+              {/* line-height en vez de flex+align-items para centrar: con
+                  html2canvas el centrado por flexbox posiciona mal el texto
+                  verticalmente en cajas pequeñas (se descuadraba sobre la
+                  fila de suplente aunque en pantalla se viera bien). */}
               <span style={{
                 color: nameTextColor,
                 fontSize: nameFontSize,
@@ -254,9 +257,9 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                display: 'block',
-                width: '100%',
-                textAlign: 'center',
+                display: 'inline-block',
+                maxWidth: '100%',
+                verticalAlign: 'top',
               }}>
                 {player.shortName || player.name}
               </span>
