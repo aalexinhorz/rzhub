@@ -139,20 +139,50 @@ export default function Navbar() {
   return (
     <>
       <header className={`header${scrolled ? ' is-scrolled' : ''}`}>
-        {/* Barra de utilidad: en directo, contacto, login/registro — se
-            oculta en mobile porque ese mismo contenido ya vive dentro
-            del menú hamburguesa. */}
-        <div className="header__topbar">
-          <div className="header__topbar-container">
-            <div className="header__topbar-left">
-              {live && (
-                <a href={live.url} target="_blank" rel="noopener noreferrer" className="rz-badge rz-badge--live">
-                  <span className="rz-live-dot" />
-                  EN DIRECTO
-                </a>
-              )}
-            </div>
-            <div className="header__topbar-right">
+        {/* Barra principal: logo + navegación agrupada. */}
+        <div className="header__mainbar">
+          <div className="header__container">
+            <Link to="/" className="header__logo" onClick={closeMobileMenu}>
+              <img src="/LOGO_RZHUB.png" alt="RZ Hub" />
+            </Link>
+
+            <nav className="header__nav">
+              {NAV_GROUPS.map(g => g.type === 'link' ? (
+                <Link
+                  key={g.to}
+                  to={g.to}
+                  className={`header__nav-link${isActive(g) ? ' is-active' : ''}`}
+                >
+                  {g.label}
+                </Link>
+              ) : (
+                <div key={g.id} className="header__group" ref={el => (groupRefs.current[g.id] = el)}>
+                  <button
+                    type="button"
+                    className={`header__nav-link header__group-trigger${isGroupActive(g) ? ' is-active' : ''}`}
+                    onClick={() => setOpenGroup(o => (o === g.id ? null : g.id))}
+                    aria-haspopup="true"
+                    aria-expanded={openGroup === g.id}
+                  >
+                    {g.label}
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: openGroup === g.id ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}>
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  {openGroup === g.id && (
+                    <div className="header__group-panel">
+                      {g.items.map(item => (
+                        <Link key={item.to} to={item.to} className={isActive(item) ? 'is-active' : ''} onClick={() => setOpenGroup(null)}>
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </nav>
+
+            <div className="header__actions">
               {user ? (
                 <div className="header__user" ref={userMenuRef}>
                   <button onClick={() => setUserMenuOpen(o => !o)} className="header__user-btn">
@@ -197,51 +227,6 @@ export default function Navbar() {
                 </>
               )}
             </div>
-          </div>
-        </div>
-
-        {/* Barra principal: logo + navegación agrupada. */}
-        <div className="header__mainbar">
-          <div className="header__container">
-            <Link to="/" className="header__logo" onClick={closeMobileMenu}>
-              <img src="/LOGO_RZHUB.png" alt="RZ Hub" />
-            </Link>
-
-            <nav className="header__nav">
-              {NAV_GROUPS.map(g => g.type === 'link' ? (
-                <Link
-                  key={g.to}
-                  to={g.to}
-                  className={`header__nav-link${isActive(g) ? ' is-active' : ''}`}
-                >
-                  {g.label}
-                </Link>
-              ) : (
-                <div key={g.id} className="header__group" ref={el => (groupRefs.current[g.id] = el)}>
-                  <button
-                    type="button"
-                    className={`header__nav-link header__group-trigger${isGroupActive(g) ? ' is-active' : ''}`}
-                    onClick={() => setOpenGroup(o => (o === g.id ? null : g.id))}
-                    aria-haspopup="true"
-                    aria-expanded={openGroup === g.id}
-                  >
-                    {g.label}
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: openGroup === g.id ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}>
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
-                  {openGroup === g.id && (
-                    <div className="header__group-panel">
-                      {g.items.map(item => (
-                        <Link key={item.to} to={item.to} className={isActive(item) ? 'is-active' : ''} onClick={() => setOpenGroup(null)}>
-                          {item.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </nav>
 
             <button onClick={toggleMobileMenu} className="header__menu-btn" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}>
               {/* Barras HTML en vez de <line> de SVG: el transform-origin de un elemento
@@ -357,18 +342,29 @@ export default function Navbar() {
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </button>
-                {mobileExpanded[g.id] && g.items.map(item => (
-                  <Link key={item.to} to={item.to} onClick={closeMobileMenu} style={{
-                    color: isActive(item) ? '#ffffff' : 'rgba(255,255,255,0.6)',
-                    textDecoration: 'none', padding: '10px var(--space-6) 10px calc(var(--space-6) + var(--space-4))',
-                    fontSize: 'var(--text-md)',
-                    fontWeight: isActive(item) ? 'var(--weight-bold)' : 'var(--weight-regular)',
-                    fontFamily: 'var(--font-body)',
-                    display: 'block', minHeight: '40px', boxSizing: 'border-box',
-                  }}>
-                    {item.label}
-                  </Link>
-                ))}
+                {/* Grid 0fr↔1fr en vez de montar/desmontar: anima la
+                    apertura/cierre sin necesidad de medir la altura real
+                    del contenido (que varía según el grupo). */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateRows: mobileExpanded[g.id] ? '1fr' : '0fr',
+                  transition: 'grid-template-rows 220ms cubic-bezier(0.4, 0, 0.2, 1)',
+                }}>
+                  <div style={{ overflow: 'hidden', minHeight: 0 }}>
+                    {g.items.map(item => (
+                      <Link key={item.to} to={item.to} onClick={closeMobileMenu} style={{
+                        color: isActive(item) ? '#ffffff' : 'rgba(255,255,255,0.6)',
+                        textDecoration: 'none', padding: '10px var(--space-6) 10px calc(var(--space-6) + var(--space-4))',
+                        fontSize: 'var(--text-md)',
+                        fontWeight: isActive(item) ? 'var(--weight-bold)' : 'var(--weight-regular)',
+                        fontFamily: 'var(--font-body)',
+                        display: 'block', minHeight: '40px', boxSizing: 'border-box',
+                      }}>
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               </div>
             ))}
           </div>

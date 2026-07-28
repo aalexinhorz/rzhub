@@ -5,34 +5,6 @@
   z-index: 1000;
 }
 
-/* -------- Barra de utilidad (arriba, más oscura) -------- */
-.header__topbar {
-  width: 100%;
-  height: 40px;
-  background: #001846;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.header__topbar-container {
-  width: 100%;
-  max-width: 1440px;
-  height: 100%;
-  margin: 0 auto;
-  padding: 0 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.header__topbar-left,
-.header__topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
 /* -------- Barra principal -------- */
 .header__mainbar {
   width: 100%;
@@ -56,10 +28,19 @@
   margin: 0 auto;
   padding: 0 32px;
 
+  /* 3 columnas, no 4: header__menu-btn tiene display:none en desktop, así
+     que no cuenta como grid item — con una 4ª columna explícita el grid
+     seguía reservando su gap de 40px a la derecha aunque estuviera vacía. */
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   column-gap: 40px;
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .header__logo {
@@ -280,15 +261,23 @@
   outline-offset: 3px;
 }
 
-/* Por debajo de 900px no cabe la navegación agrupada: se pliega todo al
-   menú hamburguesa, y la barra de utilidad se oculta porque su
-   contenido (contacto, login/registro, en directo) ya vive dentro de
-   ese menú. */
-@media (max-width: 899px) {
-  .header__topbar { display: none; }
+/* Por debajo de 940px no cabe la navegación agrupada ni las acciones
+   (contacto/login/registro): se pliega todo al menú hamburguesa. El
+   corte real no es 899 sino 924px (ahí "Comunidad" choca incluso con
+   "Regístrate gratis" solo, sin Contáctanos) — medido con margen. */
+@media (max-width: 939px) {
   .header__nav { display: none; }
+  .header__actions { display: none; }
   .header__menu-btn { display: inline-flex; }
-  .header__container { column-gap: 0; }
+  .header__container { grid-template-columns: auto 1fr auto; column-gap: 0; }
+}
+
+/* Entre 940 y 1068px "Comunidad" (el último grupo del nav) choca con
+   "Contáctanos" — medido el punto exacto en que deja de solaparse
+   (1048px), con margen. Se oculta solo Contáctanos y se deja
+   "Regístrate gratis". */
+@media (max-width: 1068px) and (min-width: 940px) {
+  .header__login { display: none; }
 }
 
 @media (max-width: 767px) {
