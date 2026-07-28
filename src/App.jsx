@@ -21,6 +21,7 @@ import Porra from './pages/Porra'
 import Mercado from './pages/Mercado'
 import Tools from './pages/Tools'
 import Fotogaleria from './pages/Fotogaleria'
+import FotogaleriaPartido from './pages/FotogaleriaPartido'
 
 export default function App() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="/mercado" element={<Mercado />} />
         <Route path="/herramientas" element={<Tools />} />
         <Route path="/fotogaleria" element={<Fotogaleria />} />
+        <Route path="/fotogaleria/:partido" element={<FotogaleriaPartido />} />
       </Routes>
     </div>
   )

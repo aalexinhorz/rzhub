@@ -58,29 +58,362 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
-.fotogaleria-match__header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-4);
+.fotogaleria-page__back {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+.fotogaleria-page__back:hover { color: #fff; }
+
+/* -------- Cards (índice: una "carpeta" por partido) -------- */
+.fotogaleria-page__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-5);
 }
 
-.fotogaleria-match__title {
-  font-size: var(--text-2xl);
+.fotogaleria-card {
+  display: block;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.fotogaleria-card:hover,
+.fotogaleria-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--rz-border-md);
+  box-shadow: var(--shadow-hover);
+}
+
+.fotogaleria-card__cover {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--rz-bg-3);
+}
+.fotogaleria-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fotogaleria-card__count {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: var(--radius-full);
+  background: rgba(6, 13, 26, 0.75);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+}
+
+/* -------- Tabs (Todos / Real Zaragoza / Deportivo Aragón) -------- */
+.fotogaleria-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--rz-border);
+  padding-bottom: var(--space-1);
+}
+
+.fotogaleria-tabs__item {
+  background: none;
+  border: none;
+  padding: var(--space-2) var(--space-1);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--rz-text-muted);
+  cursor: pointer;
+  position: relative;
+}
+.fotogaleria-tabs__item:hover { color: var(--rz-text-secondary); }
+.fotogaleria-tabs__item.is-active {
+  color: var(--rz-text-primary);
+}
+.fotogaleria-tabs__item.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -13px;
+  height: 2px;
+  background: var(--rz-yellow);
+}
+
+/* -------- Escudo compartido (card, franja de equipos, crédito) -------- */
+.fotogaleria-crest {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.fotogaleria-crest img { width: 22px; height: 22px; object-fit: contain; }
+.fotogaleria-crest-fallback {
+  font-family: var(--font-body);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  color: #333;
+}
+.fotogaleria-crest--icon { color: var(--rz-blue); }
+
+/* -------- 3 cajas de metadata de la card (equipo / fecha / rival) -------- */
+.fotogaleria-card__boxes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.fotogaleria-card__box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--rz-bg-blue);
+  text-align: center;
+}
+
+.fotogaleria-card__box-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: #ffffff;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* -------- Franja de equipos (página de un partido) -------- */
+.fotogaleria-strip {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--rz-border-md);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.fotogaleria-strip__cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  min-width: 0;
+}
+
+.fotogaleria-strip__cell--accent {
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--rz-yellow);
+  padding-inline: var(--space-6);
+}
+
+.fotogaleria-strip__vs {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: 1px;
+  color: #060D1A;
+}
+.fotogaleria-strip__date {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: rgba(6, 13, 26, 0.7);
+  white-space: nowrap;
+}
+
+.fotogaleria-strip__name {
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* -------- Visor (foto grande + tira de miniaturas) -------- */
+.fotogaleria-viewer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.fotogaleria-viewer__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.fotogaleria-viewer__count {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--rz-text-secondary);
+}
+
+.fotogaleria-viewer__author {
+  font-size: var(--text-sm);
+  color: var(--rz-text-muted);
+}
+.fotogaleria-viewer__author strong {
+  color: var(--rz-text-primary);
+  font-weight: var(--weight-semibold);
+}
+
+.fotogaleria-viewer__stage {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.fotogaleria-viewer__arrow {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--rz-border-md);
+  background: var(--rz-bg-2);
+  color: var(--rz-text-primary);
+  font-size: 24px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.fotogaleria-viewer__arrow:hover { background: var(--rz-bg-3); }
+
+.fotogaleria-viewer__image-wrap {
+  flex: 1;
+  min-width: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--rz-bg-2);
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fotogaleria-viewer__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.fotogaleria-viewer__filmstrip-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.fotogaleria-viewer__filmstrip {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.fotogaleria-viewer__thumb {
+  flex: 0 0 auto;
+  width: 92px;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 0 0 2px transparent;
+  transition: box-shadow var(--transition-fast);
+}
+.fotogaleria-viewer__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fotogaleria-viewer__thumb.is-active { box-shadow: 0 0 0 2px var(--rz-yellow); }
+
+.fotogaleria-viewer__grid-toggle {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--rz-border-md);
+  background: var(--rz-bg-2);
+  color: var(--rz-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.fotogaleria-viewer__grid-toggle:hover { color: var(--rz-text-primary); background: var(--rz-bg-3); }
+
+/* -------- Crédito de la galería -------- */
+.fotogaleria-credit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+}
+.fotogaleria-credit__avatar {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--rz-yellow);
+  color: #060D1A;
+  font-family: var(--font-body);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fotogaleria-credit__eyebrow {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--rz-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.fotogaleria-credit__name {
+  display: block;
+  font-size: var(--text-md);
   font-weight: var(--weight-bold);
   color: var(--rz-text-primary);
 }
 
-.fotogaleria-match__meta {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-size: var(--text-sm);
-  color: var(--rz-text-muted);
-}
-
+/* -------- Grid de fotos (vista alternativa de un partido) -------- */
 .fotogaleria-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -125,87 +458,17 @@
   border-radius: var(--radius-md);
 }
 
-/* -------- Lightbox -------- */
-.fotogaleria-lightbox {
-  position: fixed;
-  inset: 0;
-  background: rgba(3, 8, 16, 0.92);
-  z-index: 2200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-6);
-}
-
-.fotogaleria-lightbox__figure {
-  max-width: min(90vw, 1100px);
-  max-height: 85vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-3);
-}
-.fotogaleria-lightbox__figure img {
-  max-width: 100%;
-  max-height: 75vh;
-  width: auto;
-  height: auto;
-  border-radius: var(--radius-md);
-  object-fit: contain;
-}
-.fotogaleria-lightbox__figure figcaption {
-  font-size: var(--text-sm);
-  color: var(--rz-text-secondary);
-  text-align: center;
-}
-
-.fotogaleria-lightbox__close {
-  position: absolute;
-  top: var(--space-5);
-  right: var(--space-5);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid var(--rz-border-md);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--rz-text-primary);
-  font-size: var(--text-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.fotogaleria-lightbox__close:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.fotogaleria-lightbox__nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 1px solid var(--rz-border-md);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--rz-text-primary);
-  font-size: 28px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.fotogaleria-lightbox__nav:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
-.fotogaleria-lightbox__nav--prev { left: var(--space-5); }
-.fotogaleria-lightbox__nav--next { right: var(--space-5); }
-
 @media (max-width: 640px) {
   .fotogaleria-page__hero { padding: 44px var(--padding-page) 36px; }
   .fotogaleria-page__body { padding: 28px 0 0; }
-  .fotogaleria-page__container { padding-inline: 20px; padding-bottom: 48px; gap: 36px; }
+  .fotogaleria-page__container { padding-inline: 20px; padding-bottom: 48px; gap: 28px; }
   .fotogaleria-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--space-2); }
-  .fotogaleria-lightbox__nav { width: 40px; height: 40px; font-size: 22px; }
-  .fotogaleria-lightbox__nav--prev { left: var(--space-2); }
-  .fotogaleria-lightbox__nav--next { right: var(--space-2); }
+  .fotogaleria-page__cards { grid-template-columns: 1fr; gap: var(--space-4); }
+
+  .fotogaleria-strip { flex-direction: column; }
+  .fotogaleria-strip__cell--accent { flex-direction: row; padding: var(--space-3); }
+
+  .fotogaleria-viewer__image-wrap { aspect-ratio: 4 / 3; }
+  .fotogaleria-viewer__arrow { width: 32px; height: 32px; font-size: 20px; }
+  .fotogaleria-viewer__thumb { width: 68px; }
 }

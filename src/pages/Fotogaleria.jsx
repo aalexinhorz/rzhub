@@ -1,22 +1,23 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
-import useMatchPhotos from '../hooks/useMatchPhotos'
+import useMatchPhotos, { EQUIPOS } from '../hooks/useMatchPhotos'
 import Footer from '../components/Footer'
+import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
 import './Fotogaleria.css'
 
-function formatMatchDate(dateStr) {
-  return new Date(`${dateStr}T00:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+const TABS = [{ id: 'todos', label: 'Todos' }, ...Object.entries(EQUIPOS).map(([id, label]) => ({ id, label }))]
+
+function formatShortDate(dateStr) {
+  return new Date(`${dateStr}T00:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 function GallerySkeleton() {
   return (
-    <div className="fotogaleria-page__skeleton" aria-hidden="true">
-      <div className="rz-skeleton fotogaleria-page__skeleton-heading" />
-      <div className="fotogaleria-page__skeleton-grid">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="rz-skeleton fotogaleria-page__skeleton-thumb" />
-        ))}
-      </div>
+    <div className="fotogaleria-page__skeleton-grid" aria-hidden="true">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="rz-skeleton fotogaleria-page__skeleton-card" />
+      ))}
     </div>
   )
 }
@@ -37,85 +38,70 @@ function ErrorState() {
   )
 }
 
-function Lightbox({ photos, index, onClose, onNavigate }) {
-  const photo = photos[index]
-
-  useEffect(() => {
-    function onKeyDown(e) {
-      if (e.key === 'Escape') onClose()
-      if (e.key === 'ArrowRight') onNavigate(1)
-      if (e.key === 'ArrowLeft') onNavigate(-1)
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [onClose, onNavigate])
-
-  if (!photo) return null
+function MatchCard({ match }) {
+  const rivalCrest = useEscudo(match.rival)
 
   return (
-    <div className="fotogaleria-lightbox" role="dialog" aria-modal="true" onClick={onClose}>
-      <button type="button" className="fotogaleria-lightbox__close" onClick={onClose} aria-label="Cerrar">
-        ✕
-      </button>
+    <Link to={`/fotogaleria/${encodeURIComponent(match.key)}`} className="fotogaleria-card">
+      <div className="fotogaleria-card__cover">
+        <img src={match.photos[0].url} alt={`${EQUIPOS[match.equipo]} vs ${match.rival}`} loading="lazy" />
+        <span className="fotogaleria-card__count">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="M21 15l-5-5L5 21" />
+          </svg>
+          {match.photos.length}
+        </span>
+      </div>
 
-      <button
-        type="button"
-        className="fotogaleria-lightbox__nav fotogaleria-lightbox__nav--prev"
-        onClick={e => { e.stopPropagation(); onNavigate(-1) }}
-        aria-label="Foto anterior"
-      >
-        ‹
-      </button>
-
-      <figure className="fotogaleria-lightbox__figure" onClick={e => e.stopPropagation()}>
-        <img src={photo.url} alt={`Real Zaragoza vs ${photo.rival}`} />
-        <figcaption>
-          Real Zaragoza vs {photo.rival} · {formatMatchDate(photo.matchDate)}
-        </figcaption>
-      </figure>
-
-      <button
-        type="button"
-        className="fotogaleria-lightbox__nav fotogaleria-lightbox__nav--next"
-        onClick={e => { e.stopPropagation(); onNavigate(1) }}
-        aria-label="Foto siguiente"
-      >
-        ›
-      </button>
-    </div>
+      <div className="fotogaleria-card__boxes">
+        <span className="fotogaleria-card__box">
+          <span className="fotogaleria-crest"><img src={ESCUDO_ZARAGOZA} alt="" /></span>
+          <span className="fotogaleria-card__box-label">{EQUIPOS[match.equipo]}</span>
+        </span>
+        <span className="fotogaleria-card__box">
+          <span className="fotogaleria-crest fotogaleria-crest--icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path d="M3 10h18M8 2v4M16 2v4" />
+            </svg>
+          </span>
+          <span className="fotogaleria-card__box-label">{formatShortDate(match.matchDate)}</span>
+        </span>
+        <span className="fotogaleria-card__box">
+          <span className="fotogaleria-crest">
+            {rivalCrest ? <img src={rivalCrest} alt="" /> : <span className="fotogaleria-crest-fallback">{match.rival[0]}</span>}
+          </span>
+          <span className="fotogaleria-card__box-label">{match.rival}</span>
+        </span>
+      </div>
+    </Link>
   )
 }
 
 export default function Fotogaleria() {
   const { loading, error, matches } = useMatchPhotos()
-  const [activeIndex, setActiveIndex] = useState(null)
+  const [tab, setTab] = useState('primer-equipo')
 
-  const allPhotos = useMemo(
-    () => matches.flatMap(m => m.photos.map(p => ({ ...p, rival: m.rival, matchDate: m.matchDate }))),
-    [matches]
+  const filtered = useMemo(
+    () => (tab === 'todos' ? matches : matches.filter(m => m.equipo === tab)),
+    [matches, tab]
   )
-
-  function openLightbox(photo) {
-    setActiveIndex(allPhotos.findIndex(p => p.id === photo.id))
-  }
-
-  function navigate(delta) {
-    setActiveIndex(i => (i + delta + allPhotos.length) % allPhotos.length)
-  }
 
   return (
     <div className="fotogaleria-page">
       <SEO
         title="Fotogalería del Real Zaragoza | RZ Hub"
-        description="Fotos de los partidos del Real Zaragoza: ambiente, afición y jugadores en cada desplazamiento y jornada en La Romareda."
-        keywords="fotos Real Zaragoza, fotogalería Real Zaragoza, imágenes Real Zaragoza, afición Real Zaragoza, La Romareda fotos"
+        description="Fotos de los partidos del Real Zaragoza y el Deportivo Aragón: ambiente, afición y jugadores en cada desplazamiento y jornada."
+        keywords="fotos Real Zaragoza, fotogalería Real Zaragoza, imágenes Real Zaragoza, afición Real Zaragoza, Deportivo Aragón fotos"
         path="/fotogaleria"
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'ImageGallery',
           name: 'Fotogalería del Real Zaragoza',
           url: `${SITE_URL}/fotogaleria`,
-          description: 'Fotos de los partidos del Real Zaragoza, organizadas por partido.',
+          description: 'Fotos de los partidos del Real Zaragoza y el Deportivo Aragón, organizadas por partido.',
           isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
         }}
       />
@@ -123,54 +109,41 @@ export default function Fotogaleria() {
       <div className="fotogaleria-page__hero">
         <p className="rz-eyebrow rz-eyebrow--yellow fotogaleria-page__eyebrow">Real Zaragoza · Temporada 26/27</p>
         <h1 className="fotogaleria-page__title">Fotogalería</h1>
-        <p className="fotogaleria-page__subtitle">Ambiente, afición y jugadores en cada partido del Real Zaragoza.</p>
+        <p className="fotogaleria-page__subtitle">Ambiente, afición y jugadores en cada partido del Real Zaragoza y el Deportivo Aragón.</p>
       </div>
 
       <div className="fotogaleria-page__body">
         <div className="fotogaleria-page__container">
+          <div className="fotogaleria-tabs" role="tablist">
+            {TABS.map(t => (
+              <button
+                key={t.id}
+                type="button"
+                role="tab"
+                aria-selected={tab === t.id}
+                className={`fotogaleria-tabs__item${tab === t.id ? ' is-active' : ''}`}
+                onClick={() => setTab(t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
           {loading && <GallerySkeleton />}
           {!loading && error && <ErrorState />}
-          {!loading && !error && matches.length === 0 && <EmptyState />}
+          {!loading && !error && filtered.length === 0 && <EmptyState />}
 
-          {!loading && !error && matches.map(match => (
-            <section key={`${match.rival}-${match.matchDate}`} className="fotogaleria-match">
-              <div className="fotogaleria-match__header">
-                <h2 className="fotogaleria-match__title">Real Zaragoza vs {match.rival}</h2>
-                <div className="fotogaleria-match__meta">
-                  <span>{formatMatchDate(match.matchDate)}</span>
-                  <span className={`rz-badge ${match.sede === 'local' ? 'rz-badge--green' : 'rz-badge--red'}`}>
-                    {match.sede === 'local' ? 'Casa' : 'Fuera'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="fotogaleria-grid">
-                {match.photos.map(photo => (
-                  <button
-                    key={photo.id}
-                    type="button"
-                    className="fotogaleria-thumb"
-                    onClick={() => openLightbox(photo)}
-                  >
-                    <img src={photo.url} alt={`Real Zaragoza vs ${match.rival}`} loading="lazy" />
-                  </button>
-                ))}
-              </div>
-            </section>
-          ))}
+          {!loading && !error && filtered.length > 0 && (
+            <div className="fotogaleria-page__cards">
+              {filtered.map(match => (
+                <MatchCard key={match.key} match={match} />
+              ))}
+            </div>
+          )}
         </div>
 
         <Footer />
       </div>
-
-      {activeIndex !== null && (
-        <Lightbox
-          photos={allPhotos}
-          index={activeIndex}
-          onClose={() => setActiveIndex(null)}
-          onNavigate={navigate}
-        />
-      )}
     </div>
   )
 }

@@ -40,5 +40,17 @@ create policy "Bucket matchphotos - actualización autorizada"
     )
   );
 
+drop policy if exists "Bucket matchphotos - borrado autorizado" on storage.objects;
+create policy "Bucket matchphotos - borrado autorizado"
+  on storage.objects for delete
+  using (
+    bucket_id = 'matchphotos'
+    and exists (
+      select 1 from profiles p
+      where p.id = auth.uid()
+      and (p.es_fotografo or p.es_redactor)
+    )
+  );
+
 -- Para dar acceso a la persona externa que sube las fotos:
 --   update profiles set es_fotografo = true where id = '<user-id>';

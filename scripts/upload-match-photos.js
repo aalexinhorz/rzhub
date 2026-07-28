@@ -7,19 +7,26 @@ if (!process.env.VITE_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
   process.exit(1)
 }
 
-const [, , rival, matchDate, sede, folder] = process.argv
+const EQUIPOS = ['primer-equipo', 'aragon']
 
-if (!rival || !matchDate || !sede || !folder) {
+const [, , equipo, rival, matchDate, sede, folder] = process.argv
+
+if (!equipo || !rival || !matchDate || !sede || !folder) {
   console.error(`
-Uso: node --env-file=.env.local scripts/upload-match-photos.js "<rival>" <YYYY-MM-DD> <local|visitante> <carpeta>
+Uso: node --env-file=.env.local scripts/upload-match-photos.js <primer-equipo|aragon> "<rival>" <YYYY-MM-DD> <local|visitante> <carpeta>
 
 Ejemplo:
-  node --env-file=.env.local scripts/upload-match-photos.js "Gimnàstic de Tarragona" 2026-08-30 visitante ./fotos/tarragona
+  node --env-file=.env.local scripts/upload-match-photos.js primer-equipo "Gimnàstic de Tarragona" 2026-08-30 visitante ./fotos/tarragona
 
 Sube cada imagen de la carpeta al bucket "matchphotos" con un nombre que
-codifica fecha, sede y rival (sin necesidad de tabla en Supabase):
-  2026-08-30_visitante_gimnastic-de-tarragona_01.jpg
+codifica equipo, fecha, sede y rival (sin necesidad de tabla en Supabase):
+  2026-08-30_primer-equipo_visitante_gimnastic-de-tarragona_01.jpg
 `)
+  process.exit(1)
+}
+
+if (!EQUIPOS.includes(equipo)) {
+  console.error('El campo <equipo> debe ser "primer-equipo" o "aragon"')
   process.exit(1)
 }
 
@@ -64,7 +71,7 @@ async function uploadMatchPhotos() {
       const ext = path.extname(file).toLowerCase()
       const contentType = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg'
       const seq = String(i + 1).padStart(2, '0')
-      const destName = `${matchDate}_${sede}_${rivalSlug}_${seq}${ext}`
+      const destName = `${matchDate}_${equipo}_${sede}_${rivalSlug}_${seq}${ext}`
 
       console.log(`📤 Subiendo ${file} → ${destName}...`)
 
