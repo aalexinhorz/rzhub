@@ -130,8 +130,6 @@ function LineupSlot({ navigate, partido, nextMatch }) {
     : partido?.rival || null
 
   const closesAt = kickoff
-    ? new Date(new Date(kickoff).getTime() - 60 * 60 * 1000).toISOString()
-    : null
 
   console.log('nextMatch:', nextMatch)
   console.log('closesAt:', closesAt)
