@@ -263,12 +263,12 @@
   outline-offset: 3px;
 }
 
-/* Tablet: 900–1259px. El corte real no es 1199 sino 1259: por debajo
-   de eso, en cuanto reaparecen los enlaces "overflow" (Comunidad,
-   TierMaker, On Tour) el <nav> ya no cabe antes del botón de
-   .header__actions y ambos se solapan — medido el punto exacto en
-   que deja de pasar (1250px), con margen. */
-@media (max-width: 1259px) and (min-width: 900px) {
+/* Tablet: 900–1379px. Al añadir "Fotos" a los enlaces "overflow"
+   (Comunidad, TierMaker, On Tour, Fotos) el <nav> completo pesa más y
+   ya no cabe antes del botón de .header__actions hasta más ancho que
+   antes — medido el punto exacto en que deja de solaparse (1316px),
+   con margen. */
+@media (max-width: 1379px) and (min-width: 900px) {
   .header__container { padding: 0 24px; }
   .header__nav { gap: 20px; }
   .header__nav-link--overflow { display: none; }

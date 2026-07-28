@@ -353,11 +353,11 @@
 
 @media (max-width: 640px) {
   .hero { padding: 40px 0 76px; }
-  .hero__container { padding: 0 20px; row-gap: 16px; }
+  .hero__container { padding: 0 20px; row-gap: 2px; }
 
   .hero__eyebrow { font-size: 12px; margin-bottom: 16px; }
-  .hero__title { font-size: 40px; margin-bottom: 20px; }
-  .hero__desc { font-size: 16px; margin-bottom: 8px; }
+  .hero__title { font-size: 52px; margin-bottom: 20px; }
+  .hero__desc { font-size: 16px; margin-bottom: 16px; }
 
   .hero__benefits { display: none; }
 
