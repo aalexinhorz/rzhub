@@ -65,6 +65,12 @@ export default function RedaccionFotos() {
   const [progreso, setProgreso] = useState(null)
   const [mensaje, setMensaje] = useState('')
 
+  const [fotosExistentes, setFotosExistentes] = useState([])
+  const [ordenCambiado, setOrdenCambiado] = useState(false)
+  const [guardandoOrden, setGuardandoOrden] = useState(false)
+  const [borrandoId, setBorrandoId] = useState(null)
+  const dragIndexRef = useRef(null)
+
   const puedeSubir = profile?.es_fotografo || profile?.es_redactor
 
   useEffect(() => {
@@ -81,6 +87,8 @@ export default function RedaccionFotos() {
     setSede('visitante')
     setAutor('')
     setArchivos([])
+    setFotosExistentes([])
+    setOrdenCambiado(false)
     setMensaje('')
     setVista('formulario')
   }
@@ -93,8 +101,75 @@ export default function RedaccionFotos() {
     setSede(match.sede)
     setAutor(autorConocido ?? (await fetchMatchAuthor(match.key)) ?? '')
     setArchivos([])
+    setFotosExistentes(match.photos)
+    setOrdenCambiado(false)
     setMensaje('')
     setVista('formulario')
+  }
+
+  async function eliminarFotoExistente(photo) {
+    if (!confirm('¿Eliminar esta foto de la galería?')) return
+    setBorrandoId(photo.id)
+    const { error } = await supabase.storage.from(BUCKET).remove([photo.id])
+    setBorrandoId(null)
+    if (error) { alert('Error al eliminar la foto: ' + error.message); return }
+    setFotosExistentes(prev => prev.filter(p => p.id !== photo.id))
+    refetch()
+  }
+
+  function handleDragStart(i) {
+    dragIndexRef.current = i
+  }
+
+  function handleDragOver(e, i) {
+    e.preventDefault()
+    const from = dragIndexRef.current
+    if (from === null || from === i) return
+    setFotosExistentes(prev => {
+      const next = [...prev]
+      const [moved] = next.splice(from, 1)
+      next.splice(i, 0, moved)
+      return next
+    })
+    dragIndexRef.current = i
+    setOrdenCambiado(true)
+  }
+
+  function handleDragEnd() {
+    dragIndexRef.current = null
+  }
+
+  async function guardarOrden() {
+    setGuardandoOrden(true)
+    const rivalSlug = slugify(rival)
+    const prefix = `${fecha}_${equipo}_${sede}_${rivalSlug}_`
+
+    // Movemos primero a nombres temporales para no pisar unas fotos con
+    // otras si dos posiciones se intercambian entre sí.
+    const temporales = []
+    for (let i = 0; i < fotosExistentes.length; i++) {
+      const p = fotosExistentes[i]
+      const ext = p.id.split('.').pop()
+      const tmpName = `__tmp_${Date.now()}_${i}.${ext}`
+      const { error } = await supabase.storage.from(BUCKET).move(p.id, tmpName)
+      if (error) { alert('Error al reordenar: ' + error.message); setGuardandoOrden(false); return }
+      temporales.push({ tmpName, ext })
+    }
+
+    const reordenadas = []
+    for (let i = 0; i < temporales.length; i++) {
+      const { tmpName, ext } = temporales[i]
+      const finalName = `${prefix}${String(i + 1).padStart(2, '0')}.${ext}`
+      const { error } = await supabase.storage.from(BUCKET).move(tmpName, finalName)
+      if (error) { alert('Error al reordenar: ' + error.message); setGuardandoOrden(false); return }
+      const { publicUrl } = supabase.storage.from(BUCKET).getPublicUrl(finalName).data
+      reordenadas.push({ id: finalName, url: publicUrl, seq: i + 1 })
+    }
+
+    setFotosExistentes(reordenadas)
+    setOrdenCambiado(false)
+    setGuardandoOrden(false)
+    refetch()
   }
 
   async function eliminarGaleria(match) {
@@ -262,8 +337,43 @@ export default function RedaccionFotos() {
             <p style={{ margin: '4px 0 0', fontFamily: 'sans-serif', fontSize: '12px', color: '#aaa' }}>Se muestra en la fotogalería. Puedes dejarlo vacío.</p>
           </div>
 
+          {fotosExistentes.length > 0 && (
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ fontSize: '11px', color: '#888', fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>
+                Fotos ya subidas ({fotosExistentes.length}) — arrastra para reordenar
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '10px' }}>
+                {fotosExistentes.map((p, i) => (
+                  <div
+                    key={p.id}
+                    draggable
+                    onDragStart={() => handleDragStart(i)}
+                    onDragOver={e => handleDragOver(e, i)}
+                    onDragEnd={handleDragEnd}
+                    style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', aspectRatio: '1', cursor: 'grab', opacity: borrandoId === p.id ? 0.4 : 1, border: '2px solid transparent' }}
+                  >
+                    <img src={p.url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: 'none' }} />
+                    <span style={{ position: 'absolute', bottom: '4px', left: '4px', background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '10px', fontFamily: 'sans-serif', fontWeight: '700', padding: '1px 6px', borderRadius: '4px' }}>{i + 1}</span>
+                    <button
+                      onClick={() => eliminarFotoExistente(p)}
+                      disabled={borrandoId === p.id}
+                      style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', borderRadius: '50%', width: '22px', height: '22px', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {ordenCambiado && (
+                <button onClick={guardarOrden} disabled={guardandoOrden} style={{ marginTop: '12px', background: '#0B4390', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 20px', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '700', cursor: guardandoOrden ? 'default' : 'pointer', opacity: guardandoOrden ? 0.7 : 1 }}>
+                  {guardandoOrden ? 'Guardando orden...' : '✓ Guardar orden'}
+                </button>
+              )}
+            </div>
+          )}
+
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ fontSize: '11px', color: '#888', fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>Fotos</label>
+            <label style={{ fontSize: '11px', color: '#888', fontFamily: 'sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '8px' }}>{fotosExistentes.length > 0 ? 'Añadir más fotos' : 'Fotos'}</label>
             <button onClick={() => fileInputRef.current.click()} style={{ background: '#0B4390', color: 'white', border: 'none', borderRadius: '8px', padding: '10px 20px', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }}>
               📁 Elegir fotos
             </button>
