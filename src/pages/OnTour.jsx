@@ -5,6 +5,8 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import '../components/HeroSection.css'
 import useNextAwayMatch from '../hooks/useNextAwayMatch'
+import useNextAwayPartido from '../hooks/useNextAwayPartido'
+import QuedadasSection from '../components/QuedadasSection'
 import { useEscudo } from '../lib/escudos'
 
 const D = [
@@ -95,6 +97,7 @@ export default function OnTour() {
   const { match: nextAway } = useNextAwayMatch()
   const nextAwayEscudo = useEscudo(nextAway?.rival)
   const nextTrip = findTrip(nextAway?.rival)
+  const { partido: proximoPartidoFuera } = useNextAwayPartido()
 
   const linkStyle = {
     display: 'block',
@@ -167,6 +170,10 @@ export default function OnTour() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div style={{ paddingTop: '24px' }}>
+        <QuedadasSection partido={proximoPartidoFuera} />
       </div>
 
       <div className="ontour-mapwrap" style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
