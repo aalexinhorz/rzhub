@@ -14,11 +14,13 @@ import OnTour from './pages/OnTour'
 import Noticias from './pages/Noticias'
 import NoticiaDetalle from './pages/NoticiaDetalle'
 import Redaccion from './pages/Redaccion'
+import RedaccionFotos from './pages/RedaccionFotos'
 import Calendario from './pages/Calendario'
 import Contacto from './pages/Contacto'
 import Porra from './pages/Porra'
 import Mercado from './pages/Mercado'
 import Tools from './pages/Tools'
+import Fotogaleria from './pages/Fotogaleria'
 
 export default function App() {
   return (
@@ -36,6 +38,7 @@ export default function App() {
         <Route path="/noticias" element={<Noticias />} />
         <Route path="/noticias/:slug" element={<NoticiaDetalle />} />
         <Route path="/redaccion" element={<Redaccion />} />
+        <Route path="/redaccion-fotos" element={<RedaccionFotos />} />
         <Route path="/contenidos" element={<Navigate to="/" replace />} />
         <Route path="/on-tour" element={<OnTour />} />
         <Route path="/calendario" element={<Calendario />} />
@@ -44,6 +47,7 @@ export default function App() {
         <Route path="/porra" element={<Porra />} />
         <Route path="/mercado" element={<Mercado />} />
         <Route path="/herramientas" element={<Tools />} />
+        <Route path="/fotogaleria" element={<Fotogaleria />} />
       </Routes>
     </div>
   )

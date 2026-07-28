@@ -27,7 +27,7 @@ export default function Footer() {
           {/* Herramientas */}
           <div>
             <div style={{ fontSize: 'var(--text-xs)', fontWeight: 'var(--weight-bold)', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--rz-text-muted)', marginBottom: 'var(--space-4)' }}>Herramientas</div>
-            {['Lineup Builder', 'Mercado', 'On Tour', 'Calendario', 'La Porra'].map((l, i) => (
+            {['Lineup Builder', 'Mercado', 'On Tour', 'Calendario', 'La Porra', 'Fotogalería'].map((l, i) => (
               <div key={i} style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.40)', padding: '3px 0', cursor: 'pointer' }}
                 onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.75)'}
                 onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.40)'}
