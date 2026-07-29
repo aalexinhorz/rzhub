@@ -55,11 +55,6 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
     return drawLineupCanvas({ slotsLayout, slots, subs, teamName, formation })
   }
 
-  async function capturarPNG() {
-    const canvas = await capturarCanvas()
-    return canvas.toDataURL('image/png')
-  }
-
   async function capturarBlob() {
     const canvas = await capturarCanvas()
     return new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
@@ -68,18 +63,33 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
   async function handleDownload() {
     if (!fieldRef.current) return
     try {
-      const dataUrl = await capturarPNG()
+      const blob = await capturarBlob()
+      const nombreArchivo = `${teamName || 'alineacion'}.png`
+
+      // En iOS (Safari y Chrome, ambos sobre WebKit) el <a download> con
+      // un data:/blob: URL no descarga nada: el navegador simplemente
+      // ignora el atributo y no pasa nada al hacer click(). La única vía
+      // fiable de "descargar" en iOS es la hoja nativa de compartir, que
+      // sí ofrece "Guardar imagen".
+      const archivo = new File([blob], nombreArchivo, { type: 'image/png' })
+      if (navigator.canShare?.({ files: [archivo] })) {
+        await navigator.share({ files: [archivo] })
+        return
+      }
+
+      const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
-      link.download = `${teamName || 'alineacion'}.png`
-      link.href = dataUrl
-      // Safari (sobre todo en iOS) no dispara la descarga si el <a> no
-      // está insertado en el DOM al hacer click(): hay que añadirlo,
-      // pulsarlo y quitarlo, aunque en Chrome/Firefox "funcionara" igual
-      // sin este paso.
+      link.download = nombreArchivo
+      link.href = url
+      // Safari de escritorio no dispara la descarga si el <a> no está
+      // insertado en el DOM al hacer click(): hay que añadirlo, pulsarlo
+      // y quitarlo, aunque en Chrome/Firefox "funcionara" igual sin esto.
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      URL.revokeObjectURL(url)
     } catch (error) {
+      if (error?.name === 'AbortError') return // el usuario cerró la hoja de compartir
       console.error('Error al descargar:', error)
     }
   }
@@ -101,15 +111,38 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
 
   async function handleCompartirX() {
     if (!fieldRef.current) return
-    // X no permite adjuntar imágenes vía intent link, solo texto: abrimos
-    // el compositor con el texto listo y copiamos la imagen al
+    const esMobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent)
+    const textoPlano = `Mi alineación ideal: ${teamName || 'El XI del Real Zaragoza'} ⚽💙\n#RealZaragoza #RZHub`
+
+    // En móvil, la hoja nativa de compartir adjunta la imagen directamente
+    // a la app que elija el usuario (X incluida): soluciona de raíz el
+    // problema de "se abre X pero sin imagen" que daba el hack de
+    // portapapeles + esquema nativo, que dependía de que el navegador
+    // soportara clipboard.write() con imágenes y de que X detectara el
+    // paste — nada de eso es fiable en Chrome para iOS.
+    if (esMobile) {
+      try {
+        const blob = await capturarBlob()
+        const archivo = new File([blob], `${teamName || 'alineacion'}.png`, { type: 'image/png' })
+        if (navigator.canShare?.({ files: [archivo] })) {
+          await navigator.share({ files: [archivo], text: textoPlano })
+          return
+        }
+      } catch (error) {
+        if (error?.name === 'AbortError') return // el usuario cerró la hoja de compartir
+        console.error('No se pudo abrir el panel de compartir:', error)
+      }
+    }
+
+    // Fallback (desktop, o móviles sin soporte de Web Share con archivos):
+    // X no permite adjuntar imágenes vía intent link, solo texto, así que
+    // abrimos el compositor con el texto listo y copiamos la imagen al
     // portapapeles para que el usuario solo tenga que pegarla (Ctrl/Cmd+V).
     //
     // Safari (y cada vez más Chrome) exige que clipboard.write() se llame
     // de forma SÍNCRONA dentro del gesto de clic, sin ningún await previo;
     // por eso el ClipboardItem recibe la promesa del blob directamente en
     // vez de esperar a que termine la captura antes de invocar write().
-    const esMobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent)
     const soportaImagen = !!(navigator.clipboard?.write && window.ClipboardItem)
 
     const copiaPromise = soportaImagen
