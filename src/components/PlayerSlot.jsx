@@ -94,6 +94,10 @@ function SubSearch({ label, pending, search, results, onSearchChange, onSelect, 
   )
 }
 
+function byZaragozaFirst(a, b) {
+  return Number(b.isZaragoza) - Number(a.isZaragoza)
+}
+
 function scaleByFieldWidth(fieldWidth, min, max, refMin = 320, refMax = 620) {
   if (!fieldWidth) return max
   const t = Math.min(1, Math.max(0, (fieldWidth - refMin) / (refMax - refMin)))
@@ -121,17 +125,17 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
 
   useEffect(() => {
     if (search.length < 2) { setResults([]); return }
-    setResults(allPlayers.filter(p => p.name.toLowerCase().includes(search.toLowerCase())))
+    setResults(allPlayers.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).sort(byZaragozaFirst))
   }, [search, allPlayers])
 
   useEffect(() => {
     if (searchSub1.length < 2) { setResultsSub1([]); return }
-    setResultsSub1(allPlayers.filter(p => p.name.toLowerCase().includes(searchSub1.toLowerCase())))
+    setResultsSub1(allPlayers.filter(p => p.name.toLowerCase().includes(searchSub1.toLowerCase())).sort(byZaragozaFirst))
   }, [searchSub1, allPlayers])
 
   useEffect(() => {
     if (searchSub2.length < 2) { setResultsSub2([]); return }
-    setResultsSub2(allPlayers.filter(p => p.name.toLowerCase().includes(searchSub2.toLowerCase())))
+    setResultsSub2(allPlayers.filter(p => p.name.toLowerCase().includes(searchSub2.toLowerCase())).sort(byZaragozaFirst))
   }, [searchSub2, allPlayers])
 
   function openModal() {
