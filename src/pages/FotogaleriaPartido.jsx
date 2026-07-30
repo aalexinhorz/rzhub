@@ -99,6 +99,8 @@ export default function FotogaleriaPartido() {
             ← Fotogalería
           </button>
 
+          <h1 className="sr-only">Fotos: {equipoNombre} vs {match.rival}</h1>
+
           <div className="fotogaleria-strip">
             <div className="fotogaleria-strip__cell">
               <span className="fotogaleria-crest"><img src={ESCUDO_ZARAGOZA} alt="" /></span>
