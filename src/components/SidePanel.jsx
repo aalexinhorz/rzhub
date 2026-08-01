@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import emailjs from '@emailjs/browser'
 import { formationsList } from '../pages/Lineup'
 
-const DEFAULT_PHOTO = 'https://assets.laliga.com/squad/2025/t190/default/512x512/default_t190_2025_1_003_000.png'
+const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
 
 const card = { background: '#0F1E38', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px' }
 // Mismo look que .tool-card de la landing (ToolsSection.css)

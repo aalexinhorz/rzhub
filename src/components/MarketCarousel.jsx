@@ -4,7 +4,7 @@ import { supabase } from '../hooks/useAuth'
 import { useEscudo } from '../lib/escudos'
 import './MarketCarousel.css'
 
-const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'
+const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
 
 // Solo existen dos variantes visuales: fichaje (entrada) y salida.
 // Los sub-tipos de Supabase se agrupan en una de las dos.

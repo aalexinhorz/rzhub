@@ -7,7 +7,7 @@
 // (drawImage/fillText/arc) sí es consistente entre navegadores, así
 // que el resultado es idéntico en cualquiera de ellos.
 
-const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'
+const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
 
 const W = 540
 const H = 675

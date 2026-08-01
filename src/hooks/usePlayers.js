@@ -6,7 +6,7 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_KEY
 )
 
-const DEFAULT_PHOTO = 'https://assets.laliga.com/squad/2025/t190/default/512x512/default_t190_2025_1_003_000.png'
+const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
 
 export default function usePlayers() {
   const [players, setPlayers] = useState([])

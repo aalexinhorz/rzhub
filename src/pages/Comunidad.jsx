@@ -4,7 +4,7 @@ import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
 import '../components/HeroSection.css'
 
-const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'
+const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
 
 function LineupCard({ lineup, onDelete, isOwner }) {
   const slots = lineup.slots || {}

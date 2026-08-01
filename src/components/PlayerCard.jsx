@@ -51,7 +51,7 @@ export default function PlayerCard({ player }) {
       <div style={{ width: '100%', height: '64px', overflow: 'hidden', position: 'relative', background: 'linear-gradient(180deg, #c8d8f0 0%, #e8f0fa 100%)' }}>
         <img
           crossOrigin="anonymous"
-          src={player.photo || 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'}
+          src={player.photo || 'https://www.fotmob.com/img/player-fallback-dark.png'}
           alt={player.name}
           style={{
             width: '100%',
@@ -61,7 +61,7 @@ export default function PlayerCard({ player }) {
             display: 'block',
           }}
           onError={e => {
-            e.target.src = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'
+            e.target.src = 'https://www.fotmob.com/img/player-fallback-dark.png'
           }}
         />
 

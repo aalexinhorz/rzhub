@@ -6,7 +6,7 @@ import useAuth from '../hooks/useAuth'
 import { supabase } from '../hooks/useAuth'
 import html2canvas from 'html2canvas'
 
-const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'
+const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
 
 const TIERS_INICIALES = [
   { id: 'clave',        label: 'Jugador clave',  color: '#c0392b' },

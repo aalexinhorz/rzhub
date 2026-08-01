@@ -8,7 +8,7 @@ const TEAM_ID = 2815
 const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY
 const API_HOST = 'sportapi7.p.rapidapi.com'
 
-const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'
+const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
 
 const PARTIDOS = [
   { rival: 'Utebo', fecha: '29 Jul', sede: 'local', escudo: '/escudos/spain_utebo.football-logos.cc.svg' },

@@ -155,7 +155,7 @@ function extraerImagen(description) {
   return match ? match[1] : null
 }
 
-const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/default.png'
+const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
 
 const F = 'Archivo, sans-serif'
 
