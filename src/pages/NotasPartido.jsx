@@ -8,7 +8,7 @@ import { usePartido } from '../hooks/usePartidos'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
 import './Notas.css'
 
-const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
+const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
 const PUNTUACIONES = Array.from({ length: 10 }, (_, i) => i + 1)
 

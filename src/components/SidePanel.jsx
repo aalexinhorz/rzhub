@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import emailjs from '@emailjs/browser'
 import { formationsList } from '../pages/Lineup'
 
-const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
+const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
 const card = { background: '#0F1E38', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px' }
 // Mismo look que .tool-card de la landing (ToolsSection.css)

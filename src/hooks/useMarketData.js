@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from './useAuth'
 import { ESCUDO_ZARAGOZA } from '../lib/escudos'
 
-const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
+const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
 // Único dato real que existe hoy: la tabla `mercado` de Supabase no
 // tiene columna de temporada, solo los movimientos de la temporada en

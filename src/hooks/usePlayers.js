@@ -6,7 +6,7 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_KEY
 )
 
-const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
+const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
 export default function usePlayers() {
   const [players, setPlayers] = useState([])

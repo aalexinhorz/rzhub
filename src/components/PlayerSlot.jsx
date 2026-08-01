@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useDroppable } from '@dnd-kit/core'
 
-const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
+const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
 // Usa background-image en vez de <img objectFit> porque html2canvas no
 // respeta bien object-fit/object-position al exportar la alineación

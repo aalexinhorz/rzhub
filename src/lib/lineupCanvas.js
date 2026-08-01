@@ -7,7 +7,7 @@
 // (drawImage/fillText/arc) sí es consistente entre navegadores, así
 // que el resultado es idéntico en cualquiera de ellos.
 
-const DEFAULT_PHOTO = 'https://www.fotmob.com/img/player-fallback-dark.png'
+const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
 const W = 540
 const H = 675
@@ -64,7 +64,8 @@ async function drawSubRow(ctx, sub, x, y, w) {
   const isZaragoza = sub.isZaragoza
   ctx.fillStyle = isZaragoza ? '#0B4390' : '#f5c400'
   ctx.fillRect(x, y, w, SUB_ROW_H)
-  const photo = await loadImage(sub.photo || DEFAULT_PHOTO, { crossOrigin: 'anonymous' })
+  let photo = await loadImage(sub.photo || DEFAULT_PHOTO, { crossOrigin: 'anonymous' })
+  if (!photo && sub.photo) photo = await loadImage(DEFAULT_PHOTO, { crossOrigin: 'anonymous' })
   const photoSize = 16
   const photoX = x + 3
   const photoY = y + (SUB_ROW_H - photoSize) / 2
@@ -83,22 +84,6 @@ async function drawSubRow(ctx, sub, x, y, w) {
   const textX = photoX + photoSize + 4
   const label = truncate(ctx, sub.shortName || sub.name, x + w - textX - 3)
   ctx.fillText(label, textX, y + SUB_ROW_H / 2 + 0.5)
-}
-
-function drawSubEmpty(ctx, x, y, w) {
-  ctx.fillStyle = 'rgba(0,0,0,0.04)'
-  ctx.fillRect(x, y, w, SUB_ROW_H)
-  ctx.strokeStyle = 'rgba(0,0,0,0.1)'
-  ctx.setLineDash([2, 2])
-  ctx.beginPath()
-  ctx.moveTo(x, y)
-  ctx.lineTo(x + w, y)
-  ctx.stroke()
-  ctx.setLineDash([])
-  ctx.fillStyle = 'rgba(0,0,0,0.3)'
-  ctx.font = '400 7px Archivo, sans-serif'
-  ctx.textBaseline = 'middle'
-  ctx.fillText('+ suplente', x + 4, y + SUB_ROW_H / 2 + 0.5)
 }
 
 async function drawSlot(ctx, slot, player, sub1, sub2) {
@@ -133,7 +118,12 @@ async function drawSlot(ctx, slot, player, sub1, sub2) {
 
   const isZaragoza = player.isZaragoza
   const borderColor = isZaragoza ? '#0B4390' : '#f5c400'
-  const cardH = CARD_H + NAME_BAR_H + SUB_ROW_H * 2
+  // Al exportar solo se dibujan las filas de suplente que tengan jugador
+  // (a diferencia de la tarjeta en pantalla, que siempre muestra "+
+  // suplente" como recordatorio interactivo) — no tiene sentido en una
+  // imagen estática que vas a compartir.
+  const presentSubs = [sub1, sub2].filter(Boolean)
+  const cardH = CARD_H + NAME_BAR_H + SUB_ROW_H * presentSubs.length
   const x = cx - CARD_W / 2
   const y = cy - cardH / 2
 
@@ -152,7 +142,8 @@ async function drawSlot(ctx, slot, player, sub1, sub2) {
   ctx.fillStyle = gradient
   ctx.fillRect(x, y, CARD_W, cardH)
 
-  const photo = await loadImage(player.photo || DEFAULT_PHOTO, { crossOrigin: 'anonymous' })
+  let photo = await loadImage(player.photo || DEFAULT_PHOTO, { crossOrigin: 'anonymous' })
+  if (!photo && player.photo) photo = await loadImage(DEFAULT_PHOTO, { crossOrigin: 'anonymous' })
   drawCover(ctx, photo, x, y, CARD_W, CARD_H, 0.5, 0.15)
 
   if (player.teamLogo) {
@@ -172,10 +163,9 @@ async function drawSlot(ctx, slot, player, sub1, sub2) {
   ctx.textAlign = 'left'
 
   const subsY = nameBarY + NAME_BAR_H
-  if (sub1) await drawSubRow(ctx, sub1, x, subsY, CARD_W)
-  else drawSubEmpty(ctx, x, subsY, CARD_W)
-  if (sub2) await drawSubRow(ctx, sub2, x, subsY + SUB_ROW_H, CARD_W)
-  else drawSubEmpty(ctx, x, subsY + SUB_ROW_H, CARD_W)
+  for (let i = 0; i < presentSubs.length; i++) {
+    await drawSubRow(ctx, presentSubs[i], x, subsY + SUB_ROW_H * i, CARD_W)
+  }
 
   ctx.restore()
   ctx.lineWidth = 2
