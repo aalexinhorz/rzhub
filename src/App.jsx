@@ -22,6 +22,8 @@ import Mercado from './pages/Mercado'
 import Tools from './pages/Tools'
 import Fotogaleria from './pages/Fotogaleria'
 import FotogaleriaPartido from './pages/FotogaleriaPartido'
+import Notas from './pages/Notas'
+import NotasPartido from './pages/NotasPartido'
 
 export default function App() {
   return (
@@ -50,6 +52,8 @@ export default function App() {
         <Route path="/herramientas" element={<Tools />} />
         <Route path="/fotogaleria" element={<Fotogaleria />} />
         <Route path="/fotogaleria/:partido" element={<FotogaleriaPartido />} />
+        <Route path="/notas" element={<Notas />} />
+        <Route path="/notas/:partido" element={<NotasPartido />} />
       </Routes>
     </div>
   )
