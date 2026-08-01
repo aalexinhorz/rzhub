@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import SEO, { SITE_URL } from '../components/SEO'
-import { DndContext, closestCenter } from '@dnd-kit/core'
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import Field from '../components/Field'
 import SidePanel from '../components/SidePanel'
 import Footer from '../components/Footer'
@@ -102,6 +102,33 @@ export default function Lineup() {
   const [ventas, setVentas] = useState([])
 
   const slotsLayout = formations[formation]
+
+  // Distancia mínima antes de considerarlo un arrastre (no un simple clic),
+  // para poder seguir abriendo el modal de "cambiar jugador" con un clic.
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
+
+  function handleDragEnd({ active, over }) {
+    if (!over || active.id === over.id) return
+    const fromId = active.id
+    const toId = over.id
+
+    setSlots(prev => {
+      const n = { ...prev }
+      const fromPlayer = n[fromId]
+      const toPlayer = n[toId]
+      if (toPlayer) n[fromId] = toPlayer; else delete n[fromId]
+      if (fromPlayer) n[toId] = fromPlayer; else delete n[toId]
+      return n
+    })
+    setSubs(prev => {
+      const n = { ...prev }
+      const fromSubs = n[fromId]
+      const toSubs = n[toId]
+      if (toSubs) n[fromId] = toSubs; else delete n[fromId]
+      if (fromSubs) n[toId] = fromSubs; else delete n[toId]
+      return n
+    })
+  }
 
   function handleChangeFormation(newFormation) {
     const oldLayout = formations[formation]
@@ -223,7 +250,7 @@ export default function Lineup() {
       </div>
 
       <div style={{ display: 'flex', flexWrap: 'wrap', maxWidth: '1200px', margin: '0 auto', padding: '24px clamp(16px,4vw,40px) 64px', gap: '24px' }}>
-        <DndContext collisionDetection={closestCenter}>
+        <DndContext collisionDetection={closestCenter} sensors={sensors} onDragEnd={handleDragEnd}>
           <Field
             slotsLayout={slotsLayout}
             slots={slots}

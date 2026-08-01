@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { useDroppable } from '@dnd-kit/core'
+import { useDroppable, useDraggable } from '@dnd-kit/core'
+import { CSS } from '@dnd-kit/utilities'
 
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
@@ -115,6 +116,10 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
   const [resultsSub1, setResultsSub1] = useState([])
   const [resultsSub2, setResultsSub2] = useState([])
   const { setNodeRef, isOver } = useDroppable({ id: slot.id })
+  const { setNodeRef: setDragRef, attributes, listeners, transform, isDragging } = useDraggable({
+    id: slot.id,
+    disabled: capturing || !player,
+  })
 
   // Bloquea el scroll de la página de fondo mientras el modal está abierto.
   useEffect(() => {
@@ -221,21 +226,26 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
       }}>
         {player ? (
           <div data-card-container onClick={openModal}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px) scale(1.05)'; e.currentTarget.style.boxShadow = '0 10px 24px rgba(0,0,0,0.4)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)' }}
+            ref={setDragRef} {...listeners} {...attributes}
+            onMouseEnter={e => { if (isDragging) return; e.currentTarget.style.transform = 'translateY(-4px) scale(1.05)'; e.currentTarget.style.boxShadow = '0 10px 24px rgba(0,0,0,0.4)' }}
+            onMouseLeave={e => { if (isDragging) return; e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)' }}
             style={{
             width: cardW,
             borderRadius: '6px',
             border: `2px solid ${borderColor}`,
             overflow: 'hidden',
-            cursor: 'pointer',
+            cursor: capturing ? 'pointer' : 'grab',
             boxSizing: 'border-box',
             position: 'relative',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+            boxShadow: isDragging ? '0 14px 32px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.25)',
             display: 'flex',
             flexDirection: 'column',
             background: cardBg,
-            transition: 'transform 150ms ease, box-shadow 150ms ease',
+            opacity: isDragging ? 0.5 : 1,
+            zIndex: isDragging ? 999 : undefined,
+            transform: transform ? CSS.Translate.toString(transform) : undefined,
+            transition: isDragging ? 'none' : 'transform 150ms ease, box-shadow 150ms ease',
+            touchAction: 'none',
           }}>
             {/* Foto */}
             <div data-card-photo style={{
