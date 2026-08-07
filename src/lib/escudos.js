@@ -127,6 +127,10 @@ export const ESCUDOS_CLUBS = {
   'Utebo':                     '/escudos/spain_utebo.football-logos.cc.svg',
   'CD Numancia':               '/escudos/spain_numancia.football-logos.cc.svg',
   'Numancia':                  '/escudos/spain_numancia.football-logos.cc.svg',
+  'STVV':                      '/escudos/STVV.png',
+  'Sint-Truidense':            '/escudos/STVV.png',
+  'Sint-Truidense VV':         '/escudos/STVV.png',
+  'Sint-Truiden':              '/escudos/STVV.png',
 }
 
 const _tsdbCache = {}
