@@ -24,6 +24,8 @@ import Fotogaleria from './pages/Fotogaleria'
 import FotogaleriaPartido from './pages/FotogaleriaPartido'
 import Notas from './pages/Notas'
 import NotasPartido from './pages/NotasPartido'
+import TierlistPartido from './pages/TierlistPartido'
+import EnDirecto from './pages/EnDirecto'
 
 export default function App() {
   return (
@@ -54,6 +56,8 @@ export default function App() {
         <Route path="/fotogaleria/:partido" element={<FotogaleriaPartido />} />
         <Route path="/notas" element={<Notas />} />
         <Route path="/notas/:partido" element={<NotasPartido />} />
+        <Route path="/tierlist-partido" element={<TierlistPartido />} />
+        <Route path="/en-directo" element={<EnDirecto />} />
       </Routes>
     </div>
   )
