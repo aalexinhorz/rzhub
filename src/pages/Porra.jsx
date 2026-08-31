@@ -123,12 +123,20 @@ export default function Porra() {
   }
 
   async function fetchRanking() {
-    const { data } = await supabase
+    const { data: puntos } = await supabase
       .from('porra_puntos')
-      .select('*, profiles:user_id(username, avatar_url)')
+      .select('*')
       .order('puntos_total', { ascending: false })
-      .limit(50)
-    setRanking(data || [])
+    if (!puntos || puntos.length === 0) { setRanking([]); return }
+
+    const { data: perfiles } = await supabase
+      .from('profiles')
+      .select('id, name, username, avatar_url')
+      .in('id', puntos.map(p => p.user_id))
+    const perfilesMap = {}
+    perfiles?.forEach(p => { perfilesMap[p.id] = p })
+
+    setRanking(puntos.map(p => ({ ...p, profiles: perfilesMap[p.user_id] || null })))
   }
 
   async function guardarPrediccion() {
@@ -158,6 +166,21 @@ export default function Porra() {
   const cerrada = partidoActivo ? isCerrada(partidoActivo) : false
   const empezado = partidoActivo ? haEmpezado(partidoActivo.kickoff) : false
   const pred = partidoActivo ? predicciones[partidoActivo.id] : null
+  const esLocal = partidoActivo?.sede === 'local'
+  const marcadorFinal = partidoActivo?.finalizado
+    ? (esLocal ? [partidoActivo.goles_zaragoza, partidoActivo.goles_rival] : [partidoActivo.goles_rival, partidoActivo.goles_zaragoza])
+    : null
+  const marcadorPred = pred
+    ? (esLocal ? [pred.goles_zaragoza, pred.goles_rival] : [pred.goles_rival, pred.goles_zaragoza])
+    : null
+
+  const miPosicion = user ? ranking.findIndex(entry => entry.user_id === user.id) : -1
+  let inicioVentana = 0
+  if (miPosicion !== -1) {
+    inicioVentana = Math.max(0, miPosicion - 2)
+    inicioVentana = Math.min(inicioVentana, Math.max(0, ranking.length - 5))
+  }
+  const rankingVisible = ranking.slice(inicioVentana, inicioVentana + 5)
   const escudoRival = partidoActivo ? (ESCUDOS[partidoActivo.rival] || null) : null
 
   const inputStyle = {
@@ -290,7 +313,7 @@ export default function Porra() {
                   {partidoActivo.finalizado ? (
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '52px', fontWeight: '700', lineHeight: 1, color: 'white' }}>
-                        {partidoActivo.goles_zaragoza} - {partidoActivo.goles_rival}
+                        {marcadorFinal[0]} - {marcadorFinal[1]}
                       </div>
                       <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '4px' }}>Resultado final</div>
                     </div>
@@ -325,7 +348,7 @@ export default function Porra() {
                     <div style={{ background: '#1a1a1a', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                       <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>Tu predicción</div>
                       <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '48px', fontWeight: '700', color: 'white', lineHeight: 1 }}>
-                        {pred.goles_zaragoza} - {pred.goles_rival}
+                        {marcadorPred[0]} - {marcadorPred[1]}
                       </div>
                       {pred.goleadores?.length > 0 && (
                         <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '8px' }}>⚽ {pred.goleadores.join(', ')}</div>
@@ -347,14 +370,27 @@ export default function Porra() {
                       <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '10px', fontWeight: '300' }}>
                         Tu predicción
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-                        <input type="number" min="0" max="20" value={form.goles_zaragoza}
-                          onChange={e => setForm(f => ({ ...f, goles_zaragoza: e.target.value }))}
-                          style={inputStyle} placeholder="0" />
-                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '28px', fontFamily: 'Humane, sans-serif', fontWeight: '700' }}>-</span>
-                        <input type="number" min="0" max="20" value={form.goles_rival}
-                          onChange={e => setForm(f => ({ ...f, goles_rival: e.target.value }))}
-                          style={inputStyle} placeholder="0" />
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: '12px' }}>
+                        {(() => {
+                          const inputZaragoza = (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                              <input type="number" min="0" max="20" value={form.goles_zaragoza}
+                                onChange={e => setForm(f => ({ ...f, goles_zaragoza: e.target.value }))}
+                                style={inputStyle} placeholder="0" />
+                              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Zaragoza</span>
+                            </div>
+                          )
+                          const inputRival = (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                              <input type="number" min="0" max="20" value={form.goles_rival}
+                                onChange={e => setForm(f => ({ ...f, goles_rival: e.target.value }))}
+                                style={inputStyle} placeholder="0" />
+                              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>{partidoActivo.rival}</span>
+                            </div>
+                          )
+                          const guion = <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '28px', fontFamily: 'Humane, sans-serif', fontWeight: '700', marginTop: '10px' }}>-</span>
+                          return esLocal ? <>{inputZaragoza}{guion}{inputRival}</> : <>{inputRival}{guion}{inputZaragoza}</>
+                        })()}
                       </div>
                     </div>
                     <div>
@@ -377,30 +413,6 @@ export default function Porra() {
                     </button>
                   </div>
                 )}
-              </div>
-            </div>
-          )}
-
-          {/* Ganador jornada anterior */}
-          {ranking.length > 0 && (
-            <div style={{ marginTop: '16px', background: '#111', border: '1px solid #1e1e1e', borderRadius: '12px', padding: '16px 20px' }}>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '300', marginBottom: '8px' }}>
-                Líder de la temporada
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {ranking[0].profiles?.avatar_url ? (
-                  <img src={ranking[0].profiles.avatar_url} alt="" style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }} />
-                ) : (
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#0B4390', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '14px', fontWeight: '700' }}>{(ranking[0].profiles?.username || '?')[0].toUpperCase()}</span>
-                  </div>
-                )}
-                <div>
-                  <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '28px', fontWeight: '700', color: '#f5c400', lineHeight: 1 }}>
-                    {ranking[0].profiles?.username || 'Usuario'}
-                  </div>
-                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{ranking[0].puntos_total} puntos</div>
-                </div>
               </div>
             </div>
           )}
@@ -437,28 +449,32 @@ export default function Porra() {
                 {ranking.length === 0 && (
                   <p style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '32px', fontSize: '14px' }}>Aún no hay puntuaciones.</p>
                 )}
-                {ranking.map((entry, i) => (
-                  <div key={entry.user_id} style={{ display: 'grid', gridTemplateColumns: '40px 1fr 80px', alignItems: 'center', padding: '12px 20px', borderBottom: i < ranking.length - 1 ? '1px solid #1a1a1a' : 'none', background: user?.id === entry.user_id ? 'rgba(11,67,144,0.15)' : 'transparent' }}>
-                    <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '22px', fontWeight: '700', color: i === 0 ? '#f5c400' : i === 1 ? '#aaa' : i === 2 ? '#cd7f32' : 'rgba(255,255,255,0.3)' }}>
-                      {i + 1}
-                    </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      {entry.profiles?.avatar_url ? (
-                        <img src={entry.profiles.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                      ) : (
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#0B4390', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          <span style={{ fontSize: '11px', fontWeight: '700' }}>{(entry.profiles?.username || '?')[0].toUpperCase()}</span>
-                        </div>
-                      )}
-                      <span style={{ fontSize: '14px', fontWeight: user?.id === entry.user_id ? '700' : '500', color: user?.id === entry.user_id ? '#f5c400' : 'white' }}>
-                        {entry.profiles?.username || 'Usuario'}
+                {rankingVisible.map((entry, i) => {
+                  const pos = inicioVentana + i
+                  const nombre = entry.profiles?.name || entry.profiles?.username || 'Usuario'
+                  return (
+                    <div key={entry.user_id} style={{ display: 'grid', gridTemplateColumns: '40px 1fr 80px', alignItems: 'center', padding: '12px 20px', borderBottom: i < rankingVisible.length - 1 ? '1px solid #1a1a1a' : 'none', background: user?.id === entry.user_id ? 'rgba(11,67,144,0.15)' : 'transparent' }}>
+                      <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '22px', fontWeight: '700', color: pos === 0 ? '#f5c400' : pos === 1 ? '#aaa' : pos === 2 ? '#cd7f32' : 'rgba(255,255,255,0.3)' }}>
+                        {pos + 1}
+                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {entry.profiles?.avatar_url ? (
+                          <img src={entry.profiles.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                        ) : (
+                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#0B4390', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                            <span style={{ fontSize: '11px', fontWeight: '700' }}>{nombre[0].toUpperCase()}</span>
+                          </div>
+                        )}
+                        <span style={{ fontSize: '14px', fontWeight: user?.id === entry.user_id ? '700' : '500', color: user?.id === entry.user_id ? '#f5c400' : 'white' }}>
+                          {nombre}
+                        </span>
+                      </div>
+                      <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '24px', fontWeight: '700', color: '#f5c400', textAlign: 'right' }}>
+                        {entry.puntos_total}
                       </span>
                     </div>
-                    <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '24px', fontWeight: '700', color: '#f5c400', textAlign: 'right' }}>
-                      {entry.puntos_total}
-                    </span>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
 
@@ -483,7 +499,7 @@ export default function Porra() {
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '22px', fontWeight: '700', color: cerradaP ? 'rgba(255,255,255,0.4)' : 'white' }}>
-                            {pred.goles_zaragoza}-{pred.goles_rival}
+                            {p.sede === 'local' ? `${pred.goles_zaragoza}-${pred.goles_rival}` : `${pred.goles_rival}-${pred.goles_zaragoza}`}
                           </span>
                           {pred.puntos > 0 && (
                             <span style={{ fontSize: '11px', background: 'rgba(245,196,0,0.15)', border: '1px solid #f5c400', borderRadius: '10px', padding: '2px 8px', color: '#f5c400', fontWeight: '700' }}>

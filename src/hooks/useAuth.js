@@ -16,31 +16,42 @@ export default function useAuth() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
+      if (session?.user) fetchProfile(session.user)
       else setLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
+      if (session?.user) fetchProfile(session.user)
       else { setProfile(null); setLoading(false) }
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
-  async function fetchProfile(userId) {
+  async function fetchProfile(authUser) {
     const { data } = await supabase
       .from('profiles')
       .select('username, avatar_url, name, es_redactor, es_fotografo')
-      .eq('id', userId)
+      .eq('id', authUser.id)
       .single()
-    setProfile(data || null)
+    if (data) {
+      setProfile(data)
+    } else {
+      const nuevoPerfil = {
+        id: authUser.id,
+        name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || null,
+        avatar_url: authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture || null,
+        username: authUser.email ? authUser.email.split('@')[0] : null,
+      }
+      await supabase.from('profiles').insert(nuevoPerfil)
+      setProfile(nuevoPerfil)
+    }
     setLoading(false)
   }
 
-  async function refreshProfile(userId) {
-    await fetchProfile(userId)
+  async function refreshProfile() {
+    if (user) await fetchProfile(user)
   }
 
   async function signInWithGoogle() {
