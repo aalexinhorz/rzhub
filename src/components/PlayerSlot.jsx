@@ -214,8 +214,8 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
   const cardH = `${scaleByFieldWidth(fieldWidth, 40, 80)}px`
   const plusSize = `${scaleByFieldWidth(fieldWidth, 22, 44)}px`
   const plusFontSize = `${scaleByFieldWidth(fieldWidth, 11, 20)}px`
-  const subFontSize = '7px'
-  const nameFontSize = '9px'
+  const subFontSize = `${scaleByFieldWidth(fieldWidth, 5, 7)}px`
+  const nameFontSize = `${scaleByFieldWidth(fieldWidth, 6.5, 9)}px`
 
   return (
     <>
