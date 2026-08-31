@@ -169,13 +169,15 @@ export default function NotasPartido() {
       })
   }, [user, partidoId])
 
-  // Con la votación cerrada, las medias son públicas: cualquiera las ve,
-  // esté o no logueado.
+  // Con la votación cerrada las medias son públicas para cualquiera; con
+  // la votación abierta solo se cargan si ya has votado tú (mismo criterio
+  // que "mostrarMedia" al pintar cada jugador).
   useEffect(() => {
-    if (!partidoId || !partido || partido.abierta) return
+    if (!partidoId || !partido) return
+    if (partido.abierta && !guardado) return
     cargarMedias()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [partidoId, partido?.abierta])
+  }, [partidoId, partido?.abierta, guardado])
 
   async function cargarMedias() {
     const { data } = await supabase
