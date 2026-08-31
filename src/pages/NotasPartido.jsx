@@ -248,16 +248,35 @@ export default function NotasPartido() {
     <div className="notas-page">
       {partido && (
         <SEO
-          title={`Las Notas: Real Zaragoza vs ${partido.rival} | RZ Hub`}
-          description={`Puntúa a los jugadores del Real Zaragoza en el partido frente al ${partido.rival}.`}
+          title={`Notas: ${partido.local ? 'Real Zaragoza' : partido.rival} ${partido.goles_local ?? ''}-${partido.goles_visitante ?? ''} ${partido.local ? partido.rival : 'Real Zaragoza'} | RZ Hub`}
+          description={`Puntúa a los jugadores del Real Zaragoza en el partido frente al ${partido.rival} (${formatFecha(partido.fecha)}) y consulta la nota media de la afición.`}
+          keywords={`notas Real Zaragoza ${partido.rival}, puntuar jugadores Real Zaragoza, Real Zaragoza vs ${partido.rival}, valoración afición Real Zaragoza`}
           path={`/notas/${partido.partido_id}`}
-          jsonLd={{
-            '@context': 'https://schema.org',
-            '@type': 'WebPage',
-            name: `Las Notas: Real Zaragoza vs ${partido.rival}`,
-            url: `${SITE_URL}/notas/${partido.partido_id}`,
-            isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
-          }}
+          jsonLd={[
+            {
+              '@context': 'https://schema.org',
+              '@type': 'WebPage',
+              name: `Las Notas: Real Zaragoza vs ${partido.rival}`,
+              url: `${SITE_URL}/notas/${partido.partido_id}`,
+              isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
+            },
+            {
+              '@context': 'https://schema.org',
+              '@type': 'SportsEvent',
+              name: `${partido.local ? 'Real Zaragoza' : partido.rival} vs ${partido.local ? partido.rival : 'Real Zaragoza'}`,
+              startDate: partido.fecha,
+              sport: 'https://en.wikipedia.org/wiki/Association_football',
+              competitor: [
+                { '@type': 'SportsTeam', name: 'Real Zaragoza' },
+                { '@type': 'SportsTeam', name: partido.rival },
+              ],
+              homeTeam: { '@type': 'SportsTeam', name: partido.local ? 'Real Zaragoza' : partido.rival },
+              awayTeam: { '@type': 'SportsTeam', name: partido.local ? partido.rival : 'Real Zaragoza' },
+              ...(partido.goles_local != null && partido.goles_visitante != null && {
+                eventStatus: 'https://schema.org/EventCompleted',
+              }),
+            },
+          ]}
         />
       )}
 

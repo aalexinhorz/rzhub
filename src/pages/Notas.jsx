@@ -41,13 +41,15 @@ export default function Notas() {
   return (
     <div className="notas-page">
       <SEO
-        title="Las Notas | RZ Hub"
-        description="Puntúa a los jugadores del Real Zaragoza después de cada partido."
+        title="Las Notas | Puntúa a los jugadores del Real Zaragoza | RZ Hub"
+        description="Puntúa a los jugadores del Real Zaragoza después de cada partido y consulta la nota media que le pone la afición a cada uno."
+        keywords="notas Real Zaragoza, puntuar jugadores Real Zaragoza, valoración jugadores Real Zaragoza, nota media Real Zaragoza, mejor jugador del partido Real Zaragoza"
         path="/notas"
         jsonLd={{
           '@context': 'https://schema.org',
-          '@type': 'WebPage',
+          '@type': 'CollectionPage',
           name: 'Las Notas',
+          description: 'Puntúa a los jugadores del Real Zaragoza después de cada partido.',
           url: `${SITE_URL}/notas`,
           isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
         }}

@@ -13,6 +13,7 @@ const NAV_GROUPS = [
     type: 'group', id: 'herramientas', label: 'Herramientas', items: [
       { to: '/porra', label: 'Porra' },
       { to: '/tierlist', label: 'TierMaker' },
+      { to: '/notas', label: 'Notas' },
     ],
   },
   {
