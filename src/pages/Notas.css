@@ -329,7 +329,7 @@
 }
 .notas-jugador__media-valor {
   font-family: var(--font-body);
-  font-weight: 300;
+  font-weight: 700;
   font-size: var(--text-xl);
   color: var(--rz-yellow);
 }
