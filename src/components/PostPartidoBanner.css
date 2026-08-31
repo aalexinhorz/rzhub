@@ -1,0 +1,17 @@
+.post-partido-banner__text {
+  white-space: nowrap;
+}
+.post-partido-banner__text .post-partido-banner__full { display: inline; }
+.post-partido-banner__text .post-partido-banner__short { display: none; }
+
+@media (max-width: 480px) {
+  .post-partido-banner {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+  .post-partido-banner__text {
+    font-size: 11px;
+  }
+  .post-partido-banner__text .post-partido-banner__full { display: none; }
+  .post-partido-banner__text .post-partido-banner__short { display: inline; }
+}
