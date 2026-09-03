@@ -1,0 +1,412 @@
+.adivina-page {
+  min-height: 100vh;
+}
+
+.adivina-page__hero {
+  background: linear-gradient(90deg, #06328a 0%, #05286d 50%, #041f5c 100%);
+  padding: 60px var(--padding-page) 50px;
+  text-align: center;
+}
+
+.adivina-page__eyebrow { margin: 0 0 12px; }
+
+.adivina-page__title {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 10vw, 100px);
+  font-weight: var(--weight-bold);
+  line-height: 0.9;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+}
+
+.adivina-page__subtitle {
+  font-size: var(--text-md);
+  color: var(--rz-text-secondary);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.adivina-page__body {
+  background: #03101f;
+  padding: 40px 0 0;
+}
+
+.adivina-page__container {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding-inline: 32px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* -------- Reglas (intro) -------- */
+.adivina-reglas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.adivina-regla {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 8px 16px;
+}
+
+.adivina-regla__valor {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--rz-yellow);
+  line-height: 1;
+}
+
+.adivina-regla__label {
+  font-size: var(--text-xs);
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.02em;
+  max-width: 110px;
+  line-height: 1.2;
+}
+
+/* -------- Tarjeta genérica -------- */
+.adivina-card {
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+/* -------- Progreso de rondas -------- */
+.adivina-progreso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.adivina-progreso__ronda {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-secondary);
+  margin-right: 8px;
+}
+
+.adivina-progreso__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rz-border-md);
+  flex-shrink: 0;
+}
+.adivina-progreso__dot.is-hecha { background: var(--rz-yellow); }
+.adivina-progreso__dot.is-actual { background: #fff; }
+
+/* -------- Cronómetro -------- */
+.adivina-crono {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.adivina-crono__unidad {
+  font-size: var(--text-md);
+  color: var(--rz-text-muted);
+  font-family: var(--font-body);
+  margin-left: 2px;
+}
+
+/* -------- Enfrentamiento -------- */
+.adivina-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  width: 100%;
+}
+
+.adivina-vs__equipo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.adivina-vs__escudo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.adivina-vs__escudo img { width: 40px; height: 40px; object-fit: contain; }
+.adivina-vs__escudo-fallback {
+  font-family: var(--font-body);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+  color: #333;
+}
+
+.adivina-vs__nombre {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-primary);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.adivina-vs__separador {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--rz-text-muted);
+  flex-shrink: 0;
+}
+
+.adivina-vs__contexto {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--rz-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* -------- Selector de goles -------- */
+.adivina-picker {
+  display: flex;
+  gap: var(--space-5);
+  width: 100%;
+}
+
+.adivina-picker__lado {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.adivina-picker__label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-secondary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.adivina-picker__numeros {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.adivina-numero {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rz-border-md);
+  background: transparent;
+  color: var(--rz-text-secondary);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.adivina-numero:hover:not(:disabled) { border-color: var(--rz-border-strong); color: var(--rz-text-primary); }
+.adivina-numero.is-activo {
+  background: var(--rz-yellow);
+  border-color: var(--rz-yellow);
+  color: #060D1A;
+}
+.adivina-numero:disabled { cursor: default; opacity: 0.5; }
+
+/* -------- Feedback tras responder -------- */
+.adivina-feedback {
+  width: 100%;
+  text-align: center;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+}
+.adivina-feedback.es-acierto { background: var(--rz-green-bg); color: var(--rz-green); }
+.adivina-feedback.es-fallo { background: var(--rz-red-bg); color: var(--rz-red); }
+
+.adivina-feedback__titulo {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  display: block;
+}
+
+.adivina-feedback__detalle {
+  font-size: var(--text-sm);
+  color: var(--rz-text-secondary);
+  margin-top: 4px;
+}
+
+/* -------- Pantalla final -------- */
+.adivina-fin__puntuacion {
+  font-family: var(--font-display);
+  font-size: 88px;
+  font-weight: 700;
+  color: var(--rz-yellow);
+  line-height: 1;
+}
+.adivina-fin__puntuacion-label {
+  font-size: var(--text-sm);
+  color: var(--rz-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.adivina-desglose {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.adivina-desglose__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.03);
+  font-size: var(--text-sm);
+}
+
+.adivina-desglose__equipos {
+  color: var(--rz-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.adivina-desglose__puntos {
+  font-weight: var(--weight-bold);
+  flex-shrink: 0;
+}
+.adivina-desglose__puntos.es-acierto { color: var(--rz-green); }
+.adivina-desglose__puntos.es-fallo { color: var(--rz-text-muted); }
+
+.adivina-fin__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* -------- Ranking -------- */
+.adivina-ranking__header {
+  display: grid;
+  grid-template-columns: 40px 1fr 70px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--rz-border);
+  width: 100%;
+}
+.adivina-ranking__header span {
+  font-size: var(--text-xs);
+  color: var(--rz-text-muted);
+  letter-spacing: 0.04em;
+}
+
+.adivina-ranking__row {
+  display: grid;
+  grid-template-columns: 40px 1fr 70px;
+  align-items: center;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--rz-border);
+  width: 100%;
+}
+
+.adivina-ranking__pos {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--rz-text-muted);
+}
+.adivina-ranking__pos.pos-1 { color: var(--rz-yellow); }
+.adivina-ranking__pos.pos-2 { color: #aaa; }
+.adivina-ranking__pos.pos-3 { color: #cd7f32; }
+
+.adivina-ranking__usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.adivina-ranking__avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.adivina-ranking__avatar-fallback {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--rz-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+.adivina-ranking__nombre {
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adivina-ranking__puntos {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--rz-yellow);
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .adivina-page__hero { padding: 44px var(--padding-page) 36px; }
+  .adivina-page__body { padding: 28px 0 0; }
+  .adivina-page__container { padding-inline: 16px; padding-bottom: 48px; gap: 16px; }
+  .adivina-card { padding: var(--space-4); gap: var(--space-4); }
+  .adivina-vs__escudo { width: 44px; height: 44px; }
+  .adivina-vs__escudo img { width: 30px; height: 30px; }
+  .adivina-fin__puntuacion { font-size: 64px; }
+  .adivina-crono { font-size: 32px; }
+}
