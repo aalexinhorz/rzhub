@@ -4,7 +4,7 @@ export const SITE_NAME = 'RZ Hub'
 export const SITE_URL = 'https://rzhub.es'
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`
 
-export default function SEO({ title, description, keywords, path = '', image = DEFAULT_OG_IMAGE, jsonLd }) {
+export default function SEO({ title, description, keywords, path = '', image = DEFAULT_OG_IMAGE, jsonLd, noindex = false }) {
   const url = `${SITE_URL}${path}`
   const schemas = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []
 
@@ -13,6 +13,7 @@ export default function SEO({ title, description, keywords, path = '', image = D
       <title>{title}</title>
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
+      {noindex && <meta name="robots" content="noindex, nofollow" />}
 
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />

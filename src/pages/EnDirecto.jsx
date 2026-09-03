@@ -12,6 +12,7 @@ export default function EnDirecto() {
       <SEO
         title="En Directo | RZ Hub"
         description="Sigue en directo la retransmisión en Twitch."
+        keywords="Real Zaragoza en directo, Real Zaragoza twitch, retransmisión Real Zaragoza, ver Real Zaragoza online"
         path="/en-directo"
         jsonLd={{
           '@context': 'https://schema.org',

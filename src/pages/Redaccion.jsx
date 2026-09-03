@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import { supabase } from '../hooks/useAuth'
+import SEO from '../components/SEO'
 
 function generarSlug(titulo) {
   return titulo
@@ -199,6 +200,7 @@ export default function Redaccion() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f8f9fa' }}>
+      <SEO title="Redacción | RZ Hub" description="Panel de redacción de RZ Hub." path="/redaccion" noindex />
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 20px' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px', flexWrap: 'wrap', gap: '12px' }}>

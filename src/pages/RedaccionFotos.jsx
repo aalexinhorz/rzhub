@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import { supabase } from '../hooks/useAuth'
 import useMatchPhotos, { EQUIPOS, BUCKET, fetchMatchAuthor, useMatchAuthor } from '../hooks/useMatchPhotos'
+import SEO from '../components/SEO'
 
 const EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp'])
 
@@ -251,6 +252,7 @@ export default function RedaccionFotos() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f8f9fa' }}>
+      <SEO title="Subir fotos | RZ Hub" description="Panel de subida de fotos de RZ Hub." path="/redaccion-fotos" noindex />
       <div style={{ maxWidth: '700px', margin: '0 auto', padding: '32px 20px' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px', flexWrap: 'wrap', gap: '12px' }}>

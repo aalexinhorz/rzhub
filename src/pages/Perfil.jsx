@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import { supabase } from '../hooks/useAuth'
+import SEO from '../components/SEO'
 
 export default function Perfil() {
   const { user, profile, loading, refreshProfile } = useAuth()
@@ -83,6 +84,7 @@ export default function Perfil() {
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f5f5f5', padding: '24px' }}>
+      <SEO title="Mi perfil | RZ Hub" description="Gestiona tu perfil de RZ Hub." path="/perfil" noindex />
       <div style={{ maxWidth: '500px', margin: '0 auto' }}>
 
         <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: '64px', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: '0 0 24px 0' }}>

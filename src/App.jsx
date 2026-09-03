@@ -26,6 +26,7 @@ import Notas from './pages/Notas'
 import NotasPartido from './pages/NotasPartido'
 import TierlistPartido from './pages/TierlistPartido'
 import EnDirecto from './pages/EnDirecto'
+import AdivinaResultado from './pages/AdivinaResultado'
 
 export default function App() {
   return (
@@ -58,6 +59,7 @@ export default function App() {
         <Route path="/notas/:partido" element={<NotasPartido />} />
         <Route path="/tierlist-partido" element={<TierlistPartido />} />
         <Route path="/en-directo" element={<EnDirecto />} />
+        <Route path="/adivina-resultado" element={<AdivinaResultado />} />
       </Routes>
     </div>
   )

@@ -82,6 +82,7 @@ export default function FotogaleriaPartido() {
       <SEO
         title={`Fotos: ${equipoNombre} vs ${match.rival} | RZ Hub`}
         description={`Fotos del partido ${equipoNombre} vs ${match.rival} del ${formatMatchDate(match.matchDate)}.`}
+        keywords={`fotos ${equipoNombre} ${match.rival}, fotogalería Real Zaragoza, imágenes partido Real Zaragoza`}
         path={`/fotogaleria/${match.key}`}
         jsonLd={{
           '@context': 'https://schema.org',
