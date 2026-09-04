@@ -1,10 +1,10 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import SEO, { SITE_URL } from '../components/SEO'
 import { DndContext, closestCenter, DragOverlay, useDroppable, useDraggable } from '@dnd-kit/core'
 import useMarketData, { CURRENT_SEASON } from '../hooks/useMarketData'
 import useAuth from '../hooks/useAuth'
 import { supabase } from '../hooks/useAuth'
-import html2canvas from 'html2canvas'
+import { drawTierlistCanvas } from '../lib/tierlistCanvas'
 
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
@@ -127,8 +127,6 @@ export default function Tierlist() {
   const [nombreGuardado, setNombreGuardado] = useState('Mi Tier List')
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
-  const tierlistRef = useRef(null)
-
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
 
   // Los "jugadores" a valorar aquí son en realidad movimientos de mercado
@@ -199,9 +197,8 @@ export default function Tierlist() {
   }
 
   async function handleDownload() {
-    if (!tierlistRef.current) return
     try {
-      const canvas = await html2canvas(tierlistRef.current, { scale: 2, useCORS: true, backgroundColor: '#060D1A', logging: false })
+      const canvas = await drawTierlistCanvas({ tiers, tierPlayers, poolAltas: altas, poolBajas: bajas })
       const link = document.createElement('a')
       link.download = 'tierlist-zaragoza.png'
       link.href = canvas.toDataURL('image/png')
@@ -299,7 +296,7 @@ export default function Tierlist() {
         </p>
 
         <DndContext collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div ref={tierlistRef} style={{ padding: isMobile ? '8px' : '16px', background: '#060D1A', borderRadius: '8px' }}>
+          <div style={{ padding: isMobile ? '8px' : '16px', background: '#060D1A', borderRadius: '8px' }}>
             {tiers.map(tier => (
               <TierRow
                 key={tier.id}
