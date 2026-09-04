@@ -132,7 +132,7 @@ export default function Tierlist() {
   const marketItems = movements.map(m => ({
     id: m.id,
     name: m.player.name,
-    shortName: m.player.name,
+    shortName: m.player.shortName,
     photo: m.player.image,
     isZaragoza: m.type === 'signing',
     tipo: m.type,

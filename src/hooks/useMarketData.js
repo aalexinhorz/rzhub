@@ -28,7 +28,7 @@ function toMovement(row) {
 
   return {
     id: row.id,
-    player: { name: row.nombre, position: row.posicion, image: row.foto_url || DEFAULT_PHOTO },
+    player: { name: row.nombre, shortName: row.short_name || row.nombre, position: row.posicion, image: row.foto_url || DEFAULT_PHOTO },
     type: isSigning ? 'signing' : 'departure',
     originClub: isSigning ? rival : zaragoza,
     destinationClub: isSigning ? zaragoza : rival,
@@ -68,17 +68,19 @@ export default function useMarketData(season) {
         return
       }
 
-      const sinFoto = movData.filter(m => !m.foto_url)
-      if (sinFoto.length > 0) {
-        const { data: players } = await supabase.from('players').select('name, photo')
-        if (players && !cancelado) {
-          movData.forEach(mov => {
-            if (!mov.foto_url) {
-              const player = players.find(p => normalizar(p.name) === normalizar(mov.nombre))
-              if (player) mov.foto_url = player.photo
-            }
-          })
-        }
+      // Se cruza siempre con `players` (no solo cuando falta foto_url):
+      // así los nombres largos también se acortan con el short_name real
+      // del jugador (p. ej. "Marco Sangalli" -> "Sangalli") en vez de
+      // repetir el nombre completo, que se corta feo en las cards.
+      const { data: players } = await supabase.from('players').select('name, short_name, photo')
+      if (players && !cancelado) {
+        movData.forEach(mov => {
+          const player = players.find(p => normalizar(p.name) === normalizar(mov.nombre))
+          if (player) {
+            if (!mov.foto_url) mov.foto_url = player.photo
+            mov.short_name = player.short_name
+          }
+        })
       }
 
       if (!cancelado) setState({ loading: false, error: null, movements: movData.map(toMovement) })
