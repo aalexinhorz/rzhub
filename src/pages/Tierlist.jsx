@@ -129,7 +129,7 @@ export default function Tierlist() {
   // Los "jugadores" a valorar aquí son en realidad movimientos de mercado
   // (altas y bajas), no la plantilla completa: cada card es una decisión
   // de fichaje/salida a clasificar de muy buena a pésima.
-  const marketItems = movements.map(m => ({
+  const marketItems = movements.filter(m => !m.excluirTierlist).map(m => ({
     id: m.id,
     name: m.player.name,
     shortName: m.player.shortName,

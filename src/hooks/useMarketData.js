@@ -33,6 +33,10 @@ function toMovement(row) {
     originClub: isSigning ? rival : zaragoza,
     destinationClub: isSigning ? zaragoza : rival,
     date: row.fecha,
+    // Solo lo usa el Tier List para poder sacar a alguien puntual del
+    // juego sin tocar el historial real de fichajes (que sigue saliendo
+    // igual en la página de Mercado).
+    excluirTierlist: row.excluir_tierlist === true,
   }
 }
 
