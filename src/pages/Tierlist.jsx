@@ -23,6 +23,7 @@ function TierCard({ player, isDragging, small }) {
   const cardW = small ? '52px' : '72px'
   const cardH = small ? '48px' : '68px'
   const fontSize = small ? '8px' : '9px'
+  const footerH = small ? '14px' : '16px'
 
   return (
     <div style={{ width: cardW, borderRadius: '6px', border: `2px solid ${borderColor}`, overflow: 'hidden', background: 'white', opacity: isDragging ? 0.4 : 1, cursor: 'grab', userSelect: 'none', boxSizing: 'border-box', flexShrink: 0 }}>
@@ -35,8 +36,12 @@ function TierCard({ player, isDragging, small }) {
             style={{ position: 'absolute', top: '2px', left: '2px', width: '12px', height: '12px', objectFit: 'contain', zIndex: 3 }} />
         )}
       </div>
-      <div style={{ background: footerColor, padding: '2px 3px', textAlign: 'center' }}>
-        <span style={{ color: '#ffffff', fontSize: fontSize, fontFamily: 'Archivo, sans-serif', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+      {/* Altura y line-height fijos en vez de padding+alto automático: con
+          html2canvas el alto del texto no siempre se calcula bien y el
+          nombre se cortaba por la mitad al descargar la imagen (mismo
+          fallo ya visto y arreglado en las cards del Line-Up). */}
+      <div style={{ background: footerColor, padding: '0 3px', textAlign: 'center', height: footerH, lineHeight: footerH, overflow: 'hidden', boxSizing: 'border-box' }}>
+        <span style={{ color: '#ffffff', fontSize: fontSize, fontFamily: 'Archivo, sans-serif', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', maxWidth: '100%', verticalAlign: 'top' }}>
           {player.shortName || player.name}
         </span>
       </div>
