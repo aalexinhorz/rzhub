@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import SEO, { SITE_URL } from '../components/SEO'
 import { DndContext, closestCenter, DragOverlay, useDroppable, useDraggable } from '@dnd-kit/core'
-import usePlayers from '../hooks/usePlayers'
+import useMarketData, { CURRENT_SEASON } from '../hooks/useMarketData'
 import useAuth from '../hooks/useAuth'
 import { supabase } from '../hooks/useAuth'
 import html2canvas from 'html2canvas'
@@ -9,11 +9,10 @@ import html2canvas from 'html2canvas'
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
 const TIERS_INICIALES = [
-  { id: 'clave',        label: 'Jugador clave',  color: '#c0392b' },
-  { id: 'se-queda',    label: 'Se queda',        color: '#27ae60' },
-  { id: 'transferible', label: 'Transferible',   color: '#2980b9' },
-  { id: 'cedido',      label: 'Cedido',          color: '#7f8c8d' },
-  { id: 'venta',       label: 'Venta segura',    color: '#1a1a1a' },
+  { id: 'muy-buena', label: 'Muy buena decisión', color: '#27ae60' },
+  { id: 'buena',     label: 'Buena decisión',     color: '#2ecc71' },
+  { id: 'mala',      label: 'Mala decisión',      color: '#e67e22' },
+  { id: 'pesima',    label: 'Decisión pésima',    color: '#c0392b' },
 ]
 
 const TIER_IDS_INICIALES = new Set(TIERS_INICIALES.map(t => t.id))
@@ -89,23 +88,23 @@ function TierRow({ tier, players, onLabelChange, onDelete, small, isDeletable })
   )
 }
 
-function PoolZone({ primerEquipo, cantera, small }) {
+function PoolZone({ altas, bajas, small }) {
   const { setNodeRef, isOver } = useDroppable({ id: 'pool' })
   return (
     <div ref={setNodeRef} style={{ background: isOver ? '#132241' : '#060D1A', borderRadius: '8px', padding: '12px', transition: 'background 0.15s' }}>
-      {primerEquipo.length > 0 && (
+      {altas.length > 0 && (
         <div style={{ marginBottom: '16px' }}>
-          <p style={{ fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', color: '#999', marginBottom: '10px', letterSpacing: '1px' }}>PRIMER EQUIPO</p>
+          <p style={{ fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', color: '#999', marginBottom: '10px', letterSpacing: '1px' }}>ALTAS</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: small ? '6px' : '10px' }}>
-            {primerEquipo.map(p => <DraggableTierCard key={p.id} player={p} small={small} />)}
+            {altas.map(p => <DraggableTierCard key={p.id} player={p} small={small} />)}
           </div>
         </div>
       )}
-      {cantera.length > 0 && (
+      {bajas.length > 0 && (
         <div>
-          <p style={{ fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', color: '#999', marginBottom: '10px', letterSpacing: '1px' }}>CANTERA</p>
+          <p style={{ fontFamily: 'sans-serif', fontSize: '11px', fontWeight: '700', color: '#999', marginBottom: '10px', letterSpacing: '1px' }}>BAJAS</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: small ? '6px' : '10px' }}>
-            {cantera.map(p => <DraggableTierCard key={p.id} player={p} small={small} />)}
+            {bajas.map(p => <DraggableTierCard key={p.id} player={p} small={small} />)}
           </div>
         </div>
       )}
@@ -114,7 +113,7 @@ function PoolZone({ primerEquipo, cantera, small }) {
 }
 
 export default function Tierlist() {
-  const { players, loading } = usePlayers()
+  const { movements, loading } = useMarketData(CURRENT_SEASON)
   const { user } = useAuth()
   const [tiers, setTiers] = useState(TIERS_INICIALES)
   const [tierPlayers, setTierPlayers] = useState({})
@@ -127,11 +126,21 @@ export default function Tierlist() {
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
 
-  const zaragozaPlayers = players.filter(p => p.isZaragoza)
+  // Los "jugadores" a valorar aquí son en realidad movimientos de mercado
+  // (altas y bajas), no la plantilla completa: cada card es una decisión
+  // de fichaje/salida a clasificar de muy buena a pésima.
+  const marketItems = movements.map(m => ({
+    id: m.id,
+    name: m.player.name,
+    shortName: m.player.name,
+    photo: m.player.image,
+    isZaragoza: m.type === 'signing',
+    tipo: m.type,
+  }))
   const assignedIds = new Set(Object.values(tierPlayers).flat().map(p => p.id))
-  const poolPlayers = zaragozaPlayers.filter(p => !assignedIds.has(p.id))
-  const primerEquipo = poolPlayers.filter(p => !p.isCantera)
-  const cantera = poolPlayers.filter(p => p.isCantera)
+  const poolPlayers = marketItems.filter(p => !assignedIds.has(p.id))
+  const altas = poolPlayers.filter(p => p.tipo === 'signing')
+  const bajas = poolPlayers.filter(p => p.tipo === 'departure')
 
   function findPlayerLocation(playerId) {
     if (poolPlayers.find(p => p.id === playerId)) return 'pool'
@@ -142,7 +151,7 @@ export default function Tierlist() {
   }
 
   function handleDragStart(event) {
-    const player = zaragozaPlayers.find(p => p.id === event.active.id)
+    const player = marketItems.find(p => p.id === event.active.id)
     setActivePlayer(player || null)
   }
 
@@ -154,7 +163,7 @@ export default function Tierlist() {
     const destination = over.id
     const source = findPlayerLocation(playerId)
     if (source === destination) return
-    const player = zaragozaPlayers.find(p => p.id === playerId)
+    const player = marketItems.find(p => p.id === playerId)
     if (!player) return
     if (source !== 'pool') {
       setTierPlayers(prev => ({ ...prev, [source]: (prev[source] || []).filter(p => p.id !== playerId) }))
@@ -233,31 +242,31 @@ export default function Tierlist() {
 
   if (loading) return (
     <div style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <p style={{ fontFamily: 'sans-serif', color: '#999' }}>Cargando plantilla...</p>
+      <p style={{ fontFamily: 'sans-serif', color: '#999' }}>Cargando movimientos de mercado...</p>
     </div>
   )
 
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#060D1A', padding: isMobile ? '16px 12px' : '24px' }}>
       <SEO
-        title="Tier List del Real Zaragoza | Valora a la Plantilla | RZ Hub"
-        description="Crea tu tier list de la plantilla del Real Zaragoza. Clasifica a los jugadores por nivel y compártela con la comunidad zaragocista."
-        keywords="tier list Real Zaragoza, valorar jugadores Real Zaragoza, plantilla Real Zaragoza, ranking jugadores Real Zaragoza 26/27"
+        title="Tier List del Mercado del Real Zaragoza | Valora Altas y Bajas | RZ Hub"
+        description="Valora las altas y bajas del mercado de fichajes del Real Zaragoza: clasifica cada decisión de muy buena a pésima y compártela con la comunidad zaragocista."
+        keywords="tier list mercado Real Zaragoza, valorar fichajes Real Zaragoza, altas y bajas Real Zaragoza, decisiones mercado Real Zaragoza 26/27"
         path="/tierlist"
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'WebApplication',
-          name: 'Tier List del Real Zaragoza | RZ Hub',
+          name: 'Tier List del Mercado del Real Zaragoza | RZ Hub',
           url: `${SITE_URL}/tierlist`,
           applicationCategory: 'SportsApplication',
           operatingSystem: 'Web',
           offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-          description: 'Herramienta para clasificar y valorar a los jugadores de la plantilla del Real Zaragoza en una tier list.',
+          description: 'Herramienta para clasificar y valorar las altas y bajas del mercado de fichajes del Real Zaragoza en una tier list.',
         }}
       />
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '4px', flexWrap: 'wrap' }}>
           <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: isMobile ? '52px' : '72px', textTransform: 'uppercase', color: 'white', lineHeight: '1', margin: 0 }}>
             Tier List
           </h1>
@@ -280,6 +289,10 @@ export default function Tierlist() {
           </div>
         </div>
 
+        <p style={{ fontFamily: 'sans-serif', fontSize: '13px', color: '#999', margin: '0 0 16px' }}>
+          Arrastra cada alta y baja del mercado a la fila que refleje si fue una buena decisión.
+        </p>
+
         <DndContext collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <div ref={tierlistRef} style={{ padding: isMobile ? '8px' : '16px', background: '#060D1A', borderRadius: '8px' }}>
             {tiers.map(tier => (
@@ -296,7 +309,7 @@ export default function Tierlist() {
             <button onClick={handleAddRow} style={{ width: '100%', padding: '8px', marginBottom: '12px', marginTop: '4px', border: '2px dashed #ccc', borderRadius: '4px', background: 'transparent', color: '#999', fontFamily: 'sans-serif', fontSize: '13px', cursor: 'pointer' }}>
               + Añadir fila
             </button>
-            <PoolZone primerEquipo={primerEquipo} cantera={cantera} small={isMobile} />
+            <PoolZone altas={altas} bajas={bajas} small={isMobile} />
           </div>
           <DragOverlay>
             {activePlayer ? <TierCard player={activePlayer} small={isMobile} /> : null}
