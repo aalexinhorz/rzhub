@@ -42,7 +42,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
     return () => observer.disconnect()
   }, [])
 
-  const titleFontSize = scaleByFieldWidth(fieldWidth, 24, 44)
+  const titleFontSize = scaleByFieldWidth(fieldWidth, 17, 31)
 
   // html2canvas y dom-to-image-more "capturan" el DOM reimplementando (o
   // delegando a un <foreignObject> SVG) su propio layout/texto, y ambas
