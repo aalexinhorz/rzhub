@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 import './Footer.css'
 
 /* ============================================================
@@ -5,6 +7,8 @@ import './Footer.css'
    quiera sentirse parte del mismo Design System, como Mercado).
    ============================================================ */
 export default function Footer() {
+  const { signInWithGoogle } = useAuth()
+
   return (
     <footer style={{ background: 'var(--rz-bg-0)', borderTop: '1px solid var(--rz-border)', padding: 'var(--space-12) 0 var(--space-6)' }}>
       <div className="rz-container">
@@ -16,10 +20,15 @@ export default function Footer() {
               La plataforma definitiva para todos los zaragocistas. Herramientas, datos y comunidad en un único lugar.
             </p>
             <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-              {['𝕏', 'IG', 'YT', 'DC'].map((s, i) => (
-                <div key={i} style={{ width: 28, height: 28, borderRadius: 'var(--radius-sm)', background: 'var(--rz-bg-2)', border: '1px solid var(--rz-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--rz-text-muted)', cursor: 'pointer' }}>
+              {[
+                { s: '𝕏', href: 'https://x.com/rzhub_' },
+                { s: 'IG', href: 'https://www.instagram.com/_rzhub?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==' },
+                { s: 'YT', href: 'https://www.youtube.com/@AlexinhoRZ' },
+                { s: 'DC', href: 'https://linktr.ee/rzhub1932' },
+              ].map(({ s, href }, i) => (
+                <a key={i} href={href} target="_blank" rel="noopener noreferrer" style={{ width: 28, height: 28, borderRadius: 'var(--radius-sm)', background: 'var(--rz-bg-2)', border: '1px solid var(--rz-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--rz-text-muted)', cursor: 'pointer', textDecoration: 'none' }}>
                   {s}
-                </div>
+                </a>
               ))}
             </div>
           </div>
@@ -27,39 +36,74 @@ export default function Footer() {
           {/* Herramientas */}
           <div>
             <div style={{ fontSize: 'var(--text-xs)', fontWeight: 'var(--weight-bold)', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--rz-text-muted)', marginBottom: 'var(--space-4)' }}>Herramientas</div>
-            {['Lineup Builder', 'Mercado', 'On Tour', 'Calendario', 'La Porra', 'Fotogalería'].map((l, i) => (
-              <div key={i} style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.40)', padding: '3px 0', cursor: 'pointer' }}
+            {[
+              { l: 'Lineup Builder', href: '/lineup' },
+              { l: 'Mercado', href: '/mercado' },
+              { l: 'On Tour', href: '/on-tour' },
+              { l: 'Calendario', href: '/calendario' },
+              { l: 'La Porra', href: '/porra' },
+              { l: 'Fotogalería', href: '/fotogaleria' },
+            ].map(({ l, href }, i) => (
+              <Link key={i} to={href} style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.40)', padding: '3px 0', cursor: 'pointer', textDecoration: 'none' }}
                 onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.75)'}
                 onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.40)'}
               >
                 {l}
-              </div>
+              </Link>
             ))}
           </div>
 
           {/* Comunidad */}
           <div>
             <div style={{ fontSize: 'var(--text-xs)', fontWeight: 'var(--weight-bold)', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--rz-text-muted)', marginBottom: 'var(--space-4)' }}>Comunidad</div>
-            {['Noticias', 'Foros', 'Eventos', 'Ranking', 'Miembros'].map((l, i) => (
-              <div key={i} style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.40)', padding: '3px 0', cursor: 'pointer' }}
+            {[
+              { l: 'Noticias', href: '/noticias' },
+              { l: 'Eventos', href: '/calendario' },
+              { l: 'Ranking', href: '/tierlist' },
+            ].map(({ l, href }, i) => (
+              <Link key={i} to={href} style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.40)', padding: '3px 0', cursor: 'pointer', textDecoration: 'none' }}
                 onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.75)'}
                 onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.40)'}
               >
                 {l}
-              </div>
+              </Link>
             ))}
+            <div
+              onClick={signInWithGoogle}
+              style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.40)', padding: '3px 0', cursor: 'pointer' }}
+              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.75)'}
+              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.40)'}
+            >
+              Miembros
+            </div>
           </div>
 
           {/* Info */}
           <div>
             <div style={{ fontSize: 'var(--text-xs)', fontWeight: 'var(--weight-bold)', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--rz-text-muted)', marginBottom: 'var(--space-4)' }}>Información</div>
-            {['Sobre RZ Hub', 'Contacto', 'Ayuda', 'Términos', 'Privacidad'].map((l, i) => (
-              <div key={i} style={{ fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.40)', padding: '3px 0', cursor: 'pointer' }}
+            <Link to="/sobre-rz-hub" style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.40)', padding: '3px 0', cursor: 'pointer', textDecoration: 'none' }}
+              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.75)'}
+              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.40)'}
+            >
+              Sobre RZ Hub
+            </Link>
+            <a href="https://linktr.ee/rzhub1932" target="_blank" rel="noopener noreferrer" style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.40)', padding: '3px 0', cursor: 'pointer', textDecoration: 'none' }}
+              onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.75)'}
+              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.40)'}
+            >
+              Contacto
+            </a>
+            {[
+              { l: 'Ayuda', href: '/ayuda' },
+              { l: 'Términos', href: '/terminos' },
+              { l: 'Privacidad', href: '/privacidad' },
+            ].map(({ l, href }, i) => (
+              <Link key={i} to={href} style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'rgba(255,255,255,0.40)', padding: '3px 0', cursor: 'pointer', textDecoration: 'none' }}
                 onMouseEnter={e => e.target.style.color = 'rgba(255,255,255,0.75)'}
                 onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.40)'}
               >
                 {l}
-              </div>
+              </Link>
             ))}
           </div>
 
