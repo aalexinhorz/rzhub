@@ -42,7 +42,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
     return () => observer.disconnect()
   }, [])
 
-  const titleFontSize = scaleByFieldWidth(fieldWidth, 17, 31)
+  const titleFontSize = scaleByFieldWidth(fieldWidth, 20, 73)
 
   // html2canvas y dom-to-image-more "capturan" el DOM reimplementando (o
   // delegando a un <foreignObject> SVG) su propio layout/texto, y ambas
@@ -244,7 +244,7 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
             formación van en la misma fila (flex-wrap): si el nombre del
             equipo no deja hueco para la formación, esta baja sola a una
             segunda línea de forma automática. */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '8px 16px 0px 16px', zIndex: 10, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '23px 16px 0px 16px', zIndex: 10, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
           {editingName ? (
             <input autoFocus value={teamName} onChange={e => setTeamName(e.target.value)}
               onBlur={() => setEditingName(false)} onKeyDown={e => e.key === 'Enter' && setEditingName(false)}

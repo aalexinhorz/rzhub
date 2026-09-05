@@ -187,7 +187,7 @@ export async function drawLineupCanvas({ slotsLayout, slots, subs, teamName, for
     document.fonts.load('600 16px Archivo'),
     document.fonts.load('700 16px Archivo'),
     document.fonts.load('900 16px Archivo'),
-    document.fonts.load('700 28px Humane'),
+    document.fonts.load('700 35px Humane'),
   ])
   await document.fonts.ready
 
@@ -205,7 +205,7 @@ export async function drawLineupCanvas({ slotsLayout, slots, subs, teamName, for
   // equipo no deja hueco, la formación baja a una segunda línea (mismo
   // comportamiento que el flex-wrap del overlay en pantalla).
   const nameText = (teamName || '').toUpperCase()
-  ctx.font = '700 28px Humane, sans-serif'
+  ctx.font = '700 60px Humane, sans-serif'
   const nameW = ctx.measureText(nameText).width
 
   ctx.font = '800 10px Archivo, sans-serif'
@@ -216,9 +216,9 @@ export async function drawLineupCanvas({ slotsLayout, slots, subs, teamName, for
   const sameLine = margin + nameW + gap + badgeW <= W - margin
 
   ctx.fillStyle = '#ffffff'
-  ctx.font = '700 28px Humane, sans-serif'
+  ctx.font = '700 60px Humane, sans-serif'
   ctx.textBaseline = 'top'
-  ctx.fillText(nameText, margin, 8)
+  ctx.fillText(nameText, margin, 17)
 
   // Marca de la web: su final cuadra con la esquina superior derecha del
   // rectángulo de juego (997.409/1080 x, 179/1350 y del PNG del campo).
@@ -232,7 +232,7 @@ export async function drawLineupCanvas({ slotsLayout, slots, subs, teamName, for
   ctx.textAlign = 'left'
 
   const badgeX = sameLine ? margin + nameW + gap : margin
-  const badgeY = sameLine ? 13 : 40
+  const badgeY = sameLine ? 24 : 47
 
   ctx.font = '800 10px Archivo, sans-serif'
   ctx.fillStyle = '#FFC800'
