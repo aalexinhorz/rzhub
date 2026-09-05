@@ -27,6 +27,10 @@ import NotasPartido from './pages/NotasPartido'
 import TierlistPartido from './pages/TierlistPartido'
 import EnDirecto from './pages/EnDirecto'
 import AdivinaResultado from './pages/AdivinaResultado'
+import Sobre from './pages/Sobre'
+import Terminos from './pages/Terminos'
+import Privacidad from './pages/Privacidad'
+import Ayuda from './pages/Ayuda'
 
 export default function App() {
   return (
@@ -60,6 +64,10 @@ export default function App() {
         <Route path="/tierlist-partido" element={<TierlistPartido />} />
         <Route path="/en-directo" element={<EnDirecto />} />
         <Route path="/adivina-resultado" element={<AdivinaResultado />} />
+        <Route path="/sobre-rz-hub" element={<Sobre />} />
+        <Route path="/terminos" element={<Terminos />} />
+        <Route path="/privacidad" element={<Privacidad />} />
+        <Route path="/ayuda" element={<Ayuda />} />
       </Routes>
     </div>
   )
