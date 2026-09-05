@@ -103,20 +103,32 @@ export default function FotogaleriaPartido() {
           <h1 className="sr-only">Fotos: {equipoNombre} vs {match.rival}</h1>
 
           <div className="fotogaleria-strip">
-            <div className="fotogaleria-strip__cell">
-              <span className="fotogaleria-crest"><img src={ESCUDO_ZARAGOZA} alt="" /></span>
-              <span className="fotogaleria-strip__name">{equipoNombre}</span>
-            </div>
+            {/* goles_local/visitante en otras páginas ya nos enseñó que hay que
+                mirar la sede: si el Zaragoza jugó fuera, el rival va primero. */}
+            {match.sede === 'visitante' && (
+              <div className="fotogaleria-strip__cell">
+                <span className="fotogaleria-crest">
+                  {rivalCrest ? <img src={rivalCrest} alt="" /> : <span className="fotogaleria-crest-fallback">{match.rival[0]}</span>}
+                </span>
+                <span className="fotogaleria-strip__name">{match.rival}</span>
+              </div>
+            )}
             <div className="fotogaleria-strip__cell fotogaleria-strip__cell--accent">
               <span className="fotogaleria-strip__vs">VS</span>
               <span className="fotogaleria-strip__date">{formatMatchDate(match.matchDate)}</span>
             </div>
             <div className="fotogaleria-strip__cell">
-              <span className="fotogaleria-crest">
-                {rivalCrest ? <img src={rivalCrest} alt="" /> : <span className="fotogaleria-crest-fallback">{match.rival[0]}</span>}
-              </span>
-              <span className="fotogaleria-strip__name">{match.rival}</span>
+              <span className="fotogaleria-crest"><img src={ESCUDO_ZARAGOZA} alt="" /></span>
+              <span className="fotogaleria-strip__name">{equipoNombre}</span>
             </div>
+            {match.sede !== 'visitante' && (
+              <div className="fotogaleria-strip__cell">
+                <span className="fotogaleria-crest">
+                  {rivalCrest ? <img src={rivalCrest} alt="" /> : <span className="fotogaleria-crest-fallback">{match.rival[0]}</span>}
+                </span>
+                <span className="fotogaleria-strip__name">{match.rival}</span>
+              </div>
+            )}
           </div>
 
           <div className="fotogaleria-viewer">

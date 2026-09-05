@@ -56,6 +56,14 @@ function MatchCard({ match }) {
       </div>
 
       <div className="fotogaleria-card__boxes">
+        {match.sede === 'visitante' && (
+          <span className="fotogaleria-card__box">
+            <span className="fotogaleria-crest">
+              {rivalCrest ? <img src={rivalCrest} alt="" /> : <span className="fotogaleria-crest-fallback">{match.rival[0]}</span>}
+            </span>
+            <span className="fotogaleria-card__box-label">{match.rival}</span>
+          </span>
+        )}
         <span className="fotogaleria-card__box">
           <span className="fotogaleria-crest"><img src={ESCUDO_ZARAGOZA} alt="" /></span>
           <span className="fotogaleria-card__box-label">{EQUIPOS[match.equipo]}</span>
@@ -69,12 +77,14 @@ function MatchCard({ match }) {
           </span>
           <span className="fotogaleria-card__box-label">{formatShortDate(match.matchDate)}</span>
         </span>
-        <span className="fotogaleria-card__box">
-          <span className="fotogaleria-crest">
-            {rivalCrest ? <img src={rivalCrest} alt="" /> : <span className="fotogaleria-crest-fallback">{match.rival[0]}</span>}
+        {match.sede !== 'visitante' && (
+          <span className="fotogaleria-card__box">
+            <span className="fotogaleria-crest">
+              {rivalCrest ? <img src={rivalCrest} alt="" /> : <span className="fotogaleria-crest-fallback">{match.rival[0]}</span>}
+            </span>
+            <span className="fotogaleria-card__box-label">{match.rival}</span>
           </span>
-          <span className="fotogaleria-card__box-label">{match.rival}</span>
-        </span>
+        )}
       </div>
     </Link>
   )
