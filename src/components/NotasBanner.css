@@ -1,0 +1,17 @@
+.notas-banner__text {
+  white-space: nowrap;
+}
+.notas-banner__text .notas-banner__full { display: inline; }
+.notas-banner__text .notas-banner__short { display: none; }
+
+@media (max-width: 480px) {
+  .notas-banner {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+  .notas-banner__text {
+    font-size: 11px;
+  }
+  .notas-banner__text .notas-banner__full { display: none; }
+  .notas-banner__text .notas-banner__short { display: inline; }
+}
