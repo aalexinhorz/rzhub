@@ -8,10 +8,9 @@ import './Navbar.css'
 // en vez de una lista plana — reduce el nivel superior de 9 enlaces a 5.
 const NAV_GROUPS = [
   { type: 'link', to: '/lineup', label: 'Line-UP' },
-  { type: 'link', to: '/mercado', label: 'Mercado' },
+  { type: 'link', to: '/porra', label: 'Porra' },
   {
     type: 'group', id: 'herramientas', label: 'Herramientas', items: [
-      { to: '/porra', label: 'Porra' },
       { to: '/tierlist', label: 'TierMaker' },
       { to: '/notas', label: 'Notas' },
     ],
@@ -29,6 +28,7 @@ const NAV_GROUPS = [
       { to: '/rumores', label: 'Noticias' },
     ],
   },
+  { type: 'link', to: '/mercado', label: 'Mercado' },
 ]
 
 export default function Navbar() {
