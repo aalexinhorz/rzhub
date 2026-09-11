@@ -6,7 +6,7 @@ import { ESCUDOS_CLUBS, fetchEscudoFallback } from '../lib/escudos'
 import HeroSection from '../components/HeroSection'
 import CommunityStats from '../components/CommunityStats'
 import ToolsSection from '../components/ToolsSection'
-import MarketCarousel from '../components/MarketCarousel'
+import NoticiasHome from '../components/NoticiasHome'
 import CommunitySection from '../components/CommunitySection'
 import EditorialSection from '../components/EditorialSection'
 import CalendarSection from '../components/CalendarSection'
@@ -151,7 +151,7 @@ export default function Home() {
 
       {/* ── MERCADO + COMUNIDAD + CALENDARIO (bloque editorial, mismo fondo) ─ */}
       <EditorialSection>
-        <MarketCarousel />
+        <NoticiasHome />
         <CommunitySection />
         <CalendarSection />
       </EditorialSection>

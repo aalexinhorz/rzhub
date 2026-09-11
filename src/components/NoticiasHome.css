@@ -1,0 +1,142 @@
+/* ============================================================
+   NOTICIAS HOME — prueba: sección estática (sin autoscroll) con las
+   últimas noticias, en el hueco donde vivía <MarketCarousel />. Vive
+   dentro de .editorial-section, así que sin fondo propio (ver
+   EditorialSection.jsx).
+   ============================================================ */
+
+.noticias-home {
+  position: relative;
+  padding: 36px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-inline: 24px;
+}
+
+.noticias-home__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.noticias-home__eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 0 6px;
+}
+
+.noticias-home__title {
+  font-family: var(--font-display);
+  font-size: clamp(44px, 4vw, 64px);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+}
+
+.noticias-home__ver-todas {
+  color: var(--rz-yellow);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  white-space: nowrap;
+  padding-bottom: 6px;
+}
+.noticias-home__ver-todas:hover { text-decoration: underline; }
+
+.noticias-home__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.noticias-home__card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+}
+.noticias-home__card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.noticias-home__foto {
+  aspect-ratio: 16 / 10;
+  background: rgba(0, 0, 0, 0.2);
+}
+.noticias-home__foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.noticias-home__body {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.noticias-home__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.noticias-home__tag {
+  background: var(--tag-color, var(--rz-blue-light));
+  color: #060D1A;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.noticias-home__fecha {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.noticias-home__card-titulo {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: #ffffff;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .noticias-home__grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .noticias-home { padding-inline: 20px; }
+  .noticias-home__grid { grid-template-columns: 1fr; }
+  .noticias-home__title { font-size: clamp(32px, 8vw, 48px); }
+}

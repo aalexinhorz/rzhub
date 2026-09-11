@@ -3,8 +3,6 @@ import { useState, useEffect, useRef } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { supabase } from '../hooks/useAuth'
 
-const RSS2JSON_KEY = 'em9i5los5dhem2nejvr2tolxzoqdjtjplwlvcpuf'
-
 const PARTIDOS_CALENDARIO = [
   { rival: 'Utebo', fecha: '29 Jul', hora: '18:00', sede: 'local', escudo: '/escudos/spain_utebo.football-logos.cc.svg' },
   { rival: 'Barbastro', fecha: '1 Ago', hora: '19:00', sede: 'visitante', escudo: '/escudos/ud-barbastro-seeklogo.png' },
@@ -149,11 +147,6 @@ function normalizar(str) {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
 }
 
-function extraerImagen(description) {
-  if (!description) return null
-  const match = description.match(/<img[^>]+src="([^"]+)"/)
-  return match ? match[1] : null
-}
 
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
@@ -282,19 +275,25 @@ export default function Home3() {
   const [loadingMov, setLoadingMov] = useState(true)
 
   useEffect(() => {
+    // No se pide a Nitter en directo desde el navegador (ver Noticias.jsx):
+    // una Edge Function con cron (cada 15 min) publica los tweets como
+    // noticias (autor_id null) en la tabla "noticias", aquí solo se lee.
     async function cargarTweets() {
       try {
-        const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://nitter.net/MBlanquillo1932/rss')}&api_key=${RSS2JSON_KEY}&count=20`
-        const res = await fetch(url)
-        const data = await res.json()
-        if (data.status === 'ok') {
-          setTweets((data.items || []).slice(0, 20).map(item => ({
-            titulo: item.title,
-            link: item.link?.replace('https://nitter.net', 'https://x.com'),
-            fecha: item.pubDate,
-            imagen: extraerImagen(item.description),
-          })))
-        }
+        const { data, error } = await supabase
+          .from('noticias')
+          .select('titulo, slug, created_at, imagen_url')
+          .is('autor_id', null)
+          .eq('publicada', true)
+          .order('created_at', { ascending: false })
+          .limit(20)
+        if (error) throw error
+        setTweets((data || []).map(row => ({
+          titulo: row.titulo,
+          link: `/noticias/${row.slug}`,
+          fecha: row.created_at,
+          imagen: row.imagen_url,
+        })))
       } catch (e) { console.error(e) }
       finally { setLoadingTweets(false) }
     }
@@ -345,7 +344,7 @@ export default function Home3() {
             <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <h2 style={{ fontFamily: F, fontSize: '18px', fontWeight: '800', textTransform: 'uppercase', margin: 0, color: '#111', letterSpacing: '1px' }}>El Noticiero</h2>
-                <a href="/rumores" style={{ fontFamily: F, fontSize: '11px', color: '#0B4390', fontWeight: '700', textDecoration: 'none', border: '1px solid #0B4390', borderRadius: '20px', padding: '3px 10px' }}>
+                <a href="/noticias" style={{ fontFamily: F, fontSize: '11px', color: '#0B4390', fontWeight: '700', textDecoration: 'none', border: '1px solid #0B4390', borderRadius: '20px', padding: '3px 10px' }}>
                   Todas las noticias
                 </a>
               </div>
@@ -454,7 +453,7 @@ export default function Home3() {
             <div style={{ marginBottom: '24px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <h2 style={{ fontFamily: F, fontSize: '18px', fontWeight: '800', textTransform: 'uppercase', margin: 0, color: '#111', letterSpacing: '1px' }}>Noticias recientes</h2>
-                <a href="/rumores" style={{ fontFamily: F, fontSize: '11px', color: '#0B4390', fontWeight: '700', textDecoration: 'none', border: '1px solid #0B4390', borderRadius: '20px', padding: '3px 10px' }}>
+                <a href="/noticias" style={{ fontFamily: F, fontSize: '11px', color: '#0B4390', fontWeight: '700', textDecoration: 'none', border: '1px solid #0B4390', borderRadius: '20px', padding: '3px 10px' }}>
                   Ver todas →
                 </a>
               </div>

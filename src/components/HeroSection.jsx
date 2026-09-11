@@ -58,7 +58,15 @@ function usePorraData() {
           .eq('partido_id', proximo.id)
           .eq('user_id', user.id)
           .maybeSingle()
-        if (!cancelado && pred) setPrediction({ home: pred.goles_zaragoza, away: pred.goles_rival })
+        // goles_zaragoza/goles_rival son siempre "del Zaragoza"/"del rival",
+        // no "del local"/"del visitante" — hay que remapear según sede,
+        // igual que ya se hace con homeTeam/awayTeam más abajo.
+        if (!cancelado && pred) {
+          const esLocal = proximo.sede === 'local'
+          setPrediction(esLocal
+            ? { home: pred.goles_zaragoza, away: pred.goles_rival }
+            : { home: pred.goles_rival, away: pred.goles_zaragoza })
+        }
       }
 
       if (!cancelado) setLoading(false)

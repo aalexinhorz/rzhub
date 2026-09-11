@@ -1,36 +1,91 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
+import Footer from '../components/Footer'
 import { supabase } from '../hooks/useAuth'
+import './Noticias.css'
+
+// Colores por categoría — las que ya usan los redactores en Redaccion.jsx
+// (Real Zaragoza, Mercado, Análisis, Opinión, Previa, Crónica) más
+// "Última Hora", que es la que se asigna a los tweets auto-publicados
+// cuando huelen a anuncio oficial/urgente.
+const COLOR_CATEGORIA = {
+  'Última Hora': 'var(--rz-red)',
+  Mercado: 'var(--rz-yellow)',
+  'Real Zaragoza': 'var(--rz-blue-light)',
+  Análisis: '#8b5cf6',
+  Opinión: '#14b8a6',
+  Previa: '#f97316',
+  Crónica: 'var(--rz-green)',
+}
+const colorCategoria = (cat) => COLOR_CATEGORIA[cat] || 'var(--rz-text-muted)'
+
+// Quita diacríticos (acentos) tras normalize('NFD') para comparar sin
+// tildes. Construido con fromCharCode (en vez de un literal \uXXXX en
+// el regex) para que el rango de "combining marks" quede inequívoco.
+const RANGO_DIACRITICOS = new RegExp(`[${String.fromCharCode(0x300)}-${String.fromCharCode(0x36f)}]`, 'g')
+function normalizar(str) {
+  return (str || '').toLowerCase().normalize('NFD').replace(RANGO_DIACRITICOS, '')
+}
 
 function formatFecha(dateStr) {
   return new Date(dateStr).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+function NoticiaCard({ n }) {
+  return (
+    <Link to={`/noticias/${n.slug}`} className="noticia-card">
+      {n.imagen_url && (
+        <div className="noticia-card__foto">
+          <img
+            src={n.imagen_url}
+            alt=""
+            loading="lazy"
+            onError={e => { e.target.closest('.noticia-card__foto').style.display = 'none' }}
+          />
+        </div>
+      )}
+      <div className="noticia-card__body">
+        <div className="noticia-card__meta">
+          <span className="noticia-card__tag" style={{ '--tag-color': colorCategoria(n.categoria) }}>
+            {n.categoria || 'Real Zaragoza'}
+          </span>
+          <span className="noticia-card__fecha">{formatFecha(n.created_at)}</span>
+        </div>
+        <h3 className="noticia-card__titulo">{n.titulo}</h3>
+        {n.excerpt && <p className="noticia-card__excerpt">{n.excerpt}</p>}
+        {n.autor && <p className="noticia-card__autor">{n.autor}</p>}
+      </div>
+    </Link>
+  )
+}
+
 export default function Noticias() {
-  const navigate = useNavigate()
   const [noticias, setNoticias] = useState([])
   const [loading, setLoading] = useState(true)
+  const [busqueda, setBusqueda] = useState('')
   const [categoriaActiva, setCategoriaActiva] = useState('Todas')
 
   useEffect(() => {
-    async function fetch() {
-      const { data } = await supabase
-        .from('noticias')
-        .select('*')
-        .eq('publicada', true)
-        .order('created_at', { ascending: false })
-      setNoticias(data || [])
-      setLoading(false)
-    }
-    fetch()
+    supabase
+      .from('noticias')
+      .select('*')
+      .eq('publicada', true)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => { setNoticias(data || []); setLoading(false) })
   }, [])
 
   const categorias = ['Todas', ...new Set(noticias.map(n => n.categoria).filter(Boolean))]
-  const filtradas = categoriaActiva === 'Todas' ? noticias : noticias.filter(n => n.categoria === categoriaActiva)
+
+  const busquedaNorm = normalizar(busqueda)
+  const filtradas = noticias.filter(n => {
+    if (categoriaActiva !== 'Todas' && n.categoria !== categoriaActiva) return false
+    if (busquedaNorm && !normalizar(n.titulo).includes(busquedaNorm)) return false
+    return true
+  })
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 60px)', background: '#f8f9fa' }}>
+    <div className="noticias-page">
       <SEO
         title="Noticias del Real Zaragoza | Actualidad Zaragocista | RZ Hub"
         description="Las últimas noticias del Real Zaragoza: fichajes, resultados, entrevistas y actualidad del club, actualizadas cada día."
@@ -45,60 +100,58 @@ export default function Noticias() {
           isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
         }}
       />
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 20px' }}>
 
-        <h1 style={{ fontFamily: 'Humane, sans-serif', fontWeight: '700', fontSize: 'clamp(56px, 10vw, 96px)', textTransform: 'uppercase', color: '#0B4390', lineHeight: '1', margin: '0 0 8px' }}>
-          Noticias
-        </h1>
-        <div style={{ borderBottom: '3px solid #0B4390', marginBottom: '28px' }} />
+      <div className="noticias-page__hero">
+        <p className="rz-eyebrow rz-eyebrow--yellow noticias-page__eyebrow">Real Zaragoza · Temporada 26/27</p>
+        <h1 className="noticias-page__title">Noticias</h1>
+        <p className="noticias-page__subtitle">Toda la actualidad del Real Zaragoza: crónicas, mercado y última hora, en un solo sitio.</p>
+      </div>
 
-        {/* Filtro categorías */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '32px' }}>
-          {categorias.map(cat => (
-            <button key={cat} onClick={() => setCategoriaActiva(cat)} style={{ background: categoriaActiva === cat ? '#0B4390' : 'white', color: categoriaActiva === cat ? 'white' : '#0B4390', border: '2px solid #0B4390', borderRadius: '20px', padding: '6px 16px', fontFamily: 'sans-serif', fontSize: '13px', fontWeight: '700', cursor: 'pointer', transition: 'all 0.15s' }}>
-              {cat}
-            </button>
-          ))}
+      <div className="noticias-page__body">
+        <div className="noticias-page__container">
+          <div className="noticias-toolbar">
+            <div className="noticias-buscador">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.35-4.35" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Buscar noticias..."
+                value={busqueda}
+                onChange={e => setBusqueda(e.target.value)}
+              />
+            </div>
+
+            <div className="noticias-chips">
+              {categorias.map(cat => (
+                <button
+                  key={cat}
+                  type="button"
+                  className={`noticias-chip${categoriaActiva === cat ? ' is-active' : ''}`}
+                  style={cat !== 'Todas' ? { '--chip-color': colorCategoria(cat) } : undefined}
+                  onClick={() => setCategoriaActiva(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {loading ? (
+            <p className="noticias-page__state">Cargando noticias…</p>
+          ) : filtradas.length === 0 ? (
+            <p className="noticias-page__state">
+              {noticias.length === 0 ? 'Todavía no hay noticias publicadas.' : 'No hay noticias que coincidan con la búsqueda.'}
+            </p>
+          ) : (
+            <div className="noticias-grid">
+              {filtradas.map(n => <NoticiaCard key={n.id} n={n} />)}
+            </div>
+          )}
         </div>
 
-        {loading ? (
-          <p style={{ fontFamily: 'sans-serif', color: '#999', textAlign: 'center', padding: '48px' }}>Cargando noticias...</p>
-        ) : filtradas.length === 0 ? (
-          <p style={{ fontFamily: 'sans-serif', color: '#999', textAlign: 'center', padding: '48px' }}>No hay noticias publicadas todavía.</p>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
-            {filtradas.map(n => (
-              <div key={n.id} onClick={() => navigate(`/noticias/${n.slug}`)}
-                style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.13)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)' }}
-              >
-                {n.imagen_url && (
-                  <div style={{ height: '180px', overflow: 'hidden' }}>
-                    <img src={n.imagen_url} alt={n.titulo} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                  </div>
-                )}
-                <div style={{ padding: '16px 18px 20px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                    <span style={{ background: '#0B4390', color: 'white', fontFamily: 'sans-serif', fontSize: '10px', fontWeight: '800', padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
-                      {n.categoria}
-                    </span>
-                    <span style={{ color: '#bbb', fontFamily: 'sans-serif', fontSize: '12px' }}>{formatFecha(n.created_at)}</span>
-                  </div>
-                  <h3 style={{ margin: '0 0 8px', fontFamily: 'sans-serif', fontSize: '16px', fontWeight: '800', color: '#111', lineHeight: '1.3', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {n.titulo}
-                  </h3>
-                  {n.excerpt && (
-                    <p style={{ margin: 0, fontFamily: 'sans-serif', fontSize: '13px', color: '#666', lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {n.excerpt}
-                    </p>
-                  )}
-                  {n.autor && <p style={{ margin: '10px 0 0', fontFamily: 'sans-serif', fontSize: '12px', color: '#aaa', fontWeight: '600' }}>{n.autor}</p>}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <Footer />
       </div>
     </div>
   )

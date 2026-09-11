@@ -8,7 +8,6 @@ import Lineup from './pages/Lineup'
 import Tierlist from './pages/Tierlist'
 import Comunidad from './pages/Comunidad'
 import Perfil from './pages/Perfil'
-import Rumores from './pages/Rumores'
 import Contenidos from './pages/Contenidos'
 import OnTour from './pages/OnTour'
 import Noticias from './pages/Noticias'
@@ -52,7 +51,10 @@ export default function App() {
         <Route path="/contenidos" element={<Navigate to="/" replace />} />
         <Route path="/on-tour" element={<OnTour />} />
         <Route path="/calendario" element={<Calendario />} />
-        <Route path="/rumores" element={<Rumores />} />
+        {/* Los tweets ya se publican como noticias en /noticias (ver
+            Edge Function fetch-tweets-rumores) — se mantiene este
+            redirect por enlaces antiguos que ya apunten a /rumores. */}
+        <Route path="/rumores" element={<Navigate to="/noticias" replace />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/porra" element={<Porra />} />
         <Route path="/mercado" element={<Mercado />} />

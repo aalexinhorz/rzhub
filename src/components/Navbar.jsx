@@ -25,7 +25,7 @@ const NAV_GROUPS = [
     type: 'group', id: 'comunidad', label: 'Comunidad', items: [
       { to: '/comunidad', label: 'Comunidad' },
       { to: '/fotogaleria', label: 'Fotos' },
-      { to: '/rumores', label: 'Noticias' },
+      { to: '/noticias', label: 'Noticias' },
     ],
   },
   { type: 'link', to: '/mercado', label: 'Mercado' },
