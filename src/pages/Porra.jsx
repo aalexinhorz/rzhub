@@ -865,11 +865,24 @@ export default function Porra() {
   }
 
   // Instagram no tiene una "web intent" para publicar con texto o
-  // imagen precargados (a diferencia de X): en móvil, la hoja nativa de
-  // compartir (Web Share API) sí permite elegir Instagram Direct/
-  // Historias con el texto ya listo; la captura, en cualquier caso,
-  // queda copiada al portapapeles para poder pegarla en la publicación
-  // o historia.
+  // imagen precargados (a diferencia de X), así que la captura se copia
+  // siempre al portapapeles para pegarla a mano en la publicación o
+  // historia. Mismo patrón mobile-app-vs-web que abrirCompositorMobileX:
+  // en móvil se intenta abrir la app nativa vía su esquema propio y, si
+  // la pestaña sigue visible pasado un margen (no se abrió la app), se
+  // cae a instagram.com; en desktop se abre directamente la web.
+  function abrirInstagramMobile(urlWeb) {
+    const urlApp = 'instagram://app'
+    let volvioAlNavegador = false
+    const marcarVuelta = () => { if (document.hidden) volvioAlNavegador = true }
+    document.addEventListener('visibilitychange', marcarVuelta)
+    window.location.href = urlApp
+    setTimeout(() => {
+      document.removeEventListener('visibilitychange', marcarVuelta)
+      if (!volvioAlNavegador) window.location.href = urlWeb
+    }, 1500)
+  }
+
   async function handleCompartirInstagram() {
     const blob = await obtenerBlobParaCompartir()
     if (!blob) {
@@ -887,20 +900,19 @@ export default function Porra() {
       }
     }
 
-    if (navigator.share) {
-      try {
-        await navigator.share({ text: textoCompartirPorra() })
-        return
-      } catch (error) {
-        if (error?.name === 'AbortError') return
-      }
-    }
-
     if (copiado) {
       alert('Hemos copiado la captura de tu pronóstico al portapapeles. Pégala en tu publicación o historia de Instagram.')
     } else {
       descargarBlob(blob, 'mi-pronostico-porra.png')
-      alert('No se pudo copiar la captura al portapapeles. La hemos descargado — Instagram no permite compartir directamente desde el navegador.')
+      alert('No se pudo copiar la captura al portapapeles. La hemos descargado — adjúntala tú mismo en Instagram.')
+    }
+
+    const esMobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent)
+    const urlWeb = 'https://www.instagram.com'
+    if (esMobile) {
+      abrirInstagramMobile(urlWeb)
+    } else {
+      window.open(urlWeb, '_blank')
     }
   }
 
