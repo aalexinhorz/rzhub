@@ -1,0 +1,1144 @@
+/* ============================================================
+   PORRA — rediseño siguiendo el mockup de referencia. Fondo azul
+   noche (#060d1a), imagen de estadio como ambiente (misma que usa
+   EditorialSection.css) oscurecida progresivamente hacia abajo,
+   tarjeta de partido en dos columnas (desktop) que se apilan en
+   tablet/mobile.
+   ============================================================ */
+
+.porra-page {
+  background: #060d1a;
+  min-height: 100vh;
+  padding-bottom: 64px;
+}
+
+/* -------- Cabecera -------- */
+.porra-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 72px 0 44px;
+}
+
+.porra-hero__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+/* El word-spacing separa "LA" de "PORRA" sin tener que aflojar el
+   letter-spacing general (que es lo que mantiene el aspecto condensado
+   de Humane) — se aplica en todos los tamaños porque el amontonamiento
+   de palabras no es un problema exclusivo de desktop. */
+.porra-hero__title {
+  font-family: 'Humane', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #ffffff;
+  font-size: clamp(64px, 11vw, 140px);
+  line-height: 0.85;
+  letter-spacing: 0.3px;
+  word-spacing: 0.14em;
+  margin: 0 0 26px;
+}
+
+.porra-hero__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+}
+
+.porra-hero__subtitle {
+  font-family: 'Archivo', sans-serif;
+  font-size: 17px;
+  color: #a9bcdc;
+  margin: 0;
+}
+
+.porra-hero__howto {
+  font-family: 'Archivo', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.porra-hero__howto:hover {
+  color: #ffc800;
+}
+
+.porra-howto-box__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.porra-howto-box__pts {
+  font-family: 'Humane', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffc800;
+  line-height: 1;
+}
+.porra-howto-box__label {
+  font-family: 'Archivo', sans-serif;
+  font-size: 12.5px;
+  color: #a9bcdc;
+}
+
+/* -------- Contenedor y grid principal -------- */
+.porra-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+  box-sizing: border-box;
+}
+
+.porra-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .porra-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* -------- Tarjeta del partido -------- */
+.porra-match-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  /* Tinte propio sobre el fondo compartido de .porra-atmosphere (ver más
+     abajo): oscurece específicamente la zona de la tarjeta para que el
+     marcador y los campos de pronóstico mantengan contraste. */
+  background: linear-gradient(180deg, rgba(13, 68, 145, 0.14) 0%, rgba(7, 16, 34, 0.55) 55%, rgba(7, 16, 34, 0.88) 100%);
+}
+.porra-match-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fondo continuo: una sola capa de ambiente ligada al contenido real de
+   la cabecera + tarjeta del partido (.porra-atmosphere), no a una altura
+   fija ni a .porra-page entero, y en todos los anchos de pantalla — no
+   solo desktop. Así el fondo termina justo donde termina ese contenido y
+   nunca se prolonga bajo el historial ("Últimas/Próximas jornadas"), que
+   queda sobre el azul noche sólido de .porra-page. */
+.porra-atmosphere {
+  position: relative;
+  isolation: isolate;
+  /* Extiende el fondo ~40px más allá del contenido real (la mitad del
+     hueco de 80px hasta "Últimas/Próximas jornadas"), en vez de cortarlo
+     en seco justo al final de la tarjeta/sidebar. Al ser padding, las
+     capas (inset:0, ligadas a la caja con padding) crecen con él, así
+     que la transición sigue atada a la altura real del contenido. */
+  padding-bottom: 40px;
+}
+/* Foto + filtro fotográfico, en su propia capa. */
+.porra-atmosphere::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url('/images/estadio-comunidad.webp') center 32% / cover no-repeat;
+  filter: saturate(0.95) contrast(0.97);
+}
+/* Superposición de opacidad, SIN filtro: si el filter de la capa de la
+   foto también tocara este degradado, su tramo final "sólido" dejaría de
+   ser el #060d1a real (contrast() aclara los oscuros) y se vería como un
+   corte de color justo donde empieza el fondo sólido de .porra-page —
+   aunque el valor final del gradiente sea el mismo hex. Al vivir en una
+   capa aparte y sin filtro, el #060d1a del final del degradado es
+   exactamente el mismo píxel que el fondo de .porra-page, así que la
+   transición desaparece de verdad. Oscurece arriba y en la franja
+   central (los focos más brillantes del estadio) para que el texto
+   mantenga contraste sin depender solo de text-shadow, y sigue dejando
+   ver la fotografía y el tono azul. */
+.porra-atmosphere::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(6, 12, 26, 0.62) 0%, rgba(9, 30, 70, 0.52) 12%, rgba(13, 68, 145, 0.4) 26%, rgba(13, 68, 145, 0.32) 42%, rgba(7, 16, 34, 0.84) 66%, #060d1a 100%);
+}
+.porra-atmosphere > * {
+  position: relative;
+  z-index: 1;
+}
+
+.porra-match-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 24px 28px 0;
+}
+
+.porra-match-card__comp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #a9bcdc;
+}
+
+.porra-badge {
+  font-family: 'Archivo', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.porra-badge--open {
+  background: #27ae60;
+  border: 1px solid #27ae60;
+  color: #062013;
+}
+.porra-badge--closed {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #a9bcdc;
+}
+
+.porra-match-card__when {
+  text-align: right;
+  font-family: 'Archivo', sans-serif;
+}
+.porra-match-card__date {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: capitalize;
+}
+.porra-match-card__venue {
+  font-size: 13px;
+  color: #a9bcdc;
+  margin-top: 2px;
+}
+
+.porra-teams {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 36px;
+  /* Sin la cuenta atrás, los metadatos y la fila de equipos quedaban
+     demasiado pegados: se compensa con más aire arriba en vez de
+     reintroducir el hueco que ocupaba el contador. */
+  padding: 34px 28px 0;
+}
+.porra-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  max-width: 230px;
+  min-width: 0;
+}
+.porra-team__crest {
+  width: 104px;
+  height: 104px;
+  object-fit: contain;
+}
+.porra-team__crest-fallback {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  color: #a9bcdc;
+}
+.porra-team__name {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: #ffffff;
+  text-align: center;
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  line-height: 1.25;
+  min-height: 2.5em;
+}
+.porra-team__selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.porra-teams__sep {
+  align-self: flex-start;
+  margin-top: 38px;
+  color: rgba(169, 188, 220, 0.6);
+  font-size: 32px;
+  font-family: 'Archivo', sans-serif;
+  flex-shrink: 0;
+}
+
+.porra-stepper-btn {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: rgba(6, 13, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-family: 'Archivo', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.porra-stepper-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.porra-stepper-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.porra-score-value {
+  width: 78px;
+  height: 78px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(6, 13, 26, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Archivo', sans-serif;
+  font-size: 44px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.porra-tu-pronostico-label {
+  text-align: center;
+  font-family: 'Archivo', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #a9bcdc;
+  margin: 18px 0 0;
+}
+
+.porra-goleadores {
+  margin: 16px auto 0;
+  max-width: 520px;
+  width: 68%;
+  background: rgba(13, 68, 145, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+.porra-goleadores:hover {
+  background: rgba(13, 68, 145, 0.3);
+}
+.porra-goleadores__label {
+  font-family: 'Archivo', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.porra-goleadores__pts {
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  color: #a9bcdc;
+  white-space: nowrap;
+}
+.porra-goleadores-input {
+  display: block;
+  margin: 12px auto 0;
+  max-width: 520px;
+  width: 68%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(6, 13, 26, 0.6);
+  color: #ffffff;
+  font-family: 'Archivo', sans-serif;
+  font-size: 16px;
+  text-align: center;
+  outline: none;
+}
+.porra-goleadores-input::placeholder {
+  color: rgba(169, 188, 220, 0.5);
+}
+
+.porra-cta {
+  display: block;
+  margin: 20px auto 0;
+  max-width: 520px;
+  width: 68%;
+  background: #ffc800;
+  color: #111111;
+  border: none;
+  border-radius: 14px;
+  padding: 15px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
+  transition: filter 150ms ease, transform 150ms ease;
+}
+.porra-cta:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.porra-cta:disabled {
+  cursor: wait;
+  opacity: 0.8;
+}
+.porra-cta--saved {
+  background: #27ae60;
+  color: #ffffff;
+}
+
+.porra-cta-meta {
+  text-align: center;
+  margin: 14px 28px 0;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  color: #a9bcdc;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.porra-cta-meta__dot {
+  opacity: 0.5;
+}
+
+.porra-locked {
+  margin: 20px 28px 0;
+  text-align: center;
+  padding: 20px;
+  background: rgba(6, 13, 26, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+}
+.porra-locked__label {
+  font-family: 'Archivo', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #a9bcdc;
+  margin: 0 0 8px;
+}
+.porra-locked__score {
+  font-family: 'Humane', sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+.porra-locked__pts {
+  display: inline-block;
+  margin-top: 10px;
+  background: rgba(255, 200, 0, 0.15);
+  border: 1px solid #ffc800;
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  color: #ffc800;
+  font-weight: 700;
+}
+
+.porra-participants {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 22px 28px 28px;
+}
+.porra-participants__avatars {
+  display: flex;
+}
+.porra-avatar-mini {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid #0a1730;
+  margin-left: -8px;
+  background: #0d4491;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Archivo', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  object-fit: cover;
+}
+.porra-avatar-mini:first-child {
+  margin-left: 0;
+}
+.porra-participants__text {
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  color: #a9bcdc;
+}
+
+/* -------- Panel lateral -------- */
+/* Panel unificado: "Tu temporada" + "Clasificación" son un único panel
+   con un divisor interno, en vez de dos tarjetas independientes con su
+   propio hueco entre medias (en cualquier ancho de pantalla). */
+.porra-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #0a1730;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.porra-season {
+  padding: 24px;
+  flex: 0 0 auto;
+}
+.porra-season__title {
+  font-family: 'Archivo', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #a9bcdc;
+  margin: 0 0 12px;
+}
+.porra-season__stats {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.porra-season__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.porra-season__stat + .porra-season__stat {
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  padding-left: 20px;
+}
+.porra-season__value {
+  font-family: 'Archivo', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+.porra-season__stat-label {
+  font-family: 'Archivo', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #a9bcdc;
+}
+.porra-season__streak {
+  margin-top: 12px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  color: #a9bcdc;
+}
+.porra-season__empty {
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  color: #a9bcdc;
+  margin: 0;
+}
+.porra-season__login {
+  margin-top: 12px;
+  background: #ffc800;
+  color: #111;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.porra-ranking {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.porra-ranking__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 12px;
+}
+.porra-ranking__title {
+  font-family: 'Archivo', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #a9bcdc;
+  margin: 0;
+}
+/* El enlace inferior ("Ver clasificación completa") ya cubre esta
+   función en cualquier ancho de pantalla — el "Ver todo" de aquí arriba
+   es redundante. */
+.porra-ranking__see-all {
+  display: none;
+}
+.porra-ranking__row {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  min-height: 50px;
+  font-size: 14px;
+}
+.porra-ranking__row.is-me {
+  background: rgba(13, 68, 145, 0.4);
+  border-radius: 10px;
+  margin: 4px 8px;
+  padding: 10px 12px;
+}
+.porra-ranking__pos {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  color: rgba(169, 188, 220, 0.6);
+  text-align: center;
+}
+.porra-ranking__pos--1 { color: #ffc800; }
+.porra-ranking__pos--2 { color: #cfd8e6; }
+.porra-ranking__pos--3 { color: #cd8a4c; }
+.porra-ranking__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.porra-ranking__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #0d4491;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Archivo', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+.porra-ranking__name {
+  font-family: 'Archivo', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.porra-ranking__row.is-me .porra-ranking__name {
+  color: #ffc800;
+  font-weight: 700;
+}
+.porra-ranking__pts {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: 15px;
+  color: #ffffff;
+  text-align: right;
+  white-space: nowrap;
+}
+.porra-ranking__empty {
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  color: #a9bcdc;
+  text-align: center;
+  padding: 24px 20px;
+  margin: 0;
+}
+.porra-ranking__footer {
+  padding: 14px 20px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.porra-ranking__footer button {
+  background: none;
+  border: none;
+  color: #a9bcdc;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.porra-ranking__footer button:hover {
+  color: #ffffff;
+}
+
+/* -------- Últimas jornadas -------- */
+.porra-jornadas {
+  margin-top: 40px;
+  margin-bottom: 56px;
+}
+.porra-jornadas__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.porra-jornadas__tabs {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+/* Título condensado y visible en vez de una etiqueta pequeña con mucho
+   tracking, en todos los anchos de pantalla. Activa/inactiva comparten
+   tamaño y line-height — se distinguen solo por color y el subrayado
+   inferior, nunca por tamaño, para que no haya salto de layout al
+   alternar. El font-size fluido evita que el título se desborde en
+   pantallas muy estrechas sin perder la presencia que tiene en desktop. */
+.porra-jornadas__tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0 0 8px;
+  cursor: pointer;
+  font-family: 'Humane', sans-serif;
+  font-size: clamp(22px, 6vw, 30px);
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #7e93bf;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.porra-jornadas__tab:hover {
+  color: #a9bcdc;
+}
+.porra-jornadas__tab.is-active {
+  color: #ffffff;
+  border-bottom-color: #ffc800;
+}
+.porra-jornadas__see-all {
+  display: none;
+  background: none;
+  border: none;
+  color: #a9bcdc;
+  font-family: 'Archivo', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+.porra-jornadas__list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.porra-jornadas__empty {
+  font-family: 'Archivo', sans-serif;
+  font-size: 13.5px;
+  color: #a9bcdc;
+}
+
+.porra-jornada-card {
+  background: #0a1730;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+}
+.porra-jornada-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.porra-jornada-card__meta {
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #a9bcdc;
+}
+.porra-jornada-card__badge {
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  color: #a9bcdc;
+  white-space: nowrap;
+}
+.porra-jornada-card__score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 16px 0;
+}
+.porra-jornada-card__crest {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+.porra-jornada-card__result {
+  font-family: 'Humane', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.porra-jornada-card__divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 4px 0 12px;
+}
+.porra-jornada-card__bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.porra-jornada-card__label {
+  font-family: 'Archivo', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #a9bcdc;
+}
+.porra-jornada-card__value {
+  font-family: 'Archivo', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 3px;
+}
+.porra-jornada-card__value--pts {
+  color: #27ae60;
+}
+
+/* -------- Modal: clasificación completa -------- */
+.porra-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 8, 20, 0.72);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.porra-modal {
+  background: #0a1730;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 480px;
+  max-height: min(640px, calc(100vh - 48px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+}
+.porra-modal:focus {
+  outline: none;
+}
+.porra-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+.porra-modal__title {
+  font-family: 'Archivo', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #ffffff;
+  margin: 0;
+}
+.porra-modal__close {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 150ms ease;
+}
+.porra-modal__close:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+.porra-modal__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 0 12px;
+}
+/* La clasificación reutiliza .porra-ranking__row, que ya trae su propio
+   padding horizontal; el contenido de "Cómo se juega" no, así que aquí sí
+   hace falta padding propio y una columna en vez de filas. */
+.porra-modal__body--howto {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 22px 22px;
+}
+
+/* -------- Tablet -------- */
+@media (max-width: 1100px) {
+  .porra-container {
+    padding: 0 28px;
+  }
+}
+
+/* -------- Desktop (segunda iteración visual) --------
+   Todo lo de aquí abajo es exclusivo de la versión de escritorio (grid a
+   dos columnas real, min-width 1101px): metadatos más legibles, fondo
+   continuo entre cabecera y tarjeta del partido, panel lateral unificado
+   y jerarquía del historial. Tablet/mobile no se tocan. */
+/* -------- Desktop --------
+   Lo que queda aquí es exclusivo del grid real a dos columnas
+   (min-width 1101px): tamaños algo mayores para la cabecera y la
+   compensación de espacio en los equipos (proporcional a las piezas más
+   grandes de este layout), y el mecanismo que iguala la altura del panel
+   lateral con la tarjeta del partido — algo que solo tiene sentido
+   cuando ambos están uno junto al otro, no apilados. El resto del
+   rediseño (fondo continuo, panel unificado, tipografía de las pestañas,
+   metadatos legibles, input centrado...) ya es la regla base y se ve
+   igual en cualquier ancho de pantalla. */
+@media (min-width: 1101px) {
+  .porra-hero__title {
+    font-size: clamp(96px, 8vw, 168px);
+  }
+  .porra-hero__subtitle {
+    font-size: 22px;
+  }
+  /* Sin la cuenta atrás, los metadatos y la fila de equipos quedaban
+     demasiado pegados: se compensa con más aire arriba de los equipos,
+     algo más que en tablet/mobile porque los escudos y tipografía de
+     esta versión también son mayores. */
+  .porra-teams {
+    padding-top: 44px;
+  }
+
+  /* Iguala la altura del panel lateral con la tarjeta del partido a
+     partir de --porra-card-h (Porra.jsx mide .porra-match-card, que en
+     este breakpoint nunca se estira —.porra-grid mantiene
+     align-items:start— así que su altura depende solo de su propio
+     contenido). Usar el stretch mutuo del grid aquí crearía un ciclo:
+     más filas de ranking agrandarían el panel, lo que agrandaría la fila
+     del grid, lo que volvería a agrandar el panel. Con la altura fijada
+     por esta variable (medida, no inventada) ese ciclo no puede darse, y
+     al apilarse en una columna (< 1101px) esta regla ni siquiera se
+     aplica, así que cada bloque recupera su altura natural. */
+  .porra-sidebar {
+    height: var(--porra-card-h, auto);
+  }
+  .porra-ranking {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+  /* Absorbe el espacio sobrante entre las filas y el footer, sin
+     estirar avatares/filas individuales. min-height:0 permite que el
+     contenedor pueda ser más bajo que su contenido (si aún no se ha
+     recalculado el nº de filas que caben) y overflow:hidden actúa de red
+     de seguridad para que ese exceso nunca empuje el footer ni haga
+     crecer la tarjeta principal. */
+  .porra-ranking__rows {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+/* -------- Mobile -------- */
+@media (max-width: 640px) {
+  .porra-hero {
+    padding: 44px 0 28px;
+  }
+  .porra-hero__inner {
+    padding: 0 20px;
+  }
+  .porra-hero__title {
+    font-size: clamp(48px, 17vw, 80px);
+  }
+  .porra-hero__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .porra-container {
+    padding: 0 16px;
+  }
+  .porra-grid {
+    gap: 20px;
+  }
+
+  .porra-match-card__top {
+    padding: 20px 16px 0;
+  }
+  .porra-teams {
+    gap: 10px;
+    padding: 28px 16px 0;
+  }
+  .porra-team {
+    max-width: none;
+    gap: 8px;
+  }
+  .porra-team__crest,
+  .porra-team__crest-fallback {
+    width: 44px;
+    height: 44px;
+  }
+  .porra-team__name {
+    font-size: 12.5px;
+  }
+  .porra-team__selector {
+    gap: 8px;
+  }
+  .porra-score-value {
+    width: 48px;
+    height: 48px;
+    font-size: 26px;
+    font-family: 'Humane', sans-serif;
+    font-weight: 700;
+    border-radius: 8px;
+  }
+  .porra-stepper-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+  .porra-teams__sep {
+    align-self: center;
+    margin-top: 36px;
+    font-size: 20px;
+  }
+  .porra-tu-pronostico-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+  }
+  .porra-goleadores {
+    margin: 16px 16px 0;
+    max-width: none;
+    width: calc(100% - 32px);
+  }
+  .porra-goleadores-input {
+    margin: 12px 16px 0;
+    max-width: none;
+    width: calc(100% - 32px);
+  }
+  .porra-cta {
+    margin: 18px 16px 0;
+    max-width: none;
+    width: calc(100% - 32px);
+    padding: 16px;
+    font-size: 16px;
+  }
+  .porra-cta-meta {
+    flex-direction: column;
+    gap: 2px;
+    margin: 12px 16px 0;
+  }
+  .porra-cta-meta__dot {
+    display: none;
+  }
+  .porra-locked {
+    margin: 18px 16px 0;
+  }
+  .porra-participants {
+    padding: 18px 16px 24px;
+  }
+
+  .porra-jornadas__header {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .porra-jornadas__tabs {
+    gap: 14px;
+  }
+  .porra-jornadas__see-all {
+    display: inline-block;
+  }
+  .porra-jornadas__list {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    /* Sin esto, scroll-snap-align:start de la primera tarjeta hace que el
+       navegador desplace el scroll para pegarla al borde del scrollport,
+       "comiéndose" el padding-left visualmente — el snap no sabe que ese
+       hueco es parte de la posición válida hasta que se lo decimos aquí. */
+    scroll-padding-left: 16px;
+    gap: 12px;
+    margin: 0 -16px;
+    padding: 0 16px 8px;
+    scrollbar-width: none;
+  }
+  .porra-jornadas__list::-webkit-scrollbar {
+    display: none;
+  }
+  .porra-jornada-card {
+    min-width: 82%;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+}

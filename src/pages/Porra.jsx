@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import SEO, { SITE_URL } from '../components/SEO'
 import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
-import '../components/HeroSection.css'
+import Footer from '../components/Footer'
+import './Porra.css'
 
 const ESCUDOS = {
   'Gimnàstic de Tarragona': '/escudos/Gimnastic_de_Tarragona_logo.svg',
@@ -27,15 +28,23 @@ const ESCUDOS = {
 }
 
 const ESCUDO_ZARAGOZA = '/escudos/Real_Zaragoza_logo (3).svg'
+const HORA_PLACEHOLDER = '18:30'
+// Debe coincidir con el min-height de .porra-ranking__row en desktop
+// (Porra.css) — se usa para calcular cuántas filas completas caben en el
+// espacio que el panel lateral gana al igualar la altura de la tarjeta.
+const RANKING_ROW_HEIGHT = 50
 
-function formatMes(fecha) {
-  const d = new Date(fecha)
-  return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '')
-}
-
-function formatHora(kickoff) {
+// "Dom. 27 septiembre" — si la hora del kickoff está a medianoche UTC es
+// que aún no se ha fijado de verdad (mismo criterio que CalendarSection),
+// así que mostramos la hora placeholder en vez de un "00:00" engañoso.
+function formatFechaHora(kickoff) {
   const d = new Date(kickoff)
-  return d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+  const dia = d.toLocaleDateString('es-ES', { weekday: 'short' }).replace('.', '')
+  const diaCap = dia.charAt(0).toUpperCase() + dia.slice(1)
+  const fecha = d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })
+  const horaConocida = !(d.getUTCHours() === 0 && d.getUTCMinutes() === 0)
+  const hora = horaConocida ? d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : HORA_PLACEHOLDER
+  return `${diaCap}. ${fecha} · ${hora} h`
 }
 
 function haEmpezado(kickoff) {
@@ -56,18 +65,75 @@ function getPartidoActivo(partidos) {
   return pasados[0] || null
 }
 
+const inicialesDe = nombre => (nombre || 'U').trim().split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+
+// Comportamiento de accesibilidad compartido por las modales de Porra
+// (clasificación completa, cómo se juega): bloquea el scroll de la
+// página, mueve el foco al diálogo al abrir, lo atrapa dentro mientras
+// está abierto y lo devuelve al botón que lo abrió al cerrar.
+function useModalA11y(abierta, dialogRef, triggerRef, onClose) {
+  useEffect(() => {
+    if (!abierta) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const dialog = dialogRef.current
+    dialog?.focus()
+
+    function onKeyDown(e) {
+      if (e.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (e.key === 'Tab' && dialog) {
+        const focusables = dialog.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
+        if (focusables.length === 0) return
+        const first = focusables[0]
+        const last = focusables[focusables.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+      triggerRef.current?.focus()
+    }
+  }, [abierta])
+}
+
 export default function Porra() {
-  const { user, profile, signInWithGoogle } = useAuth()
+  const { user, signInWithGoogle } = useAuth()
   const [partidos, setPartidos] = useState([])
   const [predicciones, setPredicciones] = useState({})
   const [ranking, setRanking] = useState([])
-  const [tab, setTab] = useState('clasificacion')
   const [loading, setLoading] = useState(true)
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
-  const [form, setForm] = useState({ goles_zaragoza: '', goles_rival: '', goleadores: '' })
+  const [form, setForm] = useState({ goles_zaragoza: 0, goles_rival: 0, goleadores: '' })
   const [partidoActivo, setPartidoActivo] = useState(null)
-  const carruselRef = useRef(null)
+  const [participantes, setParticipantes] = useState(null)
+  const [mostrarGoleadores, setMostrarGoleadores] = useState(false)
+  const [vistaJornadas, setVistaJornadas] = useState('ultimas')
+  const [rowsToShow, setRowsToShow] = useState(5)
+  const [modalRankingAbierto, setModalRankingAbierto] = useState(false)
+  const [modalComoSeJuegaAbierto, setModalComoSeJuegaAbierto] = useState(false)
+  const participantesReq = useRef(0)
+  const matchCardRef = useRef(null)
+  const sidebarRef = useRef(null)
+  const seasonRef = useRef(null)
+  const rankingHeaderRef = useRef(null)
+  const rankingFooterRef = useRef(null)
+  const modalRankingRef = useRef(null)
+  const modalRankingTriggerRef = useRef(null)
+  const modalComoSeJuegaRef = useRef(null)
+  const modalComoSeJuegaTriggerRef = useRef(null)
 
   useEffect(() => {
     fetchPartidos()
@@ -80,18 +146,9 @@ export default function Porra() {
 
   useEffect(() => {
     if (partidos.length > 0 && !partidoActivo) {
-      const activo = getPartidoActivo(partidos)
-      setPartidoActivo(activo)
+      setPartidoActivo(getPartidoActivo(partidos))
     }
   }, [partidos])
-
-  useEffect(() => {
-    if (partidoActivo && carruselRef.current) {
-      const idx = partidos.findIndex(p => p.id === partidoActivo.id)
-      const el = carruselRef.current.children[idx]
-      if (el) el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-    }
-  }, [partidoActivo, partidos])
 
   useEffect(() => {
     if (partidoActivo && predicciones[partidoActivo.id]) {
@@ -101,10 +158,74 @@ export default function Porra() {
         goles_rival: pred.goles_rival,
         goleadores: pred.goleadores?.join(', ') || '',
       })
+      if (pred.goleadores?.length > 0) setMostrarGoleadores(true)
     } else {
-      setForm({ goles_zaragoza: '', goles_rival: '', goleadores: '' })
+      setForm({ goles_zaragoza: 0, goles_rival: 0, goleadores: '' })
+      setMostrarGoleadores(false)
     }
   }, [partidoActivo, predicciones])
+
+  // Nº real de zaragocistas que ya han pronosticado este partido.
+  useEffect(() => {
+    if (!partidoActivo) return
+    const miReq = ++participantesReq.current
+    supabase
+      .from('porra_predicciones')
+      .select('*', { count: 'exact', head: true })
+      .eq('partido_id', partidoActivo.id)
+      .then(({ count }) => {
+        if (miReq === participantesReq.current) setParticipantes(count || 0)
+      })
+  }, [partidoActivo])
+
+  // Nº de filas del ranking que caben en el panel lateral. Solo tiene
+  // sentido en el layout de dos columnas (desktop). OJO: la altura de
+  // referencia se mide en .porra-match-card, que en desktop lleva
+  // align-self:start y por tanto NUNCA se estira — su clientHeight
+  // depende solo de su propio contenido, nunca del nº de filas del
+  // ranking. Si en cambio midiéramos el propio panel de ranking (que sí
+  // se estira para igualar la tarjeta), cada fila añadida agrandaría el
+  // panel, lo que agrandaría la fila del grid, lo que volvería a agrandar
+  // el panel... un bucle real que llegó a "colar" ~70 filas y a inflar la
+  // tarjeta con hueco vacío. Al medir la tarjeta (independiente) y fijar
+  // la altura del panel lateral por CSS var en vez de por stretch de
+  // grid, se rompe ese ciclo.
+  useEffect(() => {
+    const card = matchCardRef.current
+    if (!card) return
+    const mq = window.matchMedia('(min-width: 1101px)')
+
+    function recompute() {
+      const cardH = card.clientHeight
+      if (sidebarRef.current) sidebarRef.current.style.setProperty('--porra-card-h', `${cardH}px`)
+
+      if (!mq.matches) {
+        setRowsToShow(prev => (prev === 5 ? prev : 5))
+        return
+      }
+      const season = seasonRef.current?.clientHeight || 0
+      const header = rankingHeaderRef.current?.clientHeight || 0
+      const footer = rankingFooterRef.current?.clientHeight || 0
+      const disponible = Math.max(0, cardH - season - header - footer)
+      const filas = Math.max(3, Math.floor(disponible / RANKING_ROW_HEIGHT))
+      setRowsToShow(prev => (prev === filas ? prev : filas))
+    }
+
+    recompute()
+    const ro = new ResizeObserver(recompute)
+    ro.observe(card)
+    if (seasonRef.current) ro.observe(seasonRef.current)
+    if (rankingHeaderRef.current) ro.observe(rankingHeaderRef.current)
+    if (rankingFooterRef.current) ro.observe(rankingFooterRef.current)
+    mq.addEventListener('change', recompute)
+    return () => {
+      ro.disconnect()
+      mq.removeEventListener('change', recompute)
+    }
+  }, [loading, partidoActivo])
+
+  useModalA11y(modalRankingAbierto, modalRankingRef, modalRankingTriggerRef, () => setModalRankingAbierto(false))
+  useModalA11y(modalComoSeJuegaAbierto, modalComoSeJuegaRef, modalComoSeJuegaTriggerRef, () => setModalComoSeJuegaAbierto(false))
 
   async function fetchPartidos() {
     const { data } = await supabase
@@ -140,15 +261,14 @@ export default function Porra() {
   }
 
   async function guardarPrediccion() {
-    if (!user) return alert('Debes iniciar sesión para participar')
+    if (!user) return signInWithGoogle()
     if (!partidoActivo) return
-    if (form.goles_zaragoza === '' || form.goles_rival === '') return alert('Rellena el marcador')
     setGuardando(true)
     const payload = {
       user_id: user.id,
       partido_id: partidoActivo.id,
-      goles_zaragoza: parseInt(form.goles_zaragoza),
-      goles_rival: parseInt(form.goles_rival),
+      goles_zaragoza: form.goles_zaragoza,
+      goles_rival: form.goles_rival,
       goleadores: form.goleadores ? form.goleadores.split(',').map(g => g.trim()).filter(Boolean) : [],
     }
     const existing = predicciones[partidoActivo.id]
@@ -165,8 +285,12 @@ export default function Porra() {
 
   const cerrada = partidoActivo ? isCerrada(partidoActivo) : false
   const empezado = partidoActivo ? haEmpezado(partidoActivo.kickoff) : false
+  const abiertaDeVerdad = partidoActivo ? (partidoActivo.abierto && !empezado) : false
   const pred = partidoActivo ? predicciones[partidoActivo.id] : null
   const esLocal = partidoActivo?.sede === 'local'
+  const venue = partidoActivo ? (esLocal ? 'Ibercaja Estadio' : 'Fuera de casa') : ''
+  const escudoRival = partidoActivo ? (ESCUDOS[partidoActivo.rival] || null) : null
+
   const marcadorFinal = partidoActivo?.finalizado
     ? (esLocal ? [partidoActivo.goles_zaragoza, partidoActivo.goles_rival] : [partidoActivo.goles_rival, partidoActivo.goles_zaragoza])
     : null
@@ -174,25 +298,63 @@ export default function Porra() {
     ? (esLocal ? [pred.goles_zaragoza, pred.goles_rival] : [pred.goles_rival, pred.goles_zaragoza])
     : null
 
+  const miEntrada = user ? ranking.find(entry => entry.user_id === user.id) : null
   const miPosicion = user ? ranking.findIndex(entry => entry.user_id === user.id) : -1
-  let inicioVentana = 0
-  if (miPosicion !== -1) {
-    inicioVentana = Math.max(0, miPosicion - 2)
-    inicioVentana = Math.min(inicioVentana, Math.max(0, ranking.length - 5))
-  }
-  const rankingVisible = ranking.slice(inicioVentana, inicioVentana + 5)
-  const escudoRival = partidoActivo ? (ESCUDOS[partidoActivo.rival] || null) : null
 
-  const inputStyle = {
-    width: '56px', padding: '10px', textAlign: 'center',
-    borderRadius: '8px', border: '2px solid #2a2a2a',
-    background: '#1a1a1a', color: 'white',
-    fontFamily: 'Humane, sans-serif', fontSize: '32px', fontWeight: '700',
-    outline: 'none', lineHeight: 1,
+  // Racha real: jornadas ya empezadas, contadas hacia atrás desde la más
+  // reciente, mientras haya una predicción guardada para cada una — no
+  // inventamos una tendencia de posición porque no guardamos histórico
+  // de clasificación, pero esto sí es 100% derivable de los datos reales.
+  let racha = 0
+  if (user) {
+    const jugadas = [...partidos].filter(p => haEmpezado(p.kickoff)).sort((a, b) => new Date(b.kickoff) - new Date(a.kickoff))
+    for (const p of jugadas) {
+      if (predicciones[p.id]) racha++
+      else break
+    }
   }
+
+  let rankingVisible = ranking.slice(0, rowsToShow)
+  if (miPosicion > rowsToShow - 1) {
+    let inicio = Math.max(0, miPosicion - Math.floor(rowsToShow / 2))
+    inicio = Math.min(inicio, Math.max(0, ranking.length - rowsToShow))
+    rankingVisible = ranking.slice(inicio, inicio + rowsToShow)
+  }
+  const offsetVisible = miPosicion > rowsToShow - 1
+    ? Math.min(Math.max(0, miPosicion - Math.floor(rowsToShow / 2)), Math.max(0, ranking.length - rowsToShow))
+    : 0
+
+  function abrirModalRanking(e) {
+    modalRankingTriggerRef.current = e.currentTarget
+    setModalRankingAbierto(true)
+  }
+
+  function abrirModalComoSeJuega(e) {
+    modalComoSeJuegaTriggerRef.current = e.currentTarget
+    setModalComoSeJuegaAbierto(true)
+  }
+
+  // Siempre visibles, también sin sesión: si no hay predicción propia para
+  // esa jornada (invitado, o logueado sin haber pronosticado) se muestran
+  // 0 puntos por defecto en vez de ocultar la tarjeta.
+  const ultimasJornadas = partidos
+    .filter(p => p.finalizado)
+    .sort((a, b) => new Date(b.kickoff) - new Date(a.kickoff))
+    .slice(0, 3)
+
+  const proximasJornadas = partidos
+    .filter(p => !p.finalizado)
+    .sort((a, b) => new Date(a.kickoff) - new Date(b.kickoff))
+    .slice(0, 3)
+
+  function ajustarMarcador(campo, delta) {
+    setForm(f => ({ ...f, [campo]: Math.max(0, Math.min(20, f[campo] + delta)) }))
+  }
+
+  const avataresParticipantes = ranking.slice(0, 3)
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0a0a0a', color: 'white', fontFamily: 'Archivo, sans-serif', paddingBottom: '80px' }}>
+    <div className="porra-page">
       <SEO
         title="La Porra del Real Zaragoza | Pronósticos y Ranking | RZ Hub"
         description="Predice los resultados del Real Zaragoza, suma puntos por acertar el marcador y los goleadores, y compite en el ranking de la comunidad zaragocista."
@@ -210,312 +372,423 @@ export default function Porra() {
         }}
       />
 
-      {/* HERO */}
-      <div style={{ backgroundColor: '#09215F', padding: '40px 24px 32px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center top, rgba(255,255,255,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <h1 style={{ fontFamily: 'Humane, sans-serif', fontSize: 'clamp(60px, 15vw, 120px)', fontWeight: '700', lineHeight: 0.9, margin: '0 0 8px', letterSpacing: '4px', textTransform: 'uppercase' }}>
-          LA PORRA
-        </h1>
-        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', margin: '0 0 20px', fontWeight: '300' }}>
-          Participa cada jornada y gana premios a final de temporada.
-        </p>
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          {[['5 PTS', 'Resultado exacto'], ['3 PTS', 'Todos los goleadores']].map(([pts, label]) => (
-            <div key={label} style={{ background: 'rgba(255,255,255,0.1)', borderRadius: '10px', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '28px', fontWeight: '700', color: '#f5c400', lineHeight: 1 }}>{pts}</span>
-              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.5px' }}>{label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* CARRUSEL PARTIDOS */}
-      <div style={{ backgroundColor: '#0d0d0d', borderBottom: '1px solid #1a1a1a', padding: '0', overflowX: 'auto' }}>
-        <div ref={carruselRef} style={{ display: 'flex', gap: '0', minWidth: 'max-content' }}>
-          {partidos.map((p, i) => {
-            const activo = partidoActivo?.id === p.id
-            const cerradaP = isCerrada(p)
-            const tienePred = !!predicciones[p.id]
-            return (
-              <button key={p.id} onClick={() => setPartidoActivo(p)} style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
-                padding: '12px 14px', minWidth: '72px', cursor: 'pointer',
-                background: activo ? '#0B4390' : 'transparent',
-                border: 'none', borderBottom: activo ? '3px solid #f5c400' : '3px solid transparent',
-                position: 'relative', transition: 'all 0.15s',
-                opacity: cerradaP && !activo ? 0.5 : 1,
-              }}>
-                {tienePred && !cerradaP && (
-                  <div style={{ position: 'absolute', top: '6px', right: '6px', width: '6px', height: '6px', borderRadius: '50%', background: '#27ae60' }} />
-                )}
-                {!cerradaP && activo && (
-                  <div style={{ position: 'absolute', top: '4px', left: '50%', transform: 'translateX(-50%)', background: '#f5c400', color: '#000', fontSize: '8px', fontWeight: '700', padding: '1px 6px', borderRadius: '10px', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-                    ACTIVA
-                  </div>
-                )}
-                <div style={{ width: '36px', height: '36px', marginTop: !cerradaP && activo ? '12px' : '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {ESCUDOS[p.rival] ? (
-                    <img src={ESCUDOS[p.rival]} alt={p.rival} style={{ width: '32px', height: '32px', objectFit: 'contain' }} onError={e => { e.target.style.display = 'none' }} />
-                  ) : (
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#666', fontWeight: '700' }}>
-                      {p.rival[0]}
-                    </div>
-                  )}
-                </div>
-                <span style={{ fontSize: '10px', color: activo ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)', fontWeight: '300', whiteSpace: 'nowrap' }}>
-                  {formatMes(p.fecha)}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* CONTENIDO PRINCIPAL */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '24px 16px', display: 'flex', gap: '24px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-
-        {/* PANEL IZQUIERDO — Partido activo */}
-        <div style={{ flex: '1', minWidth: '280px' }}>
-          {loading && <p style={{ color: 'rgba(255,255,255,0.4)' }}>Cargando...</p>}
-
-          {!loading && partidos.length === 0 && (
-            <div style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', padding: '32px', textAlign: 'center' }}>
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', margin: 0 }}>No hay jornadas abiertas en este momento</p>
-            </div>
-          )}
-
-          {partidoActivo && (
-            <div style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', overflow: 'hidden' }}>
-              {/* Header */}
-              <div style={{ background: '#0B4390', padding: '16px 20px' }}>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '300', marginBottom: '4px' }}>
-                  Jornada {partidoActivo.jornada} · {cerrada ? 'Cerrada' : 'Abierta'}
-                </div>
-                <div style={{ fontSize: '15px', fontWeight: '700' }}>
-                  {partidoActivo.sede === 'local' ? `Real Zaragoza vs ${partidoActivo.rival}` : `${partidoActivo.rival} vs Real Zaragoza`}
-                </div>
-                <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', marginTop: '4px', fontWeight: '300' }}>
-                  {new Date(partidoActivo.kickoff).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })} · {formatHora(partidoActivo.kickoff)}h
-                </div>
-              </div>
-
-              {/* Escudos y marcador */}
-              <div style={{ padding: '24px 20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '24px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
-                    <img src={partidoActivo.sede === 'local' ? ESCUDO_ZARAGOZA : (escudoRival || '')} alt="" style={{ width: '52px', height: '52px', objectFit: 'contain' }} onError={e => { e.target.style.display = 'none' }} />
-                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', textAlign: 'center', fontWeight: '600' }}>
-                      {partidoActivo.sede === 'local' ? 'Zaragoza' : partidoActivo.rival}
-                    </span>
-                  </div>
-
-                  {/* Marcador predicción o resultado */}
-                  {partidoActivo.finalizado ? (
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '52px', fontWeight: '700', lineHeight: 1, color: 'white' }}>
-                        {marcadorFinal[0]} - {marcadorFinal[1]}
-                      </div>
-                      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '4px' }}>Resultado final</div>
-                    </div>
-                  ) : empezado ? (
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '52px', fontWeight: '700', lineHeight: 1, color: 'rgba(255,255,255,0.3)' }}>? - ?</div>
-                      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '4px' }}>En juego</div>
-                    </div>
-                  ) : (
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '28px', fontWeight: '300', lineHeight: 1, color: 'rgba(255,255,255,0.3)' }}>VS</div>
-                    </div>
-                  )}
-
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
-                    <img src={partidoActivo.sede === 'local' ? (escudoRival || '') : ESCUDO_ZARAGOZA} alt="" style={{ width: '52px', height: '52px', objectFit: 'contain' }} onError={e => { e.target.style.display = 'none' }} />
-                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', textAlign: 'center', fontWeight: '600' }}>
-                      {partidoActivo.sede === 'local' ? partidoActivo.rival : 'Zaragoza'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Formulario o predicción */}
-                {!user ? (
-                  <div style={{ textAlign: 'center', padding: '16px', background: '#1a1a1a', borderRadius: '10px' }}>
-                    <button onClick={signInWithGoogle} className="hero-cta">
-                      Inicia sesión para participar
-                    </button>
-                  </div>
-                ) : cerrada ? (
-                  pred ? (
-                    <div style={{ background: '#1a1a1a', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
-                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '8px' }}>Tu predicción</div>
-                      <div style={{ fontFamily: 'Humane, sans-serif', fontSize: '48px', fontWeight: '700', color: 'white', lineHeight: 1 }}>
-                        {marcadorPred[0]} - {marcadorPred[1]}
-                      </div>
-                      {pred.goleadores?.length > 0 && (
-                        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginTop: '8px' }}>⚽ {pred.goleadores.join(', ')}</div>
-                      )}
-                      {pred.puntos > 0 && (
-                        <div style={{ marginTop: '12px', display: 'inline-block', background: 'rgba(245,196,0,0.15)', border: '1px solid #f5c400', borderRadius: '20px', padding: '4px 16px', fontSize: '14px', color: '#f5c400', fontWeight: '700' }}>
-                          +{pred.puntos} puntos
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div style={{ textAlign: 'center', padding: '16px', background: '#1a1a1a', borderRadius: '10px' }}>
-                      <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px', margin: 0 }}>Participación no disponible</p>
-                    </div>
-                  )
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div>
-                      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '10px', fontWeight: '300' }}>
-                        Tu predicción
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: '12px' }}>
-                        {(() => {
-                          const inputZaragoza = (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                              <input type="number" min="0" max="20" value={form.goles_zaragoza}
-                                onChange={e => setForm(f => ({ ...f, goles_zaragoza: e.target.value }))}
-                                style={inputStyle} placeholder="0" />
-                              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>Zaragoza</span>
-                            </div>
-                          )
-                          const inputRival = (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                              <input type="number" min="0" max="20" value={form.goles_rival}
-                                onChange={e => setForm(f => ({ ...f, goles_rival: e.target.value }))}
-                                style={inputStyle} placeholder="0" />
-                              <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>{partidoActivo.rival}</span>
-                            </div>
-                          )
-                          const guion = <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '28px', fontFamily: 'Humane, sans-serif', fontWeight: '700', marginTop: '10px' }}>-</span>
-                          return esLocal ? <>{inputZaragoza}{guion}{inputRival}</> : <>{inputRival}{guion}{inputZaragoza}</>
-                        })()}
-                      </div>
-                    </div>
-                    <div>
-                      <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: '300', display: 'block', marginBottom: '8px' }}>
-                        Goleadores (opcional, separados por coma)
-                      </label>
-                      <input type="text" value={form.goleadores}
-                        onChange={e => setForm(f => ({ ...f, goleadores: e.target.value }))}
-                        placeholder="Ej: Escobar, Gabilondo"
-                        style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #2a2a2a', background: '#1a1a1a', color: 'white', fontFamily: 'Archivo, sans-serif', fontSize: '13px', outline: 'none', boxSizing: 'border-box' }} />
-                    </div>
-                    <button onClick={guardarPrediccion} disabled={guardando} style={{
-                      width: '100%', padding: '14px', borderRadius: '10px', border: 'none',
-                      background: guardado ? '#27ae60' : '#0B4390',
-                      color: 'white', fontFamily: 'Archivo, sans-serif',
-                      fontSize: '15px', fontWeight: '700', cursor: guardando ? 'wait' : 'pointer',
-                      transition: 'background 0.3s',
-                    }}>
-                      {guardado ? '✓ ¡Guardado!' : guardando ? 'Guardando...' : pred ? 'Actualizar predicción' : 'Enviar predicción'}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* PANEL DERECHO — Ranking */}
-        <div style={{ flex: '1', minWidth: '280px' }}>
-          <div style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: '16px', overflow: 'hidden' }}>
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '28px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '2px' }}>
-                Clasificación
-              </span>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {[['clasificacion', 'Ranking'], ['predicciones', 'Mis picks']].map(([key, label]) => (
-                  <button key={key} onClick={() => setTab(key)} style={{
-                    padding: '6px 14px', borderRadius: '20px', border: 'none', cursor: 'pointer',
-                    background: tab === key ? '#0B4390' : '#1a1a1a',
-                    color: tab === key ? 'white' : 'rgba(255,255,255,0.5)',
-                    fontFamily: 'Archivo, sans-serif', fontSize: '12px', fontWeight: '600',
-                  }}>
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {tab === 'clasificacion' && (
-              <div>
-                <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 80px', padding: '10px 20px', borderBottom: '1px solid #1a1a1a' }}>
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', letterSpacing: '1px' }}>POS</span>
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', letterSpacing: '1px' }}>USUARIO</span>
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', letterSpacing: '1px', textAlign: 'right' }}>PUNTOS</span>
-                </div>
-                {ranking.length === 0 && (
-                  <p style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '32px', fontSize: '14px' }}>Aún no hay puntuaciones.</p>
-                )}
-                {rankingVisible.map((entry, i) => {
-                  const pos = inicioVentana + i
-                  const nombre = entry.profiles?.name || entry.profiles?.username || 'Usuario'
-                  return (
-                    <div key={entry.user_id} style={{ display: 'grid', gridTemplateColumns: '40px 1fr 80px', alignItems: 'center', padding: '12px 20px', borderBottom: i < rankingVisible.length - 1 ? '1px solid #1a1a1a' : 'none', background: user?.id === entry.user_id ? 'rgba(11,67,144,0.15)' : 'transparent' }}>
-                      <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '22px', fontWeight: '700', color: pos === 0 ? '#f5c400' : pos === 1 ? '#aaa' : pos === 2 ? '#cd7f32' : 'rgba(255,255,255,0.3)' }}>
-                        {pos + 1}
-                      </span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        {entry.profiles?.avatar_url ? (
-                          <img src={entry.profiles.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                        ) : (
-                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#0B4390', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <span style={{ fontSize: '11px', fontWeight: '700' }}>{nombre[0].toUpperCase()}</span>
-                          </div>
-                        )}
-                        <span style={{ fontSize: '14px', fontWeight: user?.id === entry.user_id ? '700' : '500', color: user?.id === entry.user_id ? '#f5c400' : 'white' }}>
-                          {nombre}
-                        </span>
-                      </div>
-                      <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '24px', fontWeight: '700', color: '#f5c400', textAlign: 'right' }}>
-                        {entry.puntos_total}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-
-            {tab === 'predicciones' && (
-              <div>
-                {!user ? (
-                  <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', padding: '32px', fontSize: '14px' }}>Inicia sesión para ver tus predicciones</p>
-                ) : Object.keys(predicciones).length === 0 ? (
-                  <p style={{ color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '32px', fontSize: '14px' }}>Aún no has hecho ninguna predicción</p>
-                ) : (
-                  partidos.filter(p => predicciones[p.id]).map((p, i, arr) => {
-                    const pred = predicciones[p.id]
-                    const cerradaP = isCerrada(p)
-                    return (
-                      <div key={p.id} onClick={() => setPartidoActivo(p)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderBottom: i < arr.length - 1 ? '1px solid #1a1a1a' : 'none', cursor: 'pointer', background: partidoActivo?.id === p.id ? 'rgba(11,67,144,0.15)' : 'transparent' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          {ESCUDOS[p.rival] && <img src={ESCUDOS[p.rival]} alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} onError={e => { e.target.style.display = 'none' }} />}
-                          <div>
-                            <div style={{ fontSize: '13px', fontWeight: '600' }}>{p.rival}</div>
-                            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontWeight: '300' }}>J{p.jornada} · {formatMes(p.fecha)}</div>
-                          </div>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontFamily: 'Humane, sans-serif', fontSize: '22px', fontWeight: '700', color: cerradaP ? 'rgba(255,255,255,0.4)' : 'white' }}>
-                            {p.sede === 'local' ? `${pred.goles_zaragoza}-${pred.goles_rival}` : `${pred.goles_rival}-${pred.goles_zaragoza}`}
-                          </span>
-                          {pred.puntos > 0 && (
-                            <span style={{ fontSize: '11px', background: 'rgba(245,196,0,0.15)', border: '1px solid #f5c400', borderRadius: '10px', padding: '2px 8px', color: '#f5c400', fontWeight: '700' }}>
-                              +{pred.puntos}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })
-                )}
-              </div>
-            )}
+      {/* Envuelve cabecera + tarjeta del partido: el fondo fotográfico
+          compartido (desktop) vive en este contenedor, así que termina
+          exactamente donde termina su contenido real — no en una altura
+          fija — y nunca se prolonga bajo el historial. */}
+      <div className="porra-atmosphere">
+      {/* CABECERA */}
+      <div className="porra-hero">
+        <div className="porra-hero__inner">
+          <h1 className="porra-hero__title">La Porra</h1>
+          <div className="porra-hero__row">
+            <p className="porra-hero__subtitle">Participa cada jornada y gana premios a final de temporada.</p>
+            <button className="porra-hero__howto" onClick={abrirModalComoSeJuega}>
+              Cómo se juega ↗
+            </button>
           </div>
         </div>
       </div>
+
+      <div className="porra-container">
+        {loading && <p style={{ color: '#a9bcdc', fontFamily: 'Archivo, sans-serif' }}>Cargando...</p>}
+
+        {!loading && !partidoActivo && (
+          <div className="porra-match-card" style={{ padding: '48px 28px', textAlign: 'center' }}>
+            <p style={{ color: '#a9bcdc', fontFamily: 'Archivo, sans-serif', margin: 0 }}>No hay jornadas disponibles en este momento.</p>
+          </div>
+        )}
+
+        {!loading && partidoActivo && (
+          <div className="porra-grid">
+            {/* IZQUIERDA — partido y pronóstico */}
+            <div className="porra-match-card" ref={matchCardRef}>
+              <div className="porra-match-card__top">
+                <div className="porra-match-card__comp">
+                  Primera Federación · Jornada {partidoActivo.jornada}
+                  <span className={`porra-badge ${abiertaDeVerdad ? 'porra-badge--open' : 'porra-badge--closed'}`}>
+                    {abiertaDeVerdad ? 'Porra abierta' : 'Porra cerrada'}
+                  </span>
+                </div>
+                <div className="porra-match-card__when">
+                  <div className="porra-match-card__date">{formatFechaHora(partidoActivo.kickoff)}</div>
+                  <div className="porra-match-card__venue">{venue}</div>
+                </div>
+              </div>
+
+              <div className="porra-teams">
+                <div className="porra-team">
+                  {(esLocal ? ESCUDO_ZARAGOZA : escudoRival) ? (
+                    <img className="porra-team__crest" src={esLocal ? ESCUDO_ZARAGOZA : escudoRival} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />
+                  ) : (
+                    <span className="porra-team__crest-fallback">{(esLocal ? 'Real Zaragoza' : partidoActivo.rival)[0]}</span>
+                  )}
+                  <span className="porra-team__name">{esLocal ? 'Real Zaragoza' : partidoActivo.rival}</span>
+                  {!cerrada && (
+                    <div className="porra-team__selector">
+                      <button className="porra-stepper-btn" onClick={() => ajustarMarcador(esLocal ? 'goles_zaragoza' : 'goles_rival', -1)} disabled={(esLocal ? form.goles_zaragoza : form.goles_rival) <= 0}>−</button>
+                      <span className="porra-score-value">{esLocal ? form.goles_zaragoza : form.goles_rival}</span>
+                      <button className="porra-stepper-btn" onClick={() => ajustarMarcador(esLocal ? 'goles_zaragoza' : 'goles_rival', 1)}>+</button>
+                    </div>
+                  )}
+                </div>
+
+                <span className="porra-teams__sep">–</span>
+
+                <div className="porra-team">
+                  {(esLocal ? escudoRival : ESCUDO_ZARAGOZA) ? (
+                    <img className="porra-team__crest" src={esLocal ? escudoRival : ESCUDO_ZARAGOZA} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />
+                  ) : (
+                    <span className="porra-team__crest-fallback">{(esLocal ? partidoActivo.rival : 'Real Zaragoza')[0]}</span>
+                  )}
+                  <span className="porra-team__name">{esLocal ? partidoActivo.rival : 'Real Zaragoza'}</span>
+                  {!cerrada && (
+                    <div className="porra-team__selector">
+                      <button className="porra-stepper-btn" onClick={() => ajustarMarcador(esLocal ? 'goles_rival' : 'goles_zaragoza', -1)} disabled={(esLocal ? form.goles_rival : form.goles_zaragoza) <= 0}>−</button>
+                      <span className="porra-score-value">{esLocal ? form.goles_rival : form.goles_zaragoza}</span>
+                      <button className="porra-stepper-btn" onClick={() => ajustarMarcador(esLocal ? 'goles_rival' : 'goles_zaragoza', 1)}>+</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {!user && !cerrada && (
+                <>
+                  <p className="porra-tu-pronostico-label">Tu pronóstico</p>
+                  <button className="porra-cta" onClick={signInWithGoogle}>Inicia sesión para participar →</button>
+                </>
+              )}
+
+              {user && !cerrada && (
+                <>
+                  <p className="porra-tu-pronostico-label">Tu pronóstico</p>
+
+                  <div className="porra-goleadores" onClick={() => setMostrarGoleadores(v => !v)}>
+                    <span className="porra-goleadores__label">{mostrarGoleadores ? '− Goleadores' : '+ Añadir goleadores'}</span>
+                    <span className="porra-goleadores__pts">+3 pts · Opcional</span>
+                  </div>
+                  {mostrarGoleadores && (
+                    <input
+                      className="porra-goleadores-input"
+                      type="text"
+                      value={form.goleadores}
+                      onClick={e => e.stopPropagation()}
+                      onChange={e => setForm(f => ({ ...f, goleadores: e.target.value }))}
+                      placeholder="Ej: Escobar, Gabilondo"
+                    />
+                  )}
+
+                  <button
+                    className={`porra-cta${guardado ? ' porra-cta--saved' : ''}`}
+                    onClick={guardarPrediccion}
+                    disabled={guardando}
+                  >
+                    {guardado ? '✓ ¡Guardado!' : guardando ? 'Guardando...' : 'Guardar pronóstico →'}
+                  </button>
+                  <div className="porra-cta-meta">
+                    <span>5 pts por el resultado exacto</span>
+                    <span className="porra-cta-meta__dot">·</span>
+                    <span>Puedes editarlo hasta el inicio del partido</span>
+                  </div>
+                </>
+              )}
+
+              {cerrada && (
+                pred ? (
+                  <div className="porra-locked">
+                    <p className="porra-locked__label">Tu predicción</p>
+                    <div className="porra-locked__score">{marcadorPred[0]} - {marcadorPred[1]}</div>
+                    {pred.goleadores?.length > 0 && (
+                      <p style={{ fontSize: '12px', color: '#a9bcdc', marginTop: '8px', fontFamily: 'Archivo, sans-serif' }}>⚽ {pred.goleadores.join(', ')}</p>
+                    )}
+                    {partidoActivo.finalizado && (
+                      <p style={{ fontSize: '12px', color: '#a9bcdc', marginTop: '8px', fontFamily: 'Archivo, sans-serif' }}>
+                        Resultado final: {marcadorFinal[0]} - {marcadorFinal[1]}
+                      </p>
+                    )}
+                    {pred.puntos > 0 && <div className="porra-locked__pts">+{pred.puntos} puntos</div>}
+                  </div>
+                ) : (
+                  <div className="porra-locked">
+                    <p className="porra-locked__label">Porra cerrada</p>
+                    <p style={{ color: '#a9bcdc', fontFamily: 'Archivo, sans-serif', fontSize: '13px', margin: 0 }}>
+                      {partidoActivo.finalizado ? `Resultado final: ${marcadorFinal[0]} - ${marcadorFinal[1]}` : 'No hiciste tu pronóstico a tiempo.'}
+                    </p>
+                  </div>
+                )
+              )}
+
+              <div className="porra-participants">
+                <div className="porra-participants__avatars">
+                  {avataresParticipantes.map((entry, i) => (
+                    entry.profiles?.avatar_url ? (
+                      <img key={i} className="porra-avatar-mini" src={entry.profiles.avatar_url} alt="" />
+                    ) : (
+                      <span key={i} className="porra-avatar-mini">{inicialesDe(entry.profiles?.name || entry.profiles?.username)}</span>
+                    )
+                  ))}
+                </div>
+                {participantes !== null && (
+                  <span className="porra-participants__text">{participantes.toLocaleString('es-ES')} zaragocistas ya participan</span>
+                )}
+              </div>
+            </div>
+
+            {/* DERECHA — temporada y clasificación */}
+            <div className="porra-sidebar" ref={sidebarRef}>
+              <div className="porra-season" ref={seasonRef}>
+                <p className="porra-season__title">Tu temporada</p>
+                {user && miEntrada ? (
+                  <>
+                    <div className="porra-season__stats">
+                      <div className="porra-season__stat">
+                        <span className="porra-season__value">{miEntrada.puntos_total}</span>
+                        <span className="porra-season__stat-label">Puntos</span>
+                      </div>
+                      {miPosicion !== -1 && (
+                        <div className="porra-season__stat">
+                          <span className="porra-season__value">{miPosicion + 1}.º</span>
+                          <span className="porra-season__stat-label">Posición</span>
+                        </div>
+                      )}
+                    </div>
+                    {racha > 0 && (
+                      <p className="porra-season__streak">{racha} {racha === 1 ? 'jornada seguida participando' : 'jornadas seguidas participando'}</p>
+                    )}
+                  </>
+                ) : user ? (
+                  <p className="porra-season__empty">Aún no tienes puntos — haz tu primer pronóstico.</p>
+                ) : (
+                  <>
+                    <p className="porra-season__empty">Inicia sesión para ver tu temporada y competir en el ranking.</p>
+                    <button className="porra-season__login" onClick={signInWithGoogle}>Iniciar sesión</button>
+                  </>
+                )}
+              </div>
+
+              <div className="porra-ranking">
+                <div className="porra-ranking__header" ref={rankingHeaderRef}>
+                  <p className="porra-ranking__title">Clasificación</p>
+                </div>
+
+                <div className="porra-ranking__rows">
+                  {ranking.length === 0 && <p className="porra-ranking__empty">Aún no hay puntuaciones.</p>}
+
+                  {rankingVisible.map((entry, i) => {
+                    const pos = offsetVisible + i
+                    const nombre = entry.profiles?.name || entry.profiles?.username || 'Usuario'
+                    const esYo = user?.id === entry.user_id
+                    return (
+                      <div key={entry.user_id} className={`porra-ranking__row${esYo ? ' is-me' : ''}`}>
+                        <span className={`porra-ranking__pos${pos === 0 ? ' porra-ranking__pos--1' : pos === 1 ? ' porra-ranking__pos--2' : pos === 2 ? ' porra-ranking__pos--3' : ''}`}>
+                          {pos + 1}
+                        </span>
+                        <div className="porra-ranking__user">
+                          {entry.profiles?.avatar_url ? (
+                            <img className="porra-ranking__avatar" src={entry.profiles.avatar_url} alt="" />
+                          ) : (
+                            <span className="porra-ranking__avatar">{inicialesDe(nombre)}</span>
+                          )}
+                          <span className="porra-ranking__name">{esYo ? `${nombre} · Tú` : nombre}</span>
+                        </div>
+                        <span className="porra-ranking__pts">{entry.puntos_total} pts</span>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {ranking.length > 0 && (
+                  <div className="porra-ranking__footer" ref={rankingFooterRef}>
+                    <button onClick={abrirModalRanking}>Ver clasificación completa ↗</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      </div>
+
+      <div className="porra-container">
+        {/* ÚLTIMAS / PRÓXIMAS JORNADAS */}
+        {!loading && partidos.length > 0 && (
+          <div className="porra-jornadas">
+            <div className="porra-jornadas__header">
+              <div className="porra-jornadas__tabs">
+                <button
+                  className={`porra-jornadas__tab${vistaJornadas === 'ultimas' ? ' is-active' : ''}`}
+                  onClick={() => setVistaJornadas('ultimas')}
+                >
+                  Últimas jornadas
+                </button>
+                <button
+                  className={`porra-jornadas__tab${vistaJornadas === 'proximas' ? ' is-active' : ''}`}
+                  onClick={() => setVistaJornadas('proximas')}
+                >
+                  Próximas jornadas
+                </button>
+              </div>
+              <button className="porra-jornadas__see-all">Ver todo ↗</button>
+            </div>
+
+            {vistaJornadas === 'ultimas' ? (
+              ultimasJornadas.length === 0 ? (
+                <p className="porra-jornadas__empty">Aún no se ha disputado ninguna jornada.</p>
+              ) : (
+                <div className="porra-jornadas__list">
+                  {ultimasJornadas.map(p => {
+                    const pr = predicciones[p.id]
+                    const esLocalP = p.sede === 'local'
+                    const final = esLocalP ? [p.goles_zaragoza, p.goles_rival] : [p.goles_rival, p.goles_zaragoza]
+                    const prono = pr ? (esLocalP ? [pr.goles_zaragoza, pr.goles_rival] : [pr.goles_rival, pr.goles_zaragoza]) : null
+                    const escudoRivalP = ESCUDOS[p.rival]
+                    return (
+                      <div key={p.id} className="porra-jornada-card">
+                        <div className="porra-jornada-card__top">
+                          <span className="porra-jornada-card__meta">J{p.jornada} · {p.rival}</span>
+                          <span className="porra-jornada-card__badge">Final</span>
+                        </div>
+                        <div className="porra-jornada-card__score">
+                          <img className="porra-jornada-card__crest" src={esLocalP ? ESCUDO_ZARAGOZA : (escudoRivalP || ESCUDO_ZARAGOZA)} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />
+                          <span className="porra-jornada-card__result">{final[0]} - {final[1]}</span>
+                          <img className="porra-jornada-card__crest" src={esLocalP ? (escudoRivalP || ESCUDO_ZARAGOZA) : ESCUDO_ZARAGOZA} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />
+                        </div>
+                        <div className="porra-jornada-card__divider" />
+                        <div className="porra-jornada-card__bottom">
+                          <div>
+                            <div className="porra-jornada-card__label">Tu pronóstico</div>
+                            <div className="porra-jornada-card__value">{prono ? `${prono[0]} - ${prono[1]}` : '—'}</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div className="porra-jornada-card__label">Puntos</div>
+                            <div className={`porra-jornada-card__value${pr?.puntos > 0 ? ' porra-jornada-card__value--pts' : ''}`}>
+                              {pr?.puntos > 0 ? `+${pr.puntos} pts` : '0 pts'}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            ) : (
+              proximasJornadas.length === 0 ? (
+                <p className="porra-jornadas__empty">No hay más jornadas programadas.</p>
+              ) : (
+                <div className="porra-jornadas__list">
+                  {proximasJornadas.map(p => {
+                    const esLocalP = p.sede === 'local'
+                    const escudoRivalP = ESCUDOS[p.rival]
+                    const abiertaP = p.abierto && !haEmpezado(p.kickoff)
+                    return (
+                      <div key={p.id} className="porra-jornada-card">
+                        <div className="porra-jornada-card__top">
+                          <span className="porra-jornada-card__meta">J{p.jornada} · {p.rival}</span>
+                          <span className={`porra-badge ${abiertaP ? 'porra-badge--open' : 'porra-badge--closed'}`}>
+                            {abiertaP ? 'Abierta' : 'Próximamente'}
+                          </span>
+                        </div>
+                        <div className="porra-jornada-card__score">
+                          <img className="porra-jornada-card__crest" src={esLocalP ? ESCUDO_ZARAGOZA : (escudoRivalP || ESCUDO_ZARAGOZA)} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />
+                          <span className="porra-jornada-card__result">VS</span>
+                          <img className="porra-jornada-card__crest" src={esLocalP ? (escudoRivalP || ESCUDO_ZARAGOZA) : ESCUDO_ZARAGOZA} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />
+                        </div>
+                        <div className="porra-jornada-card__divider" />
+                        <div className="porra-jornada-card__bottom">
+                          <div>
+                            <div className="porra-jornada-card__label">Fecha</div>
+                            <div className="porra-jornada-card__value">{new Date(p.kickoff).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '')}</div>
+                          </div>
+                          <div style={{ textAlign: 'right' }}>
+                            <div className="porra-jornada-card__label">Estadio</div>
+                            <div className="porra-jornada-card__value">{esLocalP ? 'Ibercaja Estadio' : 'Fuera de casa'}</div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            )}
+          </div>
+        )}
+      </div>
+
+      {modalRankingAbierto && (
+        <div className="porra-modal-overlay" onClick={() => setModalRankingAbierto(false)}>
+          <div
+            className="porra-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="porra-modal-ranking-title"
+            tabIndex={-1}
+            ref={modalRankingRef}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="porra-modal__header">
+              <h2 id="porra-modal-ranking-title" className="porra-modal__title">Clasificación completa</h2>
+              <button className="porra-modal__close" onClick={() => setModalRankingAbierto(false)} aria-label="Cerrar clasificación">✕</button>
+            </div>
+            <div className="porra-modal__body">
+              {ranking.length === 0 ? (
+                <p className="porra-ranking__empty">Aún no hay puntuaciones.</p>
+              ) : (
+                ranking.map((entry, i) => {
+                  const nombre = entry.profiles?.name || entry.profiles?.username || 'Usuario'
+                  const esYo = user?.id === entry.user_id
+                  return (
+                    <div key={entry.user_id} className={`porra-ranking__row${esYo ? ' is-me' : ''}`}>
+                      <span className={`porra-ranking__pos${i === 0 ? ' porra-ranking__pos--1' : i === 1 ? ' porra-ranking__pos--2' : i === 2 ? ' porra-ranking__pos--3' : ''}`}>
+                        {i + 1}
+                      </span>
+                      <div className="porra-ranking__user">
+                        {entry.profiles?.avatar_url ? (
+                          <img className="porra-ranking__avatar" src={entry.profiles.avatar_url} alt="" />
+                        ) : (
+                          <span className="porra-ranking__avatar">{inicialesDe(nombre)}</span>
+                        )}
+                        <span className="porra-ranking__name">{esYo ? `${nombre} · Tú` : nombre}</span>
+                      </div>
+                      <span className="porra-ranking__pts">{entry.puntos_total} pts</span>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modalComoSeJuegaAbierto && (
+        <div className="porra-modal-overlay" onClick={() => setModalComoSeJuegaAbierto(false)}>
+          <div
+            className="porra-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="porra-modal-howto-title"
+            tabIndex={-1}
+            ref={modalComoSeJuegaRef}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="porra-modal__header">
+              <h2 id="porra-modal-howto-title" className="porra-modal__title">Cómo se juega</h2>
+              <button className="porra-modal__close" onClick={() => setModalComoSeJuegaAbierto(false)} aria-label="Cerrar cómo se juega">✕</button>
+            </div>
+            <div className="porra-modal__body porra-modal__body--howto">
+              <div className="porra-howto-box__item">
+                <span className="porra-howto-box__pts">5 PTS</span>
+                <span className="porra-howto-box__label">Resultado exacto</span>
+              </div>
+              <div className="porra-howto-box__item">
+                <span className="porra-howto-box__pts">3 PTS</span>
+                <span className="porra-howto-box__label">Todos los goleadores</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Footer />
     </div>
   )
 }
