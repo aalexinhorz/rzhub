@@ -1,14 +1,34 @@
+.post-partido-banner__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.post-partido-banner__divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
 .post-partido-banner__text {
   white-space: nowrap;
 }
 .post-partido-banner__text .post-partido-banner__full { display: inline; }
 .post-partido-banner__text .post-partido-banner__short { display: none; }
 
+@media (max-width: 900px) {
+  .post-partido-banner__divider { display: none; }
+}
+
 @media (max-width: 480px) {
   .post-partido-banner {
     padding: 10px 14px;
-    gap: 8px;
+    gap: 10px 8px;
   }
+  .post-partido-banner__item { gap: 8px; }
   .post-partido-banner__text {
     font-size: 11px;
   }
