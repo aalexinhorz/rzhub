@@ -59,6 +59,9 @@
 }
 
 .porra-hero__howto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-family: 'Archivo', sans-serif;
   font-size: 14px;
   font-weight: 700;
@@ -71,6 +74,19 @@
 }
 .porra-hero__howto:hover {
   color: #ffc800;
+}
+
+/* Icono "↗" de texto (tablet/desktop) vs icono SVG (mobile): un
+   carácter de flecha queda desproporcionado a 16-18px, así que en mobile
+   se sustituye por un icono vectorial de la misma familia del resto de
+   la interfaz (trazo simple, currentColor). Ambos comparten estas
+   utilidades en cualquier botón/enlace "ver más" de Porra. */
+.porra-icon-arrow {
+  display: inline;
+}
+.porra-icon-mobile {
+  display: none;
+  flex-shrink: 0;
 }
 
 .porra-howto-box__item {
@@ -238,24 +254,40 @@
   margin-top: 2px;
 }
 
+/* Escudos + separador comparten fila (altura fija) y se alinean al
+   centro entre sí; nombres y selectores van en filas inferiores
+   independientes. Al ser filas de grid separadas, lo que pase en una
+   (p. ej. un nombre a dos líneas) nunca desplaza el contenido de las
+   demás — el guion sigue centrado con los escudos pase lo que pase
+   debajo. minmax(0,230px) + justify-content:center reproduce el
+   "flex:1 con tope de 230px, centrado como grupo" que tenía la versión
+   anterior con flexbox. */
 .porra-teams {
-  display: flex;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: minmax(0, 230px) auto minmax(0, 230px);
   justify-content: center;
-  gap: 36px;
+  align-items: start;
+  justify-items: center;
+  column-gap: 36px;
+  row-gap: 14px;
   /* Sin la cuenta atrás, los metadatos y la fila de equipos quedaban
      demasiado pegados: se compensa con más aire arriba en vez de
      reintroducir el hueco que ocupaba el contador. */
   padding: 34px 28px 0;
 }
-.porra-team {
+.porra-team--left {
+  grid-column: 1;
+}
+.porra-team--right {
+  grid-column: 3;
+}
+.porra-team__crest-box {
+  grid-row: 1;
+  height: 104px;
+  width: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  flex: 1;
-  max-width: 230px;
-  min-width: 0;
+  justify-content: center;
 }
 .porra-team__crest {
   width: 104px;
@@ -275,6 +307,7 @@
   color: #a9bcdc;
 }
 .porra-team__name {
+  grid-row: 2;
   font-family: 'Archivo', sans-serif;
   font-weight: 700;
   font-size: 24px;
@@ -286,17 +319,18 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
   line-height: 1.25;
-  min-height: 2.5em;
 }
 .porra-team__selector {
+  grid-row: 3;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
 .porra-teams__sep {
-  align-self: flex-start;
-  margin-top: 38px;
+  grid-row: 1;
+  grid-column: 2;
+  align-self: center;
   color: rgba(169, 188, 220, 0.6);
   font-size: 32px;
   font-family: 'Archivo', sans-serif;
@@ -488,6 +522,165 @@
   font-weight: 700;
 }
 
+/* Mismo estilo visual que el botón "𝕏 Compartir" del Lineup Builder
+   (Field.jsx): píldora con borde y fondo translúcidos en el color de
+   marca de cada red. Instagram no tenía antes ningún botón equivalente
+   en el proyecto, así que se creó siguiendo el mismo lenguaje visual. */
+.porra-share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 28px 0;
+}
+.porra-share__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* Ancho fijo en vez de depender del contenido: así ambos botones miden
+     lo mismo pese a que el glifo de X y el icono SVG de Instagram no
+     ocupan exactamente el mismo espacio. */
+  min-width: 150px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+.porra-share__icon {
+  flex-shrink: 0;
+}
+.porra-share__btn--x {
+  border: 1px solid rgba(29, 155, 240, 0.4);
+  background: rgba(29, 155, 240, 0.08);
+  color: #1da1f2;
+}
+.porra-share__btn--x:hover {
+  background: rgba(29, 155, 240, 0.15);
+}
+.porra-share__btn--instagram {
+  border: 1px solid rgba(225, 48, 108, 0.4);
+  background: rgba(225, 48, 108, 0.08);
+  color: #e1306c;
+}
+.porra-share__btn--instagram:hover {
+  background: rgba(225, 48, 108, 0.15);
+}
+.porra-share__fallback {
+  text-align: center;
+  margin: 8px 28px 0;
+  font-family: 'Archivo', sans-serif;
+  font-size: 12.5px;
+  color: #a9bcdc;
+}
+.porra-share__fallback a {
+  color: #1da1f2;
+  font-weight: 700;
+}
+
+/* -------- Tarjeta de exportación (compartir en X/Instagram) --------
+   Vive fuera de pantalla solo mientras se genera el PNG (ver
+   Porra.jsx): reutiliza .porra-match-card entera (mismos colores,
+   tipografía y posiciones — "no una segunda card con identidad visual
+   distinta"), y estas reglas ajustan justo lo que la exportación
+   necesita distinto de la tarjeta en pantalla. */
+.porra-match-card.porra-export-card {
+  /* Fondo autocontenido: en la página, la foto vive en el ancestro
+     .porra-atmosphere, que queda fuera de esta captura aislada — así
+     que aquí se trae la misma foto + los mismos degradados en una sola
+     capa propia, en vez de depender de ese ancestro. Sin filter()
+     porque html2canvas no lo soporta de forma fiable (se probó y
+     rompía el render); la imagen exportada queda un pelín más saturada
+     que la de pantalla, diferencia mínima y solo en la exportación. */
+  background:
+    linear-gradient(180deg, rgba(13, 68, 145, 0.14) 0%, rgba(7, 16, 34, 0.55) 55%, rgba(7, 16, 34, 0.88) 100%),
+    linear-gradient(180deg, rgba(6, 12, 26, 0.62) 0%, rgba(9, 30, 70, 0.52) 12%, rgba(13, 68, 145, 0.4) 26%, rgba(13, 68, 145, 0.32) 42%, rgba(7, 16, 34, 0.84) 66%, #060d1a 100%),
+    url('/images/estadio-comunidad.webp') center 32% / cover no-repeat;
+}
+/* Los nombres de equipo no se recortan a 2 líneas en la exportación:
+   .porra-team__name usa -webkit-line-clamp (display:-webkit-box) para
+   la tarjeta en pantalla, pero html2canvas no lo respeta de forma
+   fiable y el texto se solapaba con la fila del marcador de abajo.
+   Quitar el display:-webkit-box desactiva el clamp por completo — el
+   nombre reserva toda la altura que necesite. */
+.porra-export-card .porra-team__name {
+  display: block;
+  overflow: visible;
+}
+/* html2canvas dibuja el texto del badge visiblemente más abajo de lo
+   que le corresponde dentro de su propio fondo en píldora (medido:
+   ~8px por debajo del centro real, con padding simétrico ya
+   correcto) — desacoplamos el texto del fondo con un span interno y
+   lo desplazamos por posición relativa, en vez de tocar el padding
+   (que sí determina el tamaño/forma correctos de la píldora). */
+.porra-export-card .porra-badge__text {
+  display: inline-block;
+  position: relative;
+  top: -8px;
+}
+/* En mobile, .porra-score-value usa la fuente Humane (más presencia a
+   ese tamaño en pantalla) — pero html2canvas la renderiza mal a ese
+   tamaño pequeño (glifos convertidos en una barra fina en vez del
+   dígito real; se comprobó con capturas). Se usa el mismo equivalente
+   que ya funciona bien en desktop (Archivo) solo en la exportación,
+   independientemente del ancho de viewport. */
+.porra-export-card .porra-score-value {
+  font-family: 'Archivo', sans-serif;
+  line-height: 1;
+}
+.porra-export-card .porra-score-value__text {
+  display: inline-block;
+  position: relative;
+  top: -22px;
+}
+
+/* Causa común de "el texto queda pegado abajo/desplazado" en la
+   exportación: ninguno de estos elementos fijaba su propio line-height,
+   así que heredaban el "normal" del navegador (~1.2). Un flex
+   align-items:center centra la CAJA de línea que ese line-height
+   define, no el glifo en sí — y html2canvas calcula el alto/posición
+   real del glifo dentro de esa caja con métricas de fuente ligeramente
+   distintas a las del navegador, así que el texto queda visualmente más
+   abajo aunque la caja esté bien centrada. line-height:1 reduce esa
+   caja al tamaño real de la fuente y dejan mucho menos margen para que
+   la estimación de html2canvas se note. */
+.porra-export-card .porra-goleadores__label,
+.porra-export-card .porra-goleadores__pts,
+.porra-export-card .porra-cta {
+  line-height: 1;
+}
+/* Antes era un <input> (con su propio centrado nativo del navegador);
+   ahora es un <div> de texto que puede crecer a varias líneas — flex
+   centra el bloque de texto completo tanto si es una línea como varias,
+   con el mismo padding simétrico que ya tenía. */
+.porra-export-card .porra-goleadores-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.3;
+}
+
+/* Clases exclusivas de estos tres textos en la imagen exportada: no
+   tocan ".porra-goleadores__pts" ni nada de la página real (el botón
+   "Guardar pronóstico", el input real de goleadores, etc.), así que
+   se pueden editar aquí sin afectar a otro sitio. */
+.porra-export-goleadores-label {
+  position: relative;
+  top: -8px;
+}
+.porra-export-goleadores-nombre {
+  position: relative;
+  top: -8px;
+}
+.porra-export-cta-texto {
+  position: relative;
+  top: -8px;
+}
+
 .porra-participants {
   display: flex;
   align-items: center;
@@ -589,20 +782,46 @@
 .porra-season__empty {
   font-family: 'Archivo', sans-serif;
   font-size: 13px;
+  line-height: 1.5;
   color: #a9bcdc;
+  max-width: 32ch;
   margin: 0;
 }
+/* Estado sin sesión: mensaje principal destacado + texto secundario +
+   CTA, con un espaciado uniforme (gap) en vez de márgenes sueltos entre
+   párrafos, para que no queden huecos irregulares. */
+.porra-season__guest {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.porra-season__headline {
+  font-family: 'Archivo', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.3;
+}
+/* Botón coherente con los accesos secundarios del panel (borde sutil,
+   sin relleno sólido) para no competir con el CTA amarillo principal de
+   la tarjeta del partido. */
 .porra-season__login {
-  margin-top: 12px;
-  background: #ffc800;
-  color: #111;
-  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 10px;
-  padding: 10px 16px;
+  padding: 10px 18px;
   font-family: 'Archivo', sans-serif;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.porra-season__login:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .porra-ranking {
@@ -710,6 +929,9 @@
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 .porra-ranking__footer button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: none;
   border: none;
   color: #a9bcdc;
@@ -768,13 +990,21 @@
   border-bottom-color: #ffc800;
 }
 .porra-jornadas__see-all {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
   background: none;
   border: none;
   color: #a9bcdc;
   font-family: 'Archivo', sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+.porra-jornadas__see-all:hover {
+  color: #ffffff;
 }
 .porra-jornadas__list {
   display: grid;
@@ -787,6 +1017,10 @@
   color: #a9bcdc;
 }
 
+/* Misma estructura, padding y alturas reservadas por sección
+   (cabecera, escudos+resultado, info inferior) para "Últimas" y
+   "Próximas jornadas": lo único que cambia entre pestañas es el
+   contenido, nunca el tamaño de la tarjeta. */
 .porra-jornada-card {
   background: #0a1730;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -799,20 +1033,25 @@
   align-items: flex-start;
   gap: 8px;
 }
+/* El badge (Final/Abierta/Próximamente) hereda el tamaño de .porra-badge
+   pensado para la tarjeta grande del partido — dentro de esta tarjeta,
+   mucho más pequeña, queda desproporcionado. Se reduce solo aquí. */
+.porra-jornada-card__top .porra-badge {
+  font-size: 10px;
+  padding: 3px 9px;
+}
+/* nowrap + ellipsis en vez de dejar que un rival con nombre largo pase a
+   dos líneas: eso alargaría la cabecera solo en esa tarjeta y rompería
+   la altura uniforme entre pestañas. */
 .porra-jornada-card__meta {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: 'Archivo', sans-serif;
   font-size: 13px;
   font-weight: 700;
   color: #a9bcdc;
-}
-.porra-jornada-card__badge {
-  background: rgba(255, 255, 255, 0.08);
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 9px;
-  border-radius: 999px;
-  color: #a9bcdc;
-  white-space: nowrap;
 }
 .porra-jornada-card__score {
   display: flex;
@@ -841,6 +1080,9 @@
   justify-content: space-between;
   gap: 12px;
 }
+.porra-jornada-card__bottom > div {
+  min-width: 0;
+}
 .porra-jornada-card__label {
   font-family: 'Archivo', sans-serif;
   font-size: 10px;
@@ -850,6 +1092,9 @@
   color: #a9bcdc;
 }
 .porra-jornada-card__value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: 'Archivo', sans-serif;
   font-size: 14.5px;
   font-weight: 700;
@@ -939,6 +1184,14 @@
   gap: 16px;
   padding: 18px 22px 22px;
 }
+/* Lista vertical de tarjetas de jornada (no la grid a 3 columnas de la
+   página: la modal es más estrecha y puede llegar a listar muchas). */
+.porra-modal__body--jornadas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 20px 20px;
+}
 
 /* -------- Tablet -------- */
 @media (max-width: 1100px) {
@@ -1011,6 +1264,16 @@
 
 /* -------- Mobile -------- */
 @media (max-width: 640px) {
+  /* La flecha de texto "↗" queda desproporcionada a este tamaño: se
+     sustituye por el icono SVG equivalente (interrogación para "Cómo se
+     juega", chevron para las acciones "ver más"). */
+  .porra-icon-arrow {
+    display: none;
+  }
+  .porra-icon-mobile {
+    display: inline-flex;
+  }
+
   .porra-hero {
     padding: 44px 0 28px;
   }
@@ -1033,16 +1296,26 @@
     gap: 20px;
   }
 
+  /* La fila de metadatos se apila en columna y ambos bloques (competición
+     y fecha/localía) se centran respecto al mismo eje, en vez de que el
+     bloque de fecha quede "flotando" a la derecha cuando el ancho no
+     alcanza para las dos columnas lado a lado. */
   .porra-match-card__top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     padding: 20px 16px 0;
   }
+  .porra-match-card__when {
+    text-align: center;
+  }
   .porra-teams {
-    gap: 10px;
+    column-gap: 10px;
+    row-gap: 8px;
     padding: 28px 16px 0;
   }
-  .porra-team {
-    max-width: none;
-    gap: 8px;
+  .porra-team__crest-box {
+    height: 44px;
   }
   .porra-team__crest,
   .porra-team__crest-fallback {
@@ -1069,8 +1342,6 @@
     font-size: 18px;
   }
   .porra-teams__sep {
-    align-self: center;
-    margin-top: 36px;
     font-size: 20px;
   }
   .porra-tu-pronostico-label {
@@ -1105,6 +1376,9 @@
   .porra-locked {
     margin: 18px 16px 0;
   }
+  .porra-share {
+    margin: 16px 16px 0;
+  }
   .porra-participants {
     padding: 18px 16px 24px;
   }
@@ -1115,9 +1389,6 @@
   }
   .porra-jornadas__tabs {
     gap: 14px;
-  }
-  .porra-jornadas__see-all {
-    display: inline-block;
   }
   .porra-jornadas__list {
     display: flex;
@@ -1140,5 +1411,46 @@
     min-width: 82%;
     flex-shrink: 0;
     scroll-snap-align: start;
+  }
+}
+
+/* -------- Mobile muy pequeño (≤360px, p. ej. 320px) --------
+   Cada selector de marcador (botón − + marcador + botón +) necesita
+   ~152px con los tamaños de la franja de 640px, y a estos anchos ya no
+   caben dos uno junto al otro sin solaparse, así que aquí se reducen
+   botones, marcador y espaciados de esta fila para que ambos equipos
+   quepan sin tocarse. Por encima de 360px se deja tal cual estaba. */
+@media (max-width: 360px) {
+  .porra-teams {
+    column-gap: 6px;
+    row-gap: 6px;
+    padding: 24px 8px 0;
+  }
+  .porra-team__crest-box {
+    height: 36px;
+  }
+  .porra-team__crest,
+  .porra-team__crest-fallback {
+    width: 36px;
+    height: 36px;
+  }
+  .porra-team__name {
+    font-size: 11px;
+  }
+  .porra-team__selector {
+    gap: 6px;
+  }
+  .porra-stepper-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+  .porra-score-value {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  .porra-teams__sep {
+    font-size: 16px;
   }
 }
