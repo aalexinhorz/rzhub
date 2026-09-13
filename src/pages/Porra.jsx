@@ -4,6 +4,7 @@ import html2canvas from 'html2canvas'
 import SEO, { SITE_URL } from '../components/SEO'
 import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
+import usePlayers from '../hooks/usePlayers'
 import Footer from '../components/Footer'
 import './Porra.css'
 
@@ -30,6 +31,10 @@ const ESCUDOS = {
 }
 
 const ESCUDO_ZARAGOZA = '/escudos/Real_Zaragoza_logo (3).svg'
+// A petición expresa: no aparecen como opción en el selector de
+// goleadores de la porra (sí siguen contando como plantilla en el
+// resto de la web — Line-Up, Mercado, Notas... — is_zaragoza no se toca).
+const EXCLUIDOS_GOLEADORES = ['Jorge Franco', 'Berrar', 'Marcos Manolache']
 const HORA_PLACEHOLDER = '18:30'
 // Debe coincidir con el min-height de .porra-ranking__row en desktop
 // (Porra.css) — se usa para calcular cuántas filas completas caben en el
@@ -396,7 +401,9 @@ export default function Porra() {
   const [loading, setLoading] = useState(true)
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
-  const [form, setForm] = useState({ goles_zaragoza: 0, goles_rival: 0, goleadores: '' })
+  const [form, setForm] = useState({ goles_zaragoza: 0, goles_rival: 0, goleadores: [] })
+  const { players } = usePlayers()
+  const jugadoresZaragoza = players.filter(p => p.isZaragoza && !EXCLUIDOS_GOLEADORES.includes(p.name))
   const [partidoActivo, setPartidoActivo] = useState(null)
   const [participantes, setParticipantes] = useState(null)
   const [mostrarGoleadores, setMostrarGoleadores] = useState(false)
@@ -448,11 +455,11 @@ export default function Porra() {
       setForm({
         goles_zaragoza: pred.goles_zaragoza,
         goles_rival: pred.goles_rival,
-        goleadores: pred.goleadores?.join(', ') || '',
+        goleadores: pred.goleadores || [],
       })
       if (pred.goleadores?.length > 0) setMostrarGoleadores(true)
     } else {
-      setForm({ goles_zaragoza: 0, goles_rival: 0, goleadores: '' })
+      setForm({ goles_zaragoza: 0, goles_rival: 0, goleadores: [] })
       setMostrarGoleadores(false)
     }
   }, [partidoActivo, predicciones])
@@ -562,7 +569,7 @@ export default function Porra() {
       partido_id: partidoActivo.id,
       goles_zaragoza: form.goles_zaragoza,
       goles_rival: form.goles_rival,
-      goleadores: form.goleadores ? form.goleadores.split(',').map(g => g.trim()).filter(Boolean) : [],
+      goleadores: form.goleadores,
     }
     const existing = predicciones[partidoActivo.id]
     if (existing) {
@@ -652,6 +659,17 @@ export default function Porra() {
     setForm(f => ({ ...f, [campo]: Math.max(0, Math.min(20, f[campo] + delta)) }))
   }
 
+  // Solo hay que acertar QUIÉN marca, no cuántas veces — así que cada
+  // tarjeta es un simple on/off, sin contador de goles.
+  function toggleGoleador(nombre) {
+    setForm(f => ({
+      ...f,
+      goleadores: f.goleadores.includes(nombre)
+        ? f.goleadores.filter(n => n !== nombre)
+        : [...f.goleadores, nombre],
+    }))
+  }
+
   // Texto de compartir: usa el marcador que el usuario tiene puesto en
   // el selector ahora mismo (guardado o no — la visibilidad de estos
   // botones no depende de haber guardado el pronóstico).
@@ -728,7 +746,7 @@ export default function Porra() {
       marcadorLocal: esLocal ? form.goles_zaragoza : form.goles_rival,
       marcadorVisitante: esLocal ? form.goles_rival : form.goles_zaragoza,
       mostrarGoleadores: true,
-      goleadoresTexto: form.goleadores,
+      goleadoresTexto: form.goleadores.join(', '),
       // La imagen es una invitación para quien la vea, no una
       // confirmación personal de que YA guardaste tu pronóstico — por
       // eso el CTA exportado siempre es el mismo texto/estilo,
@@ -1061,14 +1079,22 @@ export default function Porra() {
                     <span className="porra-goleadores__pts">+3 pts · Opcional</span>
                   </div>
                   {mostrarGoleadores && (
-                    <input
-                      className="porra-goleadores-input"
-                      type="text"
-                      value={form.goleadores}
-                      onClick={e => e.stopPropagation()}
-                      onChange={e => setForm(f => ({ ...f, goleadores: e.target.value }))}
-                      placeholder="Ej: Escobar, Gabilondo"
-                    />
+                    <div className="porra-goleadores-grid" onClick={e => e.stopPropagation()}>
+                      {jugadoresZaragoza.map(jugador => {
+                        const seleccionado = form.goleadores.includes(jugador.name)
+                        return (
+                          <button
+                            type="button"
+                            key={jugador.id}
+                            className={`porra-goleador-card${seleccionado ? ' is-selected' : ''}`}
+                            onClick={() => toggleGoleador(jugador.name)}
+                          >
+                            <img className="porra-goleador-card__foto" src={jugador.photo} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />
+                            <span className="porra-goleador-card__nombre">{jugador.shortName}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
                   )}
 
                   <button

@@ -440,6 +440,74 @@
   color: rgba(169, 188, 220, 0.5);
 }
 
+.porra-goleadores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 10px;
+  margin: 12px auto 0;
+  max-width: 560px;
+  width: 92%;
+}
+
+/* Mismo aspecto que la card de titular del Line-Up (PlayerSlot.jsx):
+   degradado azul, borde a juego, foto arriba y barra con el nombre
+   abajo — así un jugador se reconoce igual en los dos sitios. */
+.porra-goleador-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-radius: 6px;
+  border: 2px solid #0B4390;
+  overflow: hidden;
+  background: linear-gradient(180deg, #c5d8f0 0%, #ddeaf8 40%, #eef4fc 70%, #f5f8fd 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+.porra-goleador-card:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+}
+.porra-goleador-card.is-selected {
+  border-color: #f5c400;
+  box-shadow: 0 0 0 2px rgba(245, 196, 0, 0.5), 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.porra-goleador-card__foto {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: 50% 15%;
+  display: block;
+  background: #152445;
+}
+
+.porra-goleador-card__nombre {
+  display: block;
+  background: #0B4390;
+  padding: 0 4px;
+  height: 20px;
+  line-height: 20px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .porra-goleadores-grid {
+    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(66px, 1fr));
+    gap: 8px;
+  }
+  .porra-goleador-card__nombre { font-size: 9px; height: 18px; line-height: 18px; }
+}
+
 .porra-cta {
   display: block;
   margin: 20px auto 0;
