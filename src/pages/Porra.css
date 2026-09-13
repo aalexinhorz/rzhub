@@ -637,6 +637,15 @@
   position: relative;
   top: -22px;
 }
+/* .porra-score-value cambia de tamaño de caja/fuente en mobile (ver
+   media queries más abajo), así que el desplazamiento que centra el
+   dígito en desktop no vale igual ahí — valor propio y ajustable
+   aparte, sin tocar el de arriba. */
+@media (max-width: 640px) {
+  .porra-export-card .porra-score-value__text {
+    top: -16px;
+  }
+}
 
 /* Causa común de "el texto queda pegado abajo/desplazado" en la
    exportación: ninguno de estos elementos fijaba su propio line-height,
