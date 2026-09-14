@@ -1,0 +1,219 @@
+.zaragozle-page {
+  min-height: 100vh;
+}
+
+.zaragozle-page__hero {
+  background: linear-gradient(90deg, #06328a 0%, #05286d 50%, #041f5c 100%);
+  padding: 60px var(--padding-page) 50px;
+  text-align: center;
+}
+
+.zaragozle-page__eyebrow { margin: 0 0 12px; }
+
+.zaragozle-page__title {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 12vw, 110px);
+  font-weight: var(--weight-bold);
+  line-height: 0.9;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+}
+
+.zaragozle-page__subtitle {
+  font-size: var(--text-md);
+  color: var(--rz-text-secondary);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.zaragozle-page__body {
+  background: #03101f;
+  padding: 32px 0 0;
+}
+
+.zaragozle-page__container {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+/* -------- Tablero -------- */
+.zaragozle-tablero {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 330px;
+}
+.zaragozle-tablero.es-sacudida .zaragozle-fila:last-of-type {
+  animation: zaragozle-sacudir 400ms ease;
+}
+
+.zaragozle-fila {
+  display: grid;
+  grid-template-columns: repeat(var(--largo), 1fr);
+  gap: 6px;
+}
+
+.zaragozle-casilla {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--rz-border-md);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: clamp(14px, calc(6vw - var(--largo) * 1px), 28px);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-primary);
+  text-transform: uppercase;
+  background: transparent;
+  box-sizing: border-box;
+}
+.zaragozle-casilla.es-escrita {
+  border-color: var(--rz-border-strong);
+}
+.zaragozle-casilla.es-correcta,
+.zaragozle-casilla.es-presente,
+.zaragozle-casilla.es-ausente {
+  border-color: transparent;
+  animation: zaragozle-revelar 300ms ease backwards;
+}
+.zaragozle-casilla.es-correcta { background: var(--rz-green); color: #060D1A; }
+.zaragozle-casilla.es-presente { background: var(--rz-yellow); color: #060D1A; }
+.zaragozle-casilla.es-ausente { background: rgba(255, 255, 255, 0.12); color: var(--rz-text-secondary); }
+
+@keyframes zaragozle-revelar {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  60% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes zaragozle-sacudir {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+.zaragozle-aviso {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--rz-text-primary);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+}
+
+/* -------- Teclado -------- */
+.zaragozle-teclado {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.zaragozle-teclado__fila {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.zaragozle-tecla {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--rz-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+.zaragozle-tecla:hover { background: rgba(255, 255, 255, 0.28); }
+.zaragozle-tecla.es-ancha { flex: 1.6; font-size: var(--text-xs); }
+.zaragozle-tecla.es-correcta { background: var(--rz-green); color: #060D1A; }
+.zaragozle-tecla.es-presente { background: var(--rz-yellow); color: #060D1A; }
+.zaragozle-tecla.es-ausente { background: rgba(255, 255, 255, 0.06); color: var(--rz-text-muted); }
+
+/* -------- Resultado final -------- */
+.zaragozle-resultado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.zaragozle-resultado__titulo {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.zaragozle-resultado.es-ganado .zaragozle-resultado__titulo { color: var(--rz-green); }
+.zaragozle-resultado.es-perdido .zaragozle-resultado__titulo { color: var(--rz-red); }
+
+.zaragozle-resultado__palabra {
+  font-family: var(--font-body);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-black);
+  letter-spacing: 0.1em;
+  color: var(--rz-yellow);
+}
+
+.zaragozle-resultado__jugador {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-full);
+  padding: 6px 16px 6px 6px;
+}
+.zaragozle-resultado__jugador img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--rz-bg-3);
+}
+.zaragozle-resultado__jugador span {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--rz-text-primary);
+}
+
+.zaragozle-resultado__vuelve {
+  font-size: var(--text-sm);
+  color: var(--rz-text-muted);
+  margin: 0;
+}
+
+@media (max-width: 380px) {
+  .zaragozle-tecla { height: 42px; font-size: 13px; }
+  .zaragozle-teclado__fila { gap: 4px; }
+  .zaragozle-teclado { gap: 6px; }
+}

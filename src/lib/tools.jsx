@@ -39,18 +39,18 @@ export const TOOLS = [
     ),
   },
   {
-    id: 'on-tour',
-    title: 'On Tour',
-    description: 'Información de desplazamientos, rutas y experiencias de los zaragocistas en los estadios.',
-    href: '/on-tour',
-    badge: null,
+    id: 'zaragozle',
+    title: 'Zaragozle',
+    description: 'El Wordle del Real Zaragoza: adivina la palabra secreta del día en 6 intentos.',
+    href: '/zaragozle',
+    badge: 'Nuevo',
     icon: (
       <svg {...ICON_PROPS}>
-        <path d="M3 16V8a2 2 0 0 1 2-2h9l4 4v6" />
-        <path d="M3 16h15" />
-        <path d="M14 6v6h6" />
-        <circle cx="7" cy="17.5" r="1.6" />
-        <circle cx="17" cy="17.5" r="1.6" />
+        <rect x="3" y="3" width="5" height="5" rx="1" fill="currentColor" stroke="none" />
+        <rect x="9.5" y="3" width="5" height="5" rx="1" />
+        <rect x="16" y="3" width="5" height="5" rx="1" />
+        <rect x="3" y="9.5" width="5" height="5" rx="1" />
+        <rect x="9.5" y="9.5" width="5" height="5" rx="1" fill="currentColor" stroke="none" />
       </svg>
     ),
   },
@@ -83,6 +83,22 @@ export const TOOLS = [
         <path d="M12 13v3" />
         <path d="M9 20h6" />
         <path d="M10 16h4l.4 4H9.6z" />
+      </svg>
+    ),
+  },
+  {
+    id: 'on-tour',
+    title: 'On Tour',
+    description: 'Información de desplazamientos, rutas y experiencias de los zaragocistas en los estadios.',
+    href: '/on-tour',
+    badge: null,
+    icon: (
+      <svg {...ICON_PROPS}>
+        <path d="M3 16V8a2 2 0 0 1 2-2h9l4 4v6" />
+        <path d="M3 16h15" />
+        <path d="M14 6v6h6" />
+        <circle cx="7" cy="17.5" r="1.6" />
+        <circle cx="17" cy="17.5" r="1.6" />
       </svg>
     ),
   },
