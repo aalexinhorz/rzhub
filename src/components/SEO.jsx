@@ -1,7 +1,10 @@
 import { Helmet } from 'react-helmet-async'
 
 export const SITE_NAME = 'RZ Hub'
-export const SITE_URL = 'https://rzhub.es'
+// www: rzhub.es (sin www) hace un 308 a www.rzhub.es — el canonical,
+// og:url y las URLs del sitemap deben apuntar directamente al destino
+// final, nunca a una URL que a su vez redirige a otra.
+export const SITE_URL = 'https://www.rzhub.es'
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`
 
 export default function SEO({ title, description, keywords, path = '', image = DEFAULT_OG_IMAGE, jsonLd, noindex = false }) {

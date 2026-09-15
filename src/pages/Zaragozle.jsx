@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import SEO, { SITE_URL } from '../components/SEO'
+import { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
 import usePlayers from '../hooks/usePlayers'
 import './Zaragozle.css'
@@ -221,23 +221,6 @@ export default function Zaragozle() {
 
   return (
     <div className="zaragozle-page">
-      <SEO
-        title="Zaragozle | El Wordle del Real Zaragoza | RZ Hub"
-        description="El Wordle del Real Zaragoza: adivina la palabra secreta del día (jugadores, afición, fútbol) en 6 intentos. Uno nuevo cada día."
-        keywords="zaragozle, wordle Real Zaragoza, juego diario Real Zaragoza, wordle español fútbol"
-        path="/zaragozle"
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'WebApplication',
-          name: 'Zaragozle | RZ Hub',
-          url: `${SITE_URL}/zaragozle`,
-          applicationCategory: 'GameApplication',
-          operatingSystem: 'Web',
-          offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-          description: 'Wordle diario tematizado del Real Zaragoza.',
-        }}
-      />
-
       <div className="zaragozle-page__hero">
         <p className="rz-eyebrow rz-eyebrow--yellow zaragozle-page__eyebrow">Puzzle diario · #{puzzle}</p>
         <h1 className="zaragozle-page__title">Zaragozle</h1>

@@ -14,6 +14,7 @@ export default function Sobre() {
         title="Sobre RZ Hub | RZ Hub"
         description="Quiénes somos y por qué existe RZ Hub, la plataforma no oficial hecha por y para la afición del Real Zaragoza."
         path="/sobre-rz-hub"
+        noindex
       />
       <div style={{ maxWidth: '680px', margin: '0 auto' }}>
         <p style={{ color: '#FFC800', fontFamily: 'Archivo, sans-serif', fontSize: '11px', fontWeight: '700', letterSpacing: '2px', textTransform: 'uppercase', margin: '0 0 6px' }}>

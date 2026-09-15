@@ -231,6 +231,7 @@ export default function TierlistPartido() {
         description="Clasifica a los jugadores del Real Zaragoza por su actuación en el último partido: suspenso, suficiente, bien, notable o sobresaliente."
         keywords="tierlist partido Real Zaragoza, puntuar jugadores Real Zaragoza, notas Real Zaragoza"
         path="/tierlist-partido"
+        noindex
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'WebApplication',

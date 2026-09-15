@@ -14,6 +14,7 @@ export default function EnDirecto() {
         description="Sigue en directo la retransmisión en Twitch."
         keywords="Real Zaragoza en directo, Real Zaragoza twitch, retransmisión Real Zaragoza, ver Real Zaragoza online"
         path="/en-directo"
+        noindex
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'WebPage',
