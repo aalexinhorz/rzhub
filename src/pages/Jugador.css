@@ -1,0 +1,230 @@
+.jugador-page {
+  min-height: 100vh;
+  background: #03101f;
+}
+.jugador-page__body { padding: 32px 0 0; }
+.jugador-page__container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding-inline: 24px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.jugador-page__state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--rz-text-muted);
+  font-size: var(--text-md);
+}
+
+.jugador-volver {
+  align-self: flex-start;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--rz-text-secondary);
+  text-decoration: none;
+}
+.jugador-volver:hover { color: var(--rz-yellow); }
+
+/* -------- Banner -------- */
+.jugador-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  background: linear-gradient(90deg, #06328a 0%, #05286d 50%, #041f5c 100%);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+.jugador-banner__foto {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 15%;
+  background: var(--rz-bg-3);
+  border: 3px solid var(--rz-yellow);
+  flex-shrink: 0;
+}
+.jugador-banner__info { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.jugador-banner__nombre {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 6vw, 44px);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1;
+  margin: 0;
+}
+.jugador-banner__tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.jugador-tag {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+.jugador-tag--dorsal { background: var(--rz-yellow); color: #060D1A; }
+.jugador-tag--cantera { background: rgba(255, 255, 255, 0.9); color: #06328a; }
+
+/* -------- Stats -------- */
+.jugador-stats {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.jugador-stats__celda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 22px 4px;
+  border-left: 1px solid var(--rz-border);
+  text-align: center;
+}
+.jugador-stats__celda:first-child { border-left: none; }
+.jugador-stats__celda--destacada { background: rgba(255, 200, 0, 0.06); }
+.jugador-stats__valor {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 4vw, 36px);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-primary);
+  line-height: 1;
+}
+.jugador-stats__celda--destacada .jugador-stats__valor { color: var(--rz-yellow); }
+.jugador-stats__valor--amarilla { color: #f2c94c; }
+.jugador-stats__valor--roja { color: var(--rz-red); }
+.jugador-stats__label {
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rz-text-muted);
+}
+
+/* -------- Secciones -------- */
+.jugador-section-title {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 14px;
+}
+.jugador-vacio {
+  font-size: var(--text-sm);
+  color: var(--rz-text-muted);
+  margin: 0;
+}
+
+/* -------- Tabla de partidos -------- */
+.jugador-tabla {
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.jugador-tabla__cabecera,
+.jugador-tabla__fila {
+  display: grid;
+  grid-template-columns: 80px minmax(120px, 1.4fr) 70px 55px 55px;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+}
+.jugador-tabla__cabecera {
+  border-bottom: 1px solid var(--rz-border);
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rz-text-muted);
+}
+.jugador-tabla__fila { border-bottom: 1px solid var(--rz-border); font-size: var(--text-sm); color: var(--rz-text-secondary); }
+.jugador-tabla__fila:last-child { border-bottom: none; }
+.jugador-tabla__rival { color: var(--rz-text-primary); font-weight: var(--weight-semibold); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jugador-tabla__num { text-align: center; font-weight: var(--weight-semibold); }
+.jugador-tabla__muted { color: var(--rz-text-muted); font-size: var(--text-xs); }
+
+.jugador-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: var(--weight-bold);
+  color: #fff;
+}
+.jugador-pill.jg-v { background: var(--rz-green); color: #06280f; }
+.jugador-pill.jg-e { background: rgba(255, 255, 255, 0.25); color: #fff; }
+.jugador-pill.jg-d { background: var(--rz-red); }
+
+/* -------- Historial de mercado -------- */
+.jugador-mercado-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.jugador-mercado-lista li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--rz-border);
+}
+.jugador-mercado-lista li:last-child { border-bottom: none; }
+.jugador-mercado-icono {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: var(--weight-bold);
+  flex-shrink: 0;
+}
+.jugador-mercado-icono.jg-v { background: var(--rz-green-bg); color: var(--rz-green); }
+.jugador-mercado-icono.jg-d { background: var(--rz-red-bg); color: var(--rz-red); }
+.jugador-mercado-lista li > div { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.jugador-mercado-texto { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--rz-text-primary); }
+.jugador-mercado-fecha { font-size: 11px; color: var(--rz-text-muted); }
+
+.jugador-nota-final {
+  font-size: var(--text-xs);
+  color: var(--rz-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .jugador-page__container { padding-inline: 12px; padding-bottom: 48px; }
+  .jugador-banner { flex-direction: column; text-align: center; padding: var(--space-4); }
+  .jugador-banner__info { align-items: center; }
+  .jugador-banner__foto { width: 90px; height: 90px; }
+  .jugador-stats { grid-template-columns: repeat(3, 1fr); }
+  .jugador-stats__celda:nth-child(3n+1) { border-left: none; }
+  .jugador-stats__celda:nth-child(n+4) { border-top: 1px solid var(--rz-border); }
+  .jugador-stats__celda { padding: 18px 4px; }
+  .jugador-stats__valor { font-size: 32px; }
+  .jugador-stats__label { font-size: 11px; }
+  .jugador-tabla { overflow-x: auto; }
+  .jugador-tabla__cabecera,
+  .jugador-tabla__fila {
+    grid-template-columns: 70px minmax(110px, 1fr) 64px 50px 50px;
+    min-width: 360px;
+  }
+}

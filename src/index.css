@@ -12,7 +12,13 @@
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+/* Reserva siempre el hueco de la barra de scroll (en vez de solo
+   cuando hace falta) — sin esto, cualquier contenido que aparezca y
+   cruce el umbral "cabe en la pantalla" -> "hace falta scroll" (p.ej.
+   el grid de goleadores de la Porra) reduce el ancho útil de golpe en
+   escritorio, y cualquier cosa centrada horizontalmente (como el
+   fondo del estadio de Porra) da un salto visible en ese instante. */
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; scrollbar-gutter: stable; }
 
 body {
   font-family: var(--font-body);

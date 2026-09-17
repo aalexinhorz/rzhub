@@ -133,6 +133,21 @@ export const TOOLS = [
     ),
   },
   {
+    id: 'estadisticas',
+    title: 'Estadísticas',
+    description: 'Partidos jugados, goles y nota media de la afición de cada jugador de la plantilla.',
+    href: '/estadisticas',
+    badge: 'Nuevo',
+    icon: (
+      <svg {...ICON_PROPS}>
+        <line x1="4" y1="20" x2="20" y2="20" />
+        <rect x="6" y="12" width="3" height="8" rx="0.8" />
+        <rect x="11" y="7" width="3" height="13" rx="0.8" />
+        <rect x="16" y="15" width="3" height="5" rx="0.8" />
+      </svg>
+    ),
+  },
+  {
     id: 'comunidad',
     title: 'Comunidad',
     description: 'Comparte contenido y conecta con otros zaragocistas.',

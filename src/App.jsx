@@ -15,6 +15,7 @@ import RedaccionFotos from './pages/RedaccionFotos'
 import Calendario from './pages/Calendario'
 import Contacto from './pages/Contacto'
 import Porra from './pages/Porra'
+import Porra2 from './pages/Porra2'
 import Mercado from './pages/Mercado'
 import Tools from './pages/Tools'
 import Fotogaleria from './pages/Fotogaleria'
@@ -24,6 +25,8 @@ import NotasPartido from './pages/NotasPartido'
 import TierlistPartido from './pages/TierlistPartido'
 import EnDirecto from './pages/EnDirecto'
 import AdivinaResultado from './pages/AdivinaResultado'
+import Estadisticas from './pages/Estadisticas'
+import Jugador from './pages/Jugador'
 import Zaragozle from './pages/Zaragozle'
 import Sobre from './pages/Sobre'
 import Terminos from './pages/Terminos'
@@ -54,6 +57,7 @@ export default function App() {
         <Route path="/rumores" element={<Navigate to="/noticias" replace />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/porra" element={<Porra />} />
+        <Route path="/porra2" element={<Porra2 />} />
         <Route path="/mercado" element={<Mercado />} />
         <Route path="/herramientas" element={<Tools />} />
         <Route path="/fotogaleria" element={<Fotogaleria />} />
@@ -63,6 +67,8 @@ export default function App() {
         <Route path="/tierlist-partido" element={<TierlistPartido />} />
         <Route path="/en-directo" element={<EnDirecto />} />
         <Route path="/adivina-resultado" element={<AdivinaResultado />} />
+        <Route path="/estadisticas" element={<Estadisticas />} />
+        <Route path="/jugador/:id" element={<Jugador />} />
         <Route path="/zaragozle" element={<Zaragozle />} />
         <Route path="/sobre-rz-hub" element={<Sobre />} />
         <Route path="/terminos" element={<Terminos />} />

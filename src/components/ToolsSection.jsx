@@ -29,7 +29,10 @@ export default function ToolsSection() {
         </div>
 
         <div className="tools-grid">
-          {TOOLS.slice(0, 5).map(tool => (
+          {/* Zaragozle se queda fuera del teaser de la Home a
+              propósito (pedido explícito) — sigue disponible en
+              /herramientas. */}
+          {TOOLS.filter(tool => tool.id !== 'zaragozle').slice(0, 5).map(tool => (
             <ToolCard key={tool.id} tool={tool} onClick={() => navigate(tool.href)} />
           ))}
         </div>
