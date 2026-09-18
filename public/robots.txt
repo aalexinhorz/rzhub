@@ -4,6 +4,5 @@ Disallow: /perfil
 Disallow: /redaccion
 Disallow: /redaccion-fotos
 Disallow: /login
-Disallow: /porra2
 
 Sitemap: https://www.rzhub.es/sitemap.xml

@@ -21,7 +21,6 @@ const RedaccionFotos = lazy(() => import('./pages/RedaccionFotos'))
 const Calendario = lazy(() => import('./pages/Calendario'))
 const Contacto = lazy(() => import('./pages/Contacto'))
 const Porra = lazy(() => import('./pages/Porra'))
-const Porra2 = lazy(() => import('./pages/Porra2'))
 const Mercado = lazy(() => import('./pages/Mercado'))
 const Tools = lazy(() => import('./pages/Tools'))
 const Fotogaleria = lazy(() => import('./pages/Fotogaleria'))
@@ -68,7 +67,6 @@ export default function App() {
           <Route path="/rumores" element={<Navigate to="/noticias" replace />} />
           <Route path="/contacto" element={<Contacto />} />
           <Route path="/porra" element={<Porra />} />
-          <Route path="/porra2" element={<Porra2 />} />
           <Route path="/mercado" element={<Mercado />} />
           <Route path="/herramientas" element={<Tools />} />
           <Route path="/fotogaleria" element={<Fotogaleria />} />
