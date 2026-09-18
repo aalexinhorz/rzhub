@@ -961,19 +961,51 @@ export default function Porra() {
     <div className="porra-page">
       <SEO
         title="La Porra del Real Zaragoza | Pronósticos y Ranking | RZ Hub"
-        description="Predice los resultados del Real Zaragoza, suma puntos por acertar el marcador y los goleadores, y compite en el ranking de la comunidad zaragocista."
-        keywords="porra Real Zaragoza, quiniela Real Zaragoza, pronósticos Real Zaragoza, predicciones Real Zaragoza, ranking porra Real Zaragoza"
+        description="Predice los resultados y goleadores del Real Zaragoza cada jornada, compite en el ranking y gana una camiseta oficial al ganador de la temporada."
+        keywords="porra Real Zaragoza, quiniela Real Zaragoza, pronósticos Real Zaragoza, predicciones Real Zaragoza, ranking porra Real Zaragoza, premios porra Real Zaragoza, camiseta Real Zaragoza, porra gratis Real Zaragoza, porra Primera Federación, afición Real Zaragoza"
         path="/porra"
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'WebApplication',
-          name: 'La Porra del Real Zaragoza | RZ Hub',
-          url: `${SITE_URL}/porra`,
-          applicationCategory: 'GameApplication',
-          operatingSystem: 'Web',
-          offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-          description: 'Juego de pronósticos de los partidos del Real Zaragoza con ranking de la comunidad.',
-        }}
+        jsonLd={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebApplication',
+            name: 'La Porra del Real Zaragoza | RZ Hub',
+            url: `${SITE_URL}/porra`,
+            applicationCategory: 'GameApplication',
+            operatingSystem: 'Web',
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+            description: 'Juego de pronósticos de los partidos del Real Zaragoza con ranking de la comunidad y camiseta oficial de premio al ganador de la temporada.',
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              {
+                '@type': 'Question',
+                name: '¿Cómo se juega la Porra del Real Zaragoza?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Cada jornada eliges el resultado exacto del partido del Real Zaragoza y, si quieres, también los goleadores. Se ganan 5 puntos por acertar el resultado exacto y 3 puntos más por acertar todos los goleadores.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: '¿Qué premio tiene la Porra del Real Zaragoza de RZ Hub?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Quien termine primero en la clasificación general al final de la temporada gana una camiseta oficial del Real Zaragoza.',
+                },
+              },
+              {
+                '@type': 'Question',
+                name: '¿Es gratis jugar a la Porra del Real Zaragoza?',
+                acceptedAnswer: {
+                  '@type': 'Answer',
+                  text: 'Sí, participar en la Porra de RZ Hub es totalmente gratuito para cualquier aficionado del Real Zaragoza.',
+                },
+              },
+            ],
+          },
+        ]}
       />
 
       {/* Envuelve cabecera + tarjeta del partido: el fondo fotográfico
@@ -986,7 +1018,7 @@ export default function Porra() {
         <div className="porra-hero__inner">
           <h1 className="porra-hero__title">La Porra</h1>
           <div className="porra-hero__row">
-            <p className="porra-hero__subtitle">Participa cada jornada y gana premios a final de temporada.</p>
+            <p className="porra-hero__subtitle">Participa cada jornada y gana una camiseta oficial del Real Zaragoza si terminas primero al final de la temporada.</p>
             <button className="porra-hero__howto" onClick={abrirModalComoSeJuega}>
               Cómo se juega
               <span className="porra-icon-arrow" aria-hidden="true">↗</span>
@@ -1371,6 +1403,12 @@ export default function Porra() {
               <div className="porra-howto-box__item">
                 <span className="porra-howto-box__pts">3 PTS</span>
                 <span className="porra-howto-box__label">Todos los goleadores</span>
+              </div>
+              <div className="porra-howto-premio">
+                <span className="porra-howto-premio__icono" aria-hidden="true">👕</span>
+                <span className="porra-howto-premio__texto">
+                  <strong>Premio de fin de temporada:</strong> quien termine primero en la clasificación general se lleva una camiseta oficial del Real Zaragoza.
+                </span>
               </div>
             </div>
           </div>
