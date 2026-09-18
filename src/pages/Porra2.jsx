@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
 import usePlayers from '../hooks/usePlayers'
+import SEO from '../components/SEO'
 import Footer from '../components/Footer'
 import './Porra.css'
 import './Porra2.css'
@@ -261,6 +262,9 @@ export default function Porra2() {
 
   return (
     <div className="porra-page">
+      {/* Prototipo sin enlazar en la navegación — noindex explícito
+          por si alguien comparte la URL directa. */}
+      <SEO title="Porra2 (prototipo interno) | RZ Hub" description="Prototipo visual interno, no es una página pública." path="/porra2" noindex />
       <div className="porra-atmosphere">
         <div className="porra-hero">
           <div className="porra-hero__inner">

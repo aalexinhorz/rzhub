@@ -1,0 +1,24 @@
+# RZ Hub
+
+> RZ Hub (rzhub.es) es una plataforma no oficial hecha por aficionados para la afición del Real Zaragoza (Primera Federación, Grupo 2, temporada 2026/2027). Reúne herramientas, datos reales del club y comunidad en un solo sitio.
+
+RZ Hub no es un canal oficial del Real Zaragoza. Es un proyecto de fans, gestionado por aficionados zaragocistas, construido en gran parte a partir de lo que la propia comunidad pide.
+
+## Herramientas principales
+
+- [Lineup Builder](https://www.rzhub.es/lineup): crea tu alineación ideal del Real Zaragoza y la comparte con la comunidad.
+- [Mercado](https://www.rzhub.es/mercado): línea temporal de altas y bajas de fichajes del Real Zaragoza, por temporada.
+- [Calendario](https://www.rzhub.es/calendario): calendario de partidos del Real Zaragoza, sincronizable con Google/Apple Calendar (.ics).
+- [La Porra](https://www.rzhub.es/porra): juego de predicción de resultados y goleadores de cada jornada del Real Zaragoza, gratuito, con ranking de la comunidad y una camiseta oficial del Real Zaragoza de premio para quien termine primero al final de la temporada.
+- [Estadísticas](https://www.rzhub.es/estadisticas): estadísticas reales de la plantilla del Real Zaragoza — partidos jugados, goles, minutos, asistencias, tarjetas y nota media de la afición, jugador a jugador.
+- [TierMaker](https://www.rzhub.es/tierlist): rankings y tier lists sobre fichajes, decisiones del club y valoraciones de partidos del Real Zaragoza.
+- [Noticias](https://www.rzhub.es/noticias): actualidad y última hora del Real Zaragoza.
+- [Las Notas](https://www.rzhub.es/notas): la afición puntúa a cada jugador del Real Zaragoza después de cada partido.
+- [On Tour](https://www.rzhub.es/on-tour): información de desplazamientos a los campos rivales del Real Zaragoza.
+- [Fotogalería](https://www.rzhub.es/fotogaleria): fotos de la afición y del equipo, partido a partido.
+- [Comunidad](https://www.rzhub.es/comunidad): alineaciones y tier lists compartidas por otros aficionados del Real Zaragoza.
+
+## Sobre RZ Hub
+
+- [Sobre RZ Hub](https://www.rzhub.es/sobre-rz-hub): qué es RZ Hub y quién lo hace.
+- [Contacto](https://www.rzhub.es/contacto): contacto con el equipo de RZ Hub.
