@@ -1,8 +1,15 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import SEO, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/SEO'
 import { supabase } from '../hooks/useAuth'
 import './NoticiaDetalle.css'
+
+// Admite youtube.com/watch?v=ID, youtu.be/ID y youtube.com/embed/ID.
+function youtubeId(url) {
+  if (!url) return null
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/)
+  return m ? m[1] : null
+}
 
 // Mismo mapa de colores que Noticias.jsx (mantenerlo alineado ahí es
 // más importante que evitar la duplicación de este objeto pequeño).
@@ -51,6 +58,8 @@ export default function NoticiaDetalle() {
     </div>
   )
 
+  const ytId = youtubeId(post.video_url)
+
   return (
     <div className="noticia-detalle-page">
       <SEO
@@ -58,19 +67,35 @@ export default function NoticiaDetalle() {
         description={post.meta_descripcion || post.excerpt || post.titulo}
         path={`/noticias/${post.slug}`}
         image={post.og_imagen || post.imagen_url || DEFAULT_OG_IMAGE}
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'NewsArticle',
-          headline: post.titulo,
-          description: post.excerpt || undefined,
-          image: post.og_imagen || post.imagen_url || undefined,
-          datePublished: post.created_at,
-          dateModified: post.updated_at || post.created_at,
-          author: post.autor ? { '@type': 'Person', name: post.autor } : undefined,
-          articleSection: post.categoria || undefined,
-          mainEntityOfPage: `${SITE_URL}/noticias/${post.slug}`,
-          publisher: { '@type': 'Organization', name: 'RZ Hub', logo: { '@type': 'ImageObject', url: DEFAULT_OG_IMAGE } },
-        }}
+        jsonLd={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'NewsArticle',
+            headline: post.titulo,
+            description: post.excerpt || undefined,
+            image: post.og_imagen || post.imagen_url || undefined,
+            datePublished: post.created_at,
+            dateModified: post.updated_at || post.created_at,
+            author: post.autor ? { '@type': 'Person', name: post.autor } : undefined,
+            articleSection: post.categoria || undefined,
+            mainEntityOfPage: `${SITE_URL}/noticias/${post.slug}`,
+            publisher: { '@type': 'Organization', name: 'RZ Hub', logo: { '@type': 'ImageObject', url: DEFAULT_OG_IMAGE } },
+          },
+          // VideoObject: es el tipo de datos estructurados que de verdad
+          // puede darle a esta página una miniatura de vídeo en Google
+          // (a diferencia de, por ejemplo, meter aggregateRating en un
+          // jugador, que Google ni siquiera soporta como rich result).
+          ytId && {
+            '@context': 'https://schema.org',
+            '@type': 'VideoObject',
+            name: post.titulo,
+            description: post.excerpt || post.meta_descripcion || post.titulo,
+            thumbnailUrl: `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`,
+            uploadDate: post.created_at,
+            embedUrl: `https://www.youtube.com/embed/${ytId}`,
+            contentUrl: post.video_url,
+          },
+        ].filter(Boolean)}
       />
 
       <div className="noticia-detalle">
@@ -95,6 +120,24 @@ export default function NoticiaDetalle() {
         )}
 
         <div className="noticia-detalle__contenido">{post.contenido}</div>
+
+        {ytId && (
+          <div className="noticia-detalle__video">
+            <iframe
+              src={`https://www.youtube.com/embed/${ytId}`}
+              title={post.titulo}
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        )}
+
+        {post.notas_partido_id && (
+          <Link to={`/notas/${post.notas_partido_id}`} className="noticia-detalle__notas-cta">
+            Puntúa a los jugadores en Las Notas →
+          </Link>
+        )}
 
         <div className="noticia-detalle__footer">
           <button className="rz-btn rz-btn--primary" onClick={() => navigate('/noticias')}>← Ver todas las noticias</button>
