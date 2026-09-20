@@ -3,19 +3,19 @@ import { Link } from 'react-router-dom'
 import { ESCUDO_ZARAGOZA, ESCUDOS_CLUBS } from '../lib/escudos'
 import './PostPartidoBanner.css'
 
-// Aviso puntual del post partido + Las Notas de Torremolinos-Zaragoza (J3).
+// Aviso puntual del post partido + Las Notas de Real Zaragoza-Cartagena (J4).
 // Fecha límite en hora española explícita (+02:00, CEST) para que no
 // dependa de la zona horaria del navegador de quien lo visite.
-const LIMITE = new Date('2026-09-16T23:59:00+02:00')
-const VIDEO_URL = 'https://www.youtube.com/watch?v=fi9r0k0-qfI'
-const NOTAS_URL = '/notas/2026-09-13-torremolinos'
+const LIMITE = new Date('2026-09-23T23:59:00+02:00')
+const VIDEO_URL = 'https://www.youtube.com/watch?v=n0_o54csavw'
+const NOTAS_URL = '/notas/2026-09-20-cartagena'
 
 function Escudos() {
   return (
     <span style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-      <img src={ESCUDOS_CLUBS['Juventud de Torremolinos CF']} alt="" style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
-      <span style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'Archivo, sans-serif', fontSize: '11px', fontWeight: '700' }}>VS</span>
       <img src={ESCUDO_ZARAGOZA} alt="" style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
+      <span style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'Archivo, sans-serif', fontSize: '11px', fontWeight: '700' }}>VS</span>
+      <img src={ESCUDOS_CLUBS['FC Cartagena']} alt="" style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
     </span>
   )
 }
@@ -46,10 +46,10 @@ export default function PostPartidoBanner() {
         <Escudos />
         <span className="post-partido-banner__text" style={{ color: '#fff', fontFamily: 'Archivo, sans-serif', fontSize: '13px', textAlign: 'center' }}>
           <span className="post-partido-banner__full">
-            <strong style={{ color: '#f5c400' }}>Ya disponible</strong> el post partido: Torremolinos 3-4 Real Zaragoza
+            <strong style={{ color: '#f5c400' }}>Ya disponible</strong> el post partido: Real Zaragoza 1-0 Cartagena
           </span>
           <span className="post-partido-banner__short">
-            <strong style={{ color: '#f5c400' }}>Ya disponible:</strong> Torremolinos 3-4 R. Zaragoza
+            <strong style={{ color: '#f5c400' }}>Ya disponible:</strong> R. Zaragoza 1-0 Cartagena
           </span>
         </span>
         <Pill>▶ Ver en YouTube</Pill>
@@ -61,10 +61,10 @@ export default function PostPartidoBanner() {
         <Escudos />
         <span className="post-partido-banner__text" style={{ color: '#fff', fontFamily: 'Archivo, sans-serif', fontSize: '13px', textAlign: 'center' }}>
           <span className="post-partido-banner__full">
-            <strong style={{ color: '#f5c400' }}>Ya puedes poner tus notas</strong> del Torremolinos-Real Zaragoza
+            <strong style={{ color: '#f5c400' }}>Ya puedes poner tus notas</strong> del Real Zaragoza-Cartagena
           </span>
           <span className="post-partido-banner__short">
-            <strong style={{ color: '#f5c400' }}>Ya puedes votar:</strong> Torremolinos-R. Zaragoza
+            <strong style={{ color: '#f5c400' }}>Ya puedes votar:</strong> R. Zaragoza-Cartagena
           </span>
         </span>
         <Pill>Votar ahora →</Pill>
