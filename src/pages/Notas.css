@@ -260,108 +260,421 @@
 
 .notas-acciones__error {
   font-size: var(--text-sm);
-  color: var(--rz-red);
+  color: var(--rz-yellow);
 }
 
-/* -------- Grid de jugadores -------- */
-.notas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: var(--space-4);
+/* -------- Selector de partido -------- */
+.notas-toolbar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  width: 100%;
+}
+.notas-selector-partido {
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border-md);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  color: var(--rz-text-primary);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  max-width: 100%;
 }
 
-.notas-jugador {
+/* -------- MVP del partido -------- */
+.notas-mvp {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: 900px;
+  margin-inline: auto;
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(120deg, #1a1404 0%, #0F1E38 70%);
+  border: 1px solid var(--rz-border-yellow);
+  box-sizing: border-box;
+}
+.notas-mvp__foto {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--rz-bg-2);
-  border: 1px solid var(--rz-border);
-  transition: transform var(--transition-fast), border-color var(--transition-fast);
+  align-items: center;
+  gap: 8px;
 }
-.notas-jugador:hover {
-  transform: translateY(-3px);
-  border-color: var(--rz-border-md);
-}
-
-.notas-jugador__foto {
-  aspect-ratio: 4 / 3;
-  background: var(--rz-bg-3);
-}
-.notas-jugador__foto img {
-  width: 100%;
-  height: 100%;
+.notas-mvp__foto img {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
   object-fit: cover;
   object-position: 50% 15%;
-  display: block;
+  border: 3px solid var(--rz-yellow);
+  background: var(--rz-bg-3);
 }
-
-.notas-jugador__info {
-  padding: var(--space-3);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.notas-jugador__nombre {
-  font-size: var(--text-sm);
+.notas-mvp__foto-nombre {
+  font-size: var(--text-xs);
   font-weight: var(--weight-bold);
   color: var(--rz-text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-
-.notas-jugador__posicion {
+.notas-mvp__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.notas-mvp__tag {
   font-size: var(--text-xs);
-  font-weight: var(--weight-semibold);
-  color: var(--rz-text-muted);
+  font-weight: var(--weight-bold);
+  color: var(--rz-yellow);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.notas-mvp__nombre {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-primary);
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+.notas-mvp__desc { font-size: var(--text-sm); color: var(--rz-text-muted); }
+.notas-mvp__runners {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: 6px;
+  font-size: var(--text-xs);
+  color: var(--rz-text-secondary);
+}
+.notas-mvp__runners b { color: var(--rz-text-muted); font-weight: var(--weight-bold); }
+.notas-mvp__runner-nota { color: var(--rz-text-primary) !important; }
+.notas-mvp__nota {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.notas-mvp__nota-valor {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 56px);
+  font-weight: var(--weight-bold);
+  color: var(--rz-yellow);
+  line-height: 1;
+}
+.notas-mvp__nota-votos { font-size: 11px; color: var(--rz-text-muted); }
+
+/* -------- Cuenta atrás -------- */
+.notas-cuenta-atras {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(255, 200, 0, 0.08);
+  border: 1px solid var(--rz-border-yellow);
+  box-sizing: border-box;
+}
+.notas-cuenta-atras__label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  color: var(--rz-yellow);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+.notas-cuenta-atras__reloj {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-primary);
+}
+.notas-cuenta-atras__reloj b { color: var(--rz-yellow); font-size: var(--text-md); }
 
-.notas-jugador__media {
+/* -------- Jugador en foco -------- */
+.notas-foco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  width: 100%;
+}
+/* ‹ tarjeta › como una sola unidad — nunca se separan al envolver. */
+.notas-foco__carrusel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+.notas-foco__flecha {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--rz-border-md);
+  background: var(--rz-bg-2);
+  color: var(--rz-text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), opacity var(--transition-fast);
+}
+.notas-foco__flecha:hover:not(:disabled) { border-color: var(--rz-yellow); color: var(--rz-yellow); }
+.notas-foco__flecha:disabled { opacity: 0.3; cursor: default; }
+
+.notas-foco__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+}
+.notas-foco__nombre {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-primary);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  line-height: 1.05;
+}
+.notas-foco__fila {
   display: flex;
   align-items: baseline;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border-top: 1px solid var(--rz-border);
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--rz-text-secondary);
+  border-bottom: 1px solid var(--rz-border);
+  padding-bottom: 4px;
 }
-.notas-jugador__media-valor {
+.notas-foco__fila b { color: var(--rz-text-primary); font-weight: var(--weight-bold); }
+.notas-foco__fila--comunidad b { color: var(--rz-green); }
+.notas-foco__fila--rzhub b { color: var(--rz-yellow); }
+.notas-foco__votos { font-size: 11px; color: var(--rz-text-muted); }
+
+/* Misma card que Lineup/Porra (PlayerSlot.jsx): degradado azul claro,
+   borde y barra de nombre #0B4390, nombre sin mayúsculas forzadas —
+   así un jugador se reconoce igual en toda la web. */
+.notas-foco__card {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  border-radius: 6px;
+  border: 2px solid #0B4390;
+  overflow: hidden;
+  background: linear-gradient(180deg, #c5d8f0 0%, #ddeaf8 40%, #eef4fc 70%, #f5f8fd 100%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+.notas-foco__card-dorsal {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 50%;
+  background: rgba(6, 13, 26, 0.85);
+  color: #fff;
+  font-size: 13px;
+  font-weight: var(--weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.notas-foco__card-foto {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: 50% 15%;
+  display: block;
+  background: #152445;
+}
+.notas-foco__card-nombre {
+  display: block;
+  background: #0B4390;
+  padding: 8px 6px;
   font-family: var(--font-body);
+  font-size: 13px;
   font-weight: 700;
-  font-size: var(--text-xl);
-  color: var(--rz-yellow);
+  color: #fff;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.notas-jugador__media-votos {
+
+.notas-foco__stepper {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  justify-content: center;
+  column-gap: 14px;
+  row-gap: 8px;
+}
+/* Mismo degradado amarillo "vivo" que el CTA de la Home
+   (HeroSection.css .hero-cta) — es el botón dinámico de referencia
+   que comparten las cards de la web. */
+.notas-foco__stepper button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(155deg, #ffc800 0%, #ffd740 50%, #ffc800 100%);
+  background-size: 300% 100%;
+  box-shadow: 0 6px 18px rgba(255, 200, 0, 0.35);
+  color: #111111;
+  font-size: 20px;
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  line-height: 1;
+  transition: filter 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  animation: notas-stepper-flow 9s linear infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .notas-foco__stepper button { animation: none; }
+}
+@keyframes notas-stepper-flow {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+.notas-foco__stepper button:hover {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(255, 200, 0, 0.45);
+}
+.notas-foco__stepper-valor {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-primary);
+  min-width: 76px;
+  text-align: center;
+}
+.notas-foco__stepper-label {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+.notas-foco__stepper--lectura {
+  grid-template-columns: 1fr;
+}
+.notas-foco__stepper--lectura .notas-foco__stepper-valor {
+  color: var(--rz-yellow);
+  font-size: 48px;
+}
+
+/* -------- Slider de progreso -------- */
+.notas-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 420px;
+  margin-inline: auto;
+}
+.notas-slider input[type="range"] {
+  flex: 1;
+  accent-color: var(--rz-yellow);
+}
+.notas-slider__contador {
+  flex-shrink: 0;
   font-size: var(--text-xs);
   color: var(--rz-text-muted);
+  white-space: nowrap;
 }
 
-.notas-jugador__votos {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-  padding: var(--space-2) var(--space-3) var(--space-3);
-  border-top: 1px solid var(--rz-border);
+/* -------- Ordenar por -------- */
+.notas-orden {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
 }
-
-.notas-jugador__voto {
-  padding: 4px 0;
-  border-radius: var(--radius-sm);
+.notas-orden__label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 4px;
+}
+.notas-orden__btn {
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
   border: 1px solid var(--rz-border-md);
-  background: transparent;
+  background: var(--rz-bg-2);
   color: var(--rz-text-secondary);
   font-family: var(--font-body);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
   cursor: pointer;
 }
-.notas-jugador__voto:hover { border-color: var(--rz-border-strong); color: var(--rz-text-primary); }
-.notas-jugador__voto.is-active {
-  background: var(--rz-yellow);
-  border-color: var(--rz-yellow);
-  color: #060D1A;
+.notas-orden__btn:hover { border-color: var(--rz-border-strong); color: var(--rz-text-primary); }
+.notas-orden__btn.is-active { background: var(--rz-yellow); border-color: var(--rz-yellow); color: #060D1A; }
+
+/* -------- Grid de mini-cards con nota -------- */
+.notas-grid-v2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: var(--space-4) var(--space-3);
+}
+.notas-mini-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.notas-mini-card__nota {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: var(--weight-bold);
+  color: var(--rz-yellow);
+}
+.notas-mini-card__trofeo {
+  position: absolute;
+  top: 30px;
+  left: 4px;
+  font-size: 14px;
+  z-index: 1;
+}
+.notas-mini-card__foto {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--rz-border-md);
+  background: var(--rz-bg-3);
+  transition: border-color var(--transition-fast);
+}
+.notas-mini-card__foto img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; display: block; }
+.notas-mini-card:hover .notas-mini-card__foto { border-color: var(--rz-border-strong); }
+.notas-mini-card.is-foco .notas-mini-card__foto { border-color: var(--rz-yellow); box-shadow: 0 0 0 2px rgba(255, 200, 0, 0.3); }
+.notas-mini-card.is-peor .notas-mini-card__foto { border-color: var(--rz-text-muted); }
+.notas-mini-card__nombre {
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  color: var(--rz-text-secondary);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 @media (max-width: 640px) {
@@ -374,12 +687,24 @@
   .notas-marcador__name { font-size: var(--text-xs); }
   .notas-marcador__score { padding-inline: var(--space-3); font-size: var(--text-lg); gap: var(--space-1); }
 
-  .notas-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: var(--space-2); }
-  .notas-jugador__info { padding: var(--space-2); }
-  .notas-jugador__nombre { font-size: var(--text-xs); }
-  .notas-jugador__media { padding: var(--space-1) var(--space-2); gap: 4px; }
-  .notas-jugador__media-valor { font-size: var(--text-md); }
-  .notas-jugador__media-votos { font-size: 10px; }
-  .notas-jugador__votos { padding: var(--space-1) var(--space-2) var(--space-2); gap: 3px; }
-  .notas-jugador__voto { font-size: 10px; padding: 3px 0; }
+  .notas-toolbar-top { flex-direction: column; align-items: flex-start; }
+  .notas-selector-partido { width: 100%; }
+
+  .notas-mvp { flex-wrap: wrap; justify-content: center; text-align: center; gap: var(--space-3); }
+  .notas-mvp__info { align-items: center; }
+  .notas-mvp__runners { justify-content: center; }
+
+  /* Columna limpia: carrusel (‹ tarjeta ›) arriba, luego el stepper
+     para votar, y el panel con el nombre/datos al final. */
+  .notas-foco { flex-direction: column; gap: var(--space-4); }
+  .notas-foco__carrusel { order: 1; }
+  .notas-foco__stepper { order: 2; }
+  .notas-foco__panel { order: 3; width: 100%; align-items: center; text-align: center; }
+  .notas-foco__fila { max-width: 220px; margin-inline: auto; width: 100%; }
+  .notas-foco__card { width: 130px; }
+  .notas-foco__stepper-valor { font-size: 36px; }
+
+  .notas-grid-v2 { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: var(--space-3) var(--space-2); }
+  .notas-mini-card__nota { font-size: 26px; }
+  .notas-mini-card__nombre { font-size: 10px; }
 }
