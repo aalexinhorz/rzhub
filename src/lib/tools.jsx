@@ -148,6 +148,19 @@ export const TOOLS = [
     ),
   },
   {
+    id: 'videos',
+    title: 'Vídeos',
+    description: 'Previas, crónicas y análisis en vídeo de cada partido, con Alexinho.',
+    href: '/videos',
+    badge: 'Nuevo',
+    icon: (
+      <svg {...ICON_PROPS}>
+        <rect x="3" y="5" width="14" height="14" rx="2" />
+        <path d="M17 9l4-3v12l-4-3" />
+      </svg>
+    ),
+  },
+  {
     id: 'comunidad',
     title: 'Comunidad',
     description: 'Comparte contenido y conecta con otros zaragocistas.',
