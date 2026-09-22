@@ -1,0 +1,75 @@
+.previa-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  background: #0B4390;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.previa-banner__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-decoration: none;
+  max-width: 100%;
+}
+
+.previa-banner__avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.previa-banner__text {
+  color: #fff;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60vw;
+}
+.previa-banner__text strong { color: #f5c400; }
+.previa-banner__text .previa-banner__full { display: inline; }
+.previa-banner__text .previa-banner__short { display: none; }
+
+.previa-banner__pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  background: #f5c400;
+  color: #060D1A;
+  font-family: 'Archivo', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+.previa-banner__pill--directo {
+  background: #e11d2e;
+  color: #fff;
+  animation: previa-banner-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes previa-banner-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@media (max-width: 480px) {
+  .previa-banner { padding: 10px 14px; }
+  .previa-banner__item { gap: 8px; }
+  .previa-banner__text {
+    font-size: 11px;
+    max-width: 50vw;
+  }
+  .previa-banner__text .previa-banner__full { display: none; }
+  .previa-banner__text .previa-banner__short { display: inline; }
+}
