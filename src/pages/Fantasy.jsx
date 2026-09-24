@@ -83,6 +83,9 @@ function Mercado({ players, precios, plantilla, mercadoHoy, saldo, onComprar, on
   return (
     <div className="fantasy-mercado">
       <p className="fantasy-mercado__aviso">El mercado cambia cada día — hoy solo puedes fichar a estos jugadores (los que ya tienes en tu plantilla siempre puedes venderlos).</p>
+      {plantilla.length >= 15 && (
+        <p className="fantasy-mercado__aviso fantasy-mercado__aviso--lleno">Tu plantilla está completa (15/15) — vende a alguien para poder fichar otro.</p>
+      )}
       <div className="fantasy-mercado__filtros">
         {['TODAS', 'POR', 'DEF', 'MED', 'DEL'].map(g => (
           <button key={g} className={`fantasy-filtro${filtro === g ? ' fantasy-filtro--activo' : ''}`} onClick={() => setFiltro(g)}>{g}</button>
@@ -96,7 +99,7 @@ function Mercado({ players, precios, plantilla, mercadoHoy, saldo, onComprar, on
             jugador={jugador}
             precio={precio}
             poseido={idsEnPlantilla.has(id)}
-            disabled={procesando || (!idsEnPlantilla.has(id) && precio > saldo)}
+            disabled={procesando || (!idsEnPlantilla.has(id) && (precio > saldo || plantilla.length >= 15))}
             onComprar={() => onComprar(id)}
             onVender={() => onVender(id)}
           />

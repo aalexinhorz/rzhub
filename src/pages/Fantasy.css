@@ -66,6 +66,7 @@
 
 /* -------- Mercado -------- */
 .fantasy-mercado__aviso { color: var(--rz-text-muted); font-size: var(--text-sm); margin: 0 0 var(--space-3); text-align: center; }
+.fantasy-mercado__aviso--lleno { color: var(--rz-yellow); font-weight: var(--weight-semibold); }
 .fantasy-mercado__filtros { display: flex; gap: var(--space-2); margin-bottom: var(--space-4); flex-wrap: wrap; }
 .fantasy-filtro {
   background: var(--rz-bg-2); border: 1px solid var(--rz-border-md); color: var(--rz-text-secondary);
