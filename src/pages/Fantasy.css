@@ -1,0 +1,173 @@
+.fantasy-page { min-height: 100vh; }
+
+.fantasy-page__hero {
+  background: linear-gradient(90deg, #06328a 0%, #05286d 50%, #041f5c 100%);
+  padding: 60px var(--padding-page) 50px;
+  text-align: center;
+}
+.fantasy-page__eyebrow { margin: 0 0 12px; color: var(--rz-yellow); font-weight: var(--weight-semibold); text-transform: uppercase; letter-spacing: 0.08em; font-size: var(--text-sm); }
+.fantasy-page__title {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 10vw, 96px);
+  font-weight: var(--weight-bold);
+  line-height: 0.9;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+}
+.fantasy-page__subtitle {
+  font-size: var(--text-md);
+  color: var(--rz-text-secondary);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.fantasy-page__body { background: #03101f; padding: 40px 0 0; }
+.fantasy-page__container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-inline: 32px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.fantasy-page__state { text-align: center; padding: 60px 20px; color: var(--rz-text-muted); font-size: var(--text-md); }
+
+.fantasy-aviso {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3);
+  padding: var(--space-4); border-radius: var(--radius-lg); background: var(--rz-bg-2); border: 1px solid var(--rz-border);
+  color: var(--rz-text-secondary); font-size: var(--text-sm);
+}
+.fantasy-aviso-ok { color: var(--rz-green); font-weight: var(--weight-semibold); text-align: center; }
+
+.fantasy-resumen {
+  display: flex; flex-wrap: wrap; gap: var(--space-8); justify-content: center; align-items: center;
+  padding: var(--space-5); border-radius: var(--radius-lg); background: var(--rz-bg-2); border: 1px solid var(--rz-border);
+  font-size: var(--text-md); color: var(--rz-text-secondary);
+}
+.fantasy-resumen > span { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.fantasy-resumen strong {
+  color: var(--rz-yellow); font-family: var(--font-display); font-weight: 700;
+  font-size: 32px; line-height: 1.3; margin-bottom: 2px;
+}
+
+.fantasy-tabs { display: flex; gap: var(--space-2); border-bottom: 1px solid var(--rz-border); }
+.fantasy-tab {
+  background: none; border: none; padding: var(--space-3) var(--space-4); color: var(--rz-text-muted);
+  font-family: var(--font-body); font-weight: var(--weight-semibold); font-size: var(--text-sm); cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.fantasy-tab.is-activo { color: var(--rz-yellow); border-bottom-color: var(--rz-yellow); }
+
+.fantasy-error { color: var(--rz-red); font-size: var(--text-sm); text-align: center; }
+
+/* -------- Mercado -------- */
+.fantasy-mercado__aviso { color: var(--rz-text-muted); font-size: var(--text-sm); margin: 0 0 var(--space-3); text-align: center; }
+.fantasy-mercado__filtros { display: flex; gap: var(--space-2); margin-bottom: var(--space-4); flex-wrap: wrap; }
+.fantasy-filtro {
+  background: var(--rz-bg-2); border: 1px solid var(--rz-border-md); color: var(--rz-text-secondary);
+  border-radius: var(--radius-full); padding: 6px 16px; font-size: var(--text-xs); font-weight: var(--weight-semibold); cursor: pointer;
+}
+.fantasy-filtro--activo { background: var(--rz-yellow); color: #060D1A; border-color: var(--rz-yellow); }
+
+.fantasy-mercado__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-3); }
+
+.fantasy-card {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: var(--space-3); border-radius: var(--radius-lg); background: var(--rz-bg-2); border: 1px solid var(--rz-border);
+}
+.fantasy-card__foto { position: relative; width: 64px; height: 64px; }
+.fantasy-card__foto-recorte { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 2px solid var(--rz-blue); background: var(--rz-bg-3); }
+.fantasy-card__foto img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 15%; }
+.fantasy-card__pos {
+  position: absolute; bottom: -2px; right: -2px; background: var(--rz-blue); color: #fff; font-size: 9px; font-weight: 800;
+  padding: 1px 4px; border-radius: 4px;
+}
+.fantasy-card__info { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.fantasy-card__nombre { font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--rz-text-primary); text-align: center; }
+.fantasy-card__precio { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.2; color: var(--rz-yellow); }
+.fantasy-card__btn {
+  width: 100%; padding: 6px; border-radius: var(--radius-md); border: none; font-weight: var(--weight-bold);
+  font-size: var(--text-xs); cursor: pointer; text-transform: uppercase;
+}
+.fantasy-card__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.fantasy-card__btn--comprar { background: var(--rz-yellow); color: #060D1A; }
+.fantasy-card__btn--vender { background: rgba(255,255,255,0.08); color: var(--rz-text-secondary); border: 1px solid var(--rz-border-md); }
+
+/* -------- Mi equipo -------- */
+.fantasy-vacio { text-align: center; padding: 60px 20px; color: var(--rz-text-secondary); }
+.fantasy-vacio__hint { color: var(--rz-text-muted); font-size: var(--text-sm); margin-top: 6px; }
+
+.fantasy-equipo__toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); }
+.fantasy-select {
+  background: var(--rz-bg-2); border: 1px solid var(--rz-border-md); border-radius: var(--radius-md); color: var(--rz-text-primary);
+  padding: 8px 12px; font-family: var(--font-body); font-size: var(--text-sm); font-weight: var(--weight-semibold);
+}
+.fantasy-equipo__rival { color: var(--rz-text-secondary); font-size: var(--text-sm); flex: 1; }
+.fantasy-btn { border-radius: var(--radius-md); padding: 9px 18px; font-weight: var(--weight-bold); font-size: var(--text-sm); border: none; cursor: pointer; }
+.fantasy-btn--primary { background: var(--rz-yellow); color: #060D1A; }
+.fantasy-btn--primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.fantasy-campo {
+  position: relative; width: 100%; max-width: 460px; margin: 0 auto; aspect-ratio: 680/1000;
+  border-radius: var(--radius-lg); overflow: hidden;
+}
+.fantasy-campo__fondo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fantasy-hueco {
+  position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center;
+  width: 60px; background: none; border: none; cursor: pointer; padding: 0;
+}
+.fantasy-hueco img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; object-position: 50% 15%; border: 2px solid var(--rz-blue); background: var(--rz-bg-3); }
+.fantasy-hueco__nombre {
+  margin-top: 2px; font-size: 10px; font-weight: var(--weight-bold); color: #fff; background: var(--rz-blue);
+  padding: 1px 6px; border-radius: 4px; white-space: nowrap; max-width: 70px; overflow: hidden; text-overflow: ellipsis;
+}
+.fantasy-hueco__precio { font-size: 9px; color: var(--rz-yellow); font-weight: var(--weight-semibold); margin-top: 1px; }
+.fantasy-hueco--vacio .fantasy-hueco__mas {
+  width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  border: 2px dashed rgba(255,255,255,0.35); color: rgba(255,255,255,0.35); font-size: 22px; background: rgba(0,0,0,0.25);
+}
+
+.fantasy-selector {
+  margin-top: var(--space-4); background: var(--rz-bg-2); border: 1px solid var(--rz-border-md); border-radius: var(--radius-lg);
+  padding: var(--space-4); max-width: 460px; margin-inline: auto;
+}
+.fantasy-selector__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); color: var(--rz-text-secondary); font-size: var(--text-sm); }
+.fantasy-selector__header button { background: none; border: none; color: var(--rz-text-muted); font-size: 16px; cursor: pointer; }
+.fantasy-selector__quitar {
+  width: 100%; margin-bottom: var(--space-3); padding: 8px; border-radius: var(--radius-md); border: 1px solid var(--rz-red-bg);
+  background: var(--rz-red-bg); color: var(--rz-red); font-weight: var(--weight-semibold); font-size: var(--text-sm); cursor: pointer;
+}
+.fantasy-selector__lista { display: flex; flex-direction: column; gap: 4px; max-height: 260px; overflow-y: auto; }
+.fantasy-selector__item {
+  display: flex; align-items: center; gap: var(--space-3); padding: 8px; border-radius: var(--radius-md); border: none;
+  background: transparent; cursor: pointer; text-align: left; color: var(--rz-text-primary); font-size: var(--text-sm);
+}
+.fantasy-selector__item:hover { background: rgba(255,255,255,0.05); }
+.fantasy-selector__item img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; object-position: 50% 15%; flex-shrink: 0; }
+.fantasy-selector__item span:first-of-type { flex: 1; }
+.fantasy-selector__item-pos { color: var(--rz-text-muted); font-size: var(--text-xs); }
+
+/* -------- Clasificación -------- */
+.fantasy-ranking { display: flex; flex-direction: column; gap: 6px; }
+.fantasy-ranking__row {
+  display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border-radius: var(--radius-md);
+  background: var(--rz-bg-2); border: 1px solid var(--rz-border);
+}
+.fantasy-ranking__row.is-me { border-color: var(--rz-yellow); background: rgba(255,200,0,0.06); }
+.fantasy-ranking__pos { width: 24px; text-align: center; font-weight: var(--weight-bold); color: var(--rz-text-muted); }
+.fantasy-ranking__pos--1 { color: #FFD700; }
+.fantasy-ranking__pos--2 { color: #C0C0C0; }
+.fantasy-ranking__pos--3 { color: #CD7F32; }
+.fantasy-ranking__avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+.fantasy-ranking__nombre { flex: 1; font-weight: var(--weight-semibold); font-size: var(--text-sm); }
+.fantasy-ranking__saldo { color: var(--rz-text-muted); font-size: var(--text-xs); }
+.fantasy-ranking__puntos { font-family: var(--font-display); color: var(--rz-yellow); font-size: var(--text-md); min-width: 60px; text-align: right; }
+
+@media (max-width: 640px) {
+  .fantasy-mercado__grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .fantasy-page__container { padding-inline: 16px; }
+}
