@@ -34,6 +34,7 @@ const Estadisticas = lazy(() => import('./pages/Estadisticas'))
 const Jugador = lazy(() => import('./pages/Jugador'))
 const Videos = lazy(() => import('./pages/Videos'))
 const Fantasy = lazy(() => import('./pages/Fantasy'))
+const Rival = lazy(() => import('./pages/Rival'))
 const Zaragozle = lazy(() => import('./pages/Zaragozle'))
 const Sobre = lazy(() => import('./pages/Sobre'))
 const Terminos = lazy(() => import('./pages/Terminos'))
@@ -82,6 +83,7 @@ export default function App() {
           <Route path="/jugador/:id" element={<Jugador />} />
           <Route path="/videos" element={<Videos />} />
           <Route path="/fantasy" element={<Fantasy />} />
+          <Route path="/rival/:slug" element={<Rival />} />
           <Route path="/zaragozle" element={<Zaragozle />} />
           <Route path="/sobre-rz-hub" element={<Sobre />} />
           <Route path="/terminos" element={<Terminos />} />
