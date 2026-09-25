@@ -69,6 +69,7 @@ export default function Rival() {
   const [enfrentamientos, setEnfrentamientos] = useState([])
   const [loading, setLoading] = useState(true)
   const [filtro, setFiltro] = useState('TODAS')
+  const [verTodosH2H, setVerTodosH2H] = useState(false)
   const escudoLocal = useEscudo(rival?.nombre)
 
   useEffect(() => {
@@ -97,6 +98,7 @@ export default function Rival() {
   const filas = plantilla
     .filter(p => filtro === 'TODAS' || grupoPosicion(p.posicion) === filtro)
     .sort(porPosicion)
+  const enfrentamientosVisibles = verTodosH2H ? enfrentamientos : enfrentamientos.slice(0, 5)
   const victoriasZaragoza = enfrentamientos.filter(e => e.goles_zaragoza > e.goles_rival).length
   const empates = enfrentamientos.filter(e => e.goles_zaragoza === e.goles_rival).length
   const derrotasZaragoza = enfrentamientos.filter(e => e.goles_zaragoza < e.goles_rival).length
@@ -136,10 +138,15 @@ export default function Rival() {
                 {enfrentamientos.length} enfrentamientos — {victoriasZaragoza} victorias del Real Zaragoza, {empates} empates, {derrotasZaragoza} victorias del {rival.nombre}
               </p>
               <div className="rival-h2h">
-                {enfrentamientos.map(e => (
+                {enfrentamientosVisibles.map(e => (
                   <FichaEnfrentamiento key={e.id} e={e} rivalNombre={rival.nombre} rivalEscudo={escudoLocal} />
                 ))}
               </div>
+              {enfrentamientos.length > 5 && (
+                <button className="rival-h2h__toggle" onClick={() => setVerTodosH2H(v => !v)}>
+                  {verTodosH2H ? 'Ver solo los últimos 5' : `Ver todos (${enfrentamientos.length})`}
+                </button>
+              )}
             </section>
           )}
 

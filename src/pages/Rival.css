@@ -68,6 +68,13 @@
 .rival-h2h__fecha { color: var(--rz-text-muted); font-size: var(--text-xs); flex: 0 0 100%; }
 .rival-h2h__goleadores { color: var(--rz-text-muted); font-size: var(--text-xs); flex: 0 0 100%; line-height: 1.5; }
 
+.rival-h2h__toggle {
+  align-self: center; margin-top: var(--space-2); background: transparent; border: 1px solid var(--rz-border-md);
+  color: var(--rz-text-secondary); border-radius: var(--radius-full); padding: 8px 20px;
+  font-size: var(--text-sm); font-weight: var(--weight-semibold); cursor: pointer;
+}
+.rival-h2h__toggle:hover { border-color: var(--rz-border-strong); color: var(--rz-text-primary); }
+
 /* -------- Plantilla -------- */
 .rival-plantilla__filtros { display: flex; gap: var(--space-2); flex-wrap: wrap; }
 .rival-filtro {

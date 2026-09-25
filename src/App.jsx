@@ -35,6 +35,9 @@ const Jugador = lazy(() => import('./pages/Jugador'))
 const Videos = lazy(() => import('./pages/Videos'))
 const Fantasy = lazy(() => import('./pages/Fantasy'))
 const Rival = lazy(() => import('./pages/Rival'))
+const Rivales = lazy(() => import('./pages/Rivales'))
+const Simulador = lazy(() => import('./pages/Simulador'))
+const Calendario2 = lazy(() => import('./pages/Calendario2'))
 const Zaragozle = lazy(() => import('./pages/Zaragozle'))
 const Sobre = lazy(() => import('./pages/Sobre'))
 const Terminos = lazy(() => import('./pages/Terminos'))
@@ -83,7 +86,10 @@ export default function App() {
           <Route path="/jugador/:id" element={<Jugador />} />
           <Route path="/videos" element={<Videos />} />
           <Route path="/fantasy" element={<Fantasy />} />
+          <Route path="/rivales" element={<Rivales />} />
           <Route path="/rival/:slug" element={<Rival />} />
+          <Route path="/simulador" element={<Simulador />} />
+          <Route path="/calendario2" element={<Calendario2 />} />
           <Route path="/zaragozle" element={<Zaragozle />} />
           <Route path="/sobre-rz-hub" element={<Sobre />} />
           <Route path="/terminos" element={<Terminos />} />

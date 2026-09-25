@@ -34,7 +34,7 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  column-gap: 40px;
+  column-gap: 28px;
 }
 
 .header__actions {
@@ -58,7 +58,7 @@
 .header__nav {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 22px;
   min-width: 0;
 }
 
@@ -261,22 +261,22 @@
   outline-offset: 3px;
 }
 
-/* Por debajo de 940px no cabe la navegación agrupada ni las acciones
-   (contacto/login/registro): se pliega todo al menú hamburguesa. El
-   corte real no es 899 sino 924px (ahí "Comunidad" choca incluso con
-   "Regístrate gratis" solo, sin Contáctanos) — medido con margen. */
-@media (max-width: 939px) {
+/* Por debajo de 1170px no cabe la navegación agrupada (8 items desde que
+   se separaron Noticias/Juegos) ni las acciones (contacto/login/registro):
+   se pliega todo al menú hamburguesa. El corte real está entre 1150
+   (solapa "Regístrate gratis") y 1180 (ya no solapa) — medido con margen. */
+@media (max-width: 1170px) {
   .header__nav { display: none; }
   .header__actions { display: none; }
   .header__menu-btn { display: inline-flex; }
   .header__container { grid-template-columns: auto 1fr auto; column-gap: 0; }
 }
 
-/* Entre 940 y 1068px "Comunidad" (el último grupo del nav) choca con
+/* Entre 1171 y 1290px "Herramientas" (el último grupo del nav) choca con
    "Contáctanos" — medido el punto exacto en que deja de solaparse
-   (1048px), con margen. Se oculta solo Contáctanos y se deja
+   (entre 1280 y 1300), con margen. Se oculta solo Contáctanos y se deja
    "Regístrate gratis". */
-@media (max-width: 1068px) and (min-width: 940px) {
+@media (max-width: 1290px) and (min-width: 1171px) {
   .header__login { display: none; }
 }
 

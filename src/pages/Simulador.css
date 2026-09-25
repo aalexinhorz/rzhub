@@ -1,0 +1,136 @@
+.sim-page { min-height: 100vh; background: #03101f; }
+.sim-page__body { padding: 40px 0 0; }
+.sim-page__container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-inline: 32px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.sim-page__state { text-align: center; padding: 60px 20px; color: var(--rz-text-muted); font-size: var(--text-md); }
+
+/* -------- Cabecera -------- */
+.sim-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.sim-header__title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 7vw, 64px);
+  font-weight: var(--weight-bold);
+  line-height: 0.95;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--rz-yellow);
+  margin: 0 0 6px;
+}
+.sim-header__subtitle { font-size: var(--text-md); color: var(--rz-text-secondary); margin: 0; }
+.sim-reiniciar {
+  flex-shrink: 0; background: var(--rz-bg-2); border: 1px solid var(--rz-border-md); color: var(--rz-text-secondary);
+  border-radius: var(--radius-full); padding: 10px 18px; font-size: var(--text-sm); font-weight: var(--weight-semibold); cursor: pointer;
+}
+.sim-reiniciar:hover { border-color: var(--rz-border-strong); color: var(--rz-text-primary); }
+
+/* -------- Grid dos columnas -------- */
+.sim-grid { display: grid; grid-template-columns: minmax(0, 400px) 1fr; gap: var(--space-8); align-items: start; }
+
+/* -------- Columna izquierda -------- */
+.sim-left { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+
+.sim-competicion { display: flex; align-items: center; gap: var(--space-3); }
+.sim-competicion__escudo { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
+.sim-competicion__texto { display: flex; flex-direction: column; line-height: 1.3; }
+.sim-competicion__texto strong { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--rz-text-primary); text-transform: uppercase; }
+.sim-competicion__texto span { font-size: var(--text-xs); color: var(--rz-text-muted); }
+
+.sim-jornadas { display: flex; align-items: center; gap: var(--space-2); }
+.sim-jornadas__flecha {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: var(--rz-bg-2); border: 1px solid var(--rz-border-md);
+  color: var(--rz-text-secondary); font-size: 16px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.sim-jornadas__flecha:disabled { opacity: 0.3; cursor: default; }
+.sim-jornadas__flecha:not(:disabled):hover { border-color: var(--rz-border-strong); color: var(--rz-text-primary); }
+.sim-jornadas__pills {
+  display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0;
+}
+.sim-jornadas__pills::-webkit-scrollbar { display: none; }
+.sim-jornada-btn {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: var(--rz-bg-2); border: 1px solid var(--rz-border-md);
+  color: var(--rz-text-secondary); font-size: var(--text-xs); font-weight: var(--weight-semibold); cursor: pointer;
+}
+.sim-jornada-btn.is-activa { background: var(--rz-yellow); color: #060D1A; border-color: var(--rz-yellow); }
+
+.sim-jornada-label {
+  font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--rz-text-primary);
+  text-transform: uppercase; margin: 0;
+}
+
+/* -------- Partidos -------- */
+.sim-partidos { display: flex; flex-direction: column; gap: 6px; }
+.sim-partido {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: 8px var(--space-3); border-radius: var(--radius-full);
+  background: var(--rz-bg-2); border: 1px solid var(--rz-border);
+}
+.sim-partido--destacado { border-color: var(--rz-border-yellow); background: rgba(255, 200, 0, 0.06); }
+.sim-partido__equipo { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; font-size: var(--text-xs); font-weight: var(--weight-semibold); color: var(--rz-text-primary); justify-content: flex-end; text-align: right; }
+.sim-partido__equipo span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sim-partido__equipo--visitante { justify-content: flex-start; text-align: left; }
+.sim-escudo { width: 18px; height: 18px; object-fit: contain; flex-shrink: 0; }
+.sim-escudo--placeholder {
+  width: 18px; height: 18px; border-radius: 50%; background: var(--rz-bg-3); color: var(--rz-text-muted);
+  display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0;
+}
+.sim-partido__marcador { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.sim-partido__input {
+  width: 28px; height: 28px; text-align: center; border-radius: var(--radius-sm);
+  background: var(--rz-bg-1); border: 1px solid var(--rz-border-md); color: var(--rz-text-primary);
+  font-family: var(--font-body); font-weight: 700; font-size: 14px;
+}
+.sim-partido__input:disabled { color: var(--rz-yellow); background: transparent; border-color: transparent; opacity: 1; }
+.sim-partido__input::-webkit-outer-spin-button, .sim-partido__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sim-partido__input[type=number] { -moz-appearance: textfield; }
+.sim-partido__guion { color: var(--rz-text-muted); font-size: var(--text-xs); }
+
+/* -------- Columna derecha: Clasificación -------- */
+.sim-right { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.sim-clasificacion__titulo {
+  font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--rz-text-primary); text-transform: uppercase; margin: 0;
+}
+
+.sim-tabla-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--rz-border); }
+.sim-tabla { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.sim-tabla thead th {
+  background: var(--rz-bg-2); color: var(--rz-text-muted); font-size: var(--text-xs); text-transform: uppercase;
+  letter-spacing: 0.04em; font-weight: var(--weight-semibold); padding: var(--space-2) var(--space-2); text-align: center;
+  white-space: nowrap;
+}
+.sim-tabla tbody td { padding: var(--space-2) var(--space-2); text-align: center; color: var(--rz-text-secondary); border-top: 1px solid var(--rz-border); white-space: nowrap; }
+.sim-tabla__pos { width: 28px; font-weight: var(--weight-bold); color: var(--rz-text-primary); }
+.sim-tabla__equipo { text-align: left !important; display: flex; align-items: center; gap: 8px; font-weight: var(--weight-semibold); color: var(--rz-text-primary); white-space: nowrap; }
+.sim-tabla__pts { font-weight: var(--weight-bold); color: var(--rz-yellow); }
+
+.sim-fila--promocion td.sim-tabla__pos { border-left: 3px solid var(--rz-green); }
+.sim-fila--playoff td.sim-tabla__pos { border-left: 3px solid var(--rz-blue-light); }
+.sim-fila--descenso td.sim-tabla__pos { border-left: 3px solid var(--rz-red); }
+.sim-fila--separador td { border-top: 2px solid var(--rz-border-strong); }
+.sim-fila--destacada { background: rgba(255, 200, 0, 0.06); }
+.sim-fila--destacada .sim-tabla__equipo { color: var(--rz-yellow); }
+
+/* -------- Leyenda -------- */
+.sim-leyenda { display: flex; flex-wrap: wrap; gap: var(--space-4); font-size: var(--text-xs); color: var(--rz-text-muted); }
+.sim-leyenda span { display: flex; align-items: center; gap: 6px; }
+.sim-leyenda__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sim-leyenda__dot--promocion { background: var(--rz-green); }
+.sim-leyenda__dot--playoff { background: var(--rz-blue-light); }
+.sim-leyenda__dot--descenso { background: var(--rz-red); }
+
+@media (max-width: 900px) {
+  .sim-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .sim-page__container { padding-inline: 16px; }
+  .sim-partido__equipo { font-size: 11px; }
+  .sim-tabla { font-size: var(--text-xs); }
+}

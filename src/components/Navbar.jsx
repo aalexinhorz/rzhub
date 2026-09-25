@@ -10,13 +10,8 @@ const NAV_GROUPS = [
   { type: 'link', to: '/lineup', label: 'Line-UP' },
   { type: 'link', to: '/porra', label: 'Porra' },
   {
-    type: 'group', id: 'herramientas', label: 'Herramientas', items: [
-      { to: '/tierlist', label: 'TierMaker' },
-      { to: '/notas', label: 'Notas' },
-    ],
-  },
-  {
     type: 'group', id: 'partidos', label: 'Partidos', items: [
+      { to: '/rivales', label: 'Rivales' },
       { to: '/calendario', label: 'Calendario' },
       { to: '/on-tour', label: 'On Tour' },
     ],
@@ -25,10 +20,23 @@ const NAV_GROUPS = [
     type: 'group', id: 'comunidad', label: 'Comunidad', items: [
       { to: '/comunidad', label: 'Comunidad' },
       { to: '/fotogaleria', label: 'Fotos' },
-      { to: '/noticias', label: 'Noticias' },
     ],
   },
+  { type: 'link', to: '/noticias', label: 'Noticias' },
   { type: 'link', to: '/mercado', label: 'Mercado' },
+  {
+    type: 'group', id: 'juegos', label: 'Juegos', items: [
+      { to: '/zaragozle', label: 'Zaragozle' },
+      { to: '/adivina-resultado', label: 'Adivina el resultado' },
+    ],
+  },
+  {
+    type: 'group', id: 'herramientas', label: 'Herramientas', items: [
+      { to: '/tierlist', label: 'TierMaker' },
+      { to: '/notas', label: 'Notas' },
+      { to: '/simulador', label: 'Simulador' },
+    ],
+  },
 ]
 
 export default function Navbar() {

@@ -194,7 +194,7 @@ export default function AdivinaResultado() {
 
       <div className="adivina-page__hero">
         <p className="rz-eyebrow rz-eyebrow--yellow adivina-page__eyebrow">Real Zaragoza · Desde la 2009-10</p>
-        <h1 className="adivina-page__title">Adivina el Resultado</h1>
+        <h1 className="adivina-page__title">Adivina<span>el resultado</span></h1>
         <p className="adivina-page__subtitle">Enfrentamientos reales del Real Zaragoza. Acierta el marcador exacto lo más rápido que puedas.</p>
       </div>
 
@@ -208,6 +208,28 @@ export default function AdivinaResultado() {
                   <p style={{ textAlign: 'center', color: 'var(--rz-text-secondary)', fontSize: 'var(--text-sm)', margin: 0, lineHeight: 1.5 }}>
                     Van saliendo enfrentamientos reales del Real Zaragoza de distintas temporadas. Elige el marcador con los números del 0 al 9: cuanto más rápido aciertes, más puntos ganas.
                   </p>
+
+                  <div className="adivina-preview">
+                    <div className="adivina-preview__marcador">
+                      <span className="adivina-preview__num">0</span>
+                      <span className="adivina-preview__guion">-</span>
+                      <span className="adivina-preview__num">0</span>
+                    </div>
+                    <EscudoEquipo nombre="Real Zaragoza" />
+                    <span className="adivina-vs__separador">VS</span>
+                    <div className="adivina-vs__equipo">
+                      <span className="adivina-preview__escudo-generico">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--rz-text-muted)" strokeWidth="1.5"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V5l-8-3Z" /></svg>
+                      </span>
+                      <span className="adivina-vs__nombre" style={{ color: 'var(--rz-text-muted)' }}>Equipo rival</span>
+                    </div>
+                  </div>
+
+                  <button className="rz-btn rz-btn--primary rz-btn--lg" onClick={iniciarJuego} disabled={cargando}>
+                    {cargando ? 'Cargando...' : '▶ Jugar ahora'}
+                  </button>
+                  <button className="rz-btn rz-btn--ghost" onClick={() => setMostrarRanking(true)}>🏆 Ver ranking</button>
+
                   <div className="adivina-reglas">
                     <div className="adivina-regla">
                       <span className="adivina-regla__valor">10</span>
@@ -222,10 +244,6 @@ export default function AdivinaResultado() {
                       <span className="adivina-regla__label">puntos si fallas el marcador</span>
                     </div>
                   </div>
-                  <button className="rz-btn rz-btn--primary rz-btn--lg" onClick={iniciarJuego} disabled={cargando}>
-                    {cargando ? 'Cargando...' : '▶ Jugar'}
-                  </button>
-                  <button className="rz-btn rz-btn--ghost" onClick={() => setMostrarRanking(true)}>🏆 Ver ranking</button>
                   {!user && (
                     <p style={{ textAlign: 'center', color: 'var(--rz-text-muted)', fontSize: 'var(--text-xs)', margin: 0 }}>
                       No hace falta iniciar sesión para jugar. Solo la necesitas para guardar tu puntuación en el ranking.

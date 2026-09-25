@@ -3,10 +3,30 @@
 }
 
 .adivina-page__hero {
-  background: linear-gradient(90deg, #06328a 0%, #05286d 50%, #041f5c 100%);
+  position: relative;
   padding: 60px var(--padding-page) 50px;
   text-align: center;
+  isolation: isolate;
+  overflow: hidden;
 }
+.adivina-page__hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url('/images/estadio-comunidad.webp') center 32% / cover no-repeat;
+  filter: saturate(0.95) contrast(0.97);
+}
+.adivina-page__hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(100deg, rgba(6,12,26,0.88) 0%, rgba(9,30,70,0.80) 40%, rgba(13,68,145,0.55) 70%, rgba(13,68,145,0.45) 100%);
+}
+.adivina-page__hero > * { position: relative; z-index: 1; }
 
 .adivina-page__eyebrow { margin: 0 0 12px; }
 
@@ -14,11 +34,12 @@
   font-family: var(--font-display);
   font-size: clamp(48px, 10vw, 100px);
   font-weight: var(--weight-bold);
-  line-height: 0.9;
+  line-height: 0.95;
   letter-spacing: 3px;
   text-transform: uppercase;
   margin: 0 0 16px;
 }
+.adivina-page__title span { display: block; color: var(--rz-yellow); }
 
 .adivina-page__subtitle {
   font-size: var(--text-md);
@@ -44,13 +65,38 @@
   gap: 24px;
 }
 
+/* -------- Vista previa decorativa (intro) -------- */
+.adivina-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  width: 100%;
+  padding: var(--space-4);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--rz-border);
+  border-radius: var(--radius-md);
+}
+.adivina-preview__marcador {
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.adivina-preview__num {
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); border: 1px solid var(--rz-border-md);
+  font-family: var(--font-body); font-weight: 700; font-size: var(--text-xl); color: var(--rz-text-primary);
+}
+.adivina-preview__guion { color: var(--rz-text-muted); font-size: var(--text-lg); }
+.adivina-preview__escudo-generico {
+  width: 44px; height: 44px; border-radius: 50%; background: var(--rz-bg-3);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
 /* -------- Reglas (intro) -------- */
 .adivina-reglas {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-top: 24px;
 }
 
 .adivina-regla {
@@ -258,9 +304,9 @@
 .adivina-feedback.es-fallo { background: var(--rz-red-bg); color: var(--rz-red); }
 
 .adivina-feedback__titulo {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: var(--weight-bold);
   display: block;
 }
 
@@ -272,11 +318,12 @@
 
 /* -------- Pantalla final -------- */
 .adivina-fin__puntuacion {
-  font-family: var(--font-display);
-  font-size: 88px;
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 64px;
+  font-weight: var(--weight-bold);
   color: var(--rz-yellow);
   line-height: 1;
+  letter-spacing: -0.03em;
 }
 .adivina-fin__puntuacion-label {
   font-size: var(--text-sm);
@@ -351,9 +398,9 @@
 }
 
 .adivina-ranking__pos {
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
   color: var(--rz-text-muted);
 }
 .adivina-ranking__pos.pos-1 { color: var(--rz-yellow); }
@@ -393,11 +440,12 @@
 }
 
 .adivina-ranking__puntos {
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--text-lg);
-  font-weight: 700;
+  font-weight: var(--weight-bold);
   color: var(--rz-yellow);
   text-align: right;
+  letter-spacing: -0.03em;
 }
 
 @media (max-width: 640px) {
