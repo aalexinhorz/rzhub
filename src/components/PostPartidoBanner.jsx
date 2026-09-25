@@ -66,14 +66,17 @@ export default function PostPartidoBanner() {
   const marcador = partido ? `${nombreLocal} ${partido.goles_local}-${partido.goles_visitante} ${nombreVisitante}` : null
   const marcadorCorto = marcador?.replace('Real Zaragoza', 'R. Zaragoza')
 
+  const escudoLocal = partido?.local ? ESCUDO_ZARAGOZA : rivalCrest
+  const escudoVisitante = partido?.local ? rivalCrest : ESCUDO_ZARAGOZA
+
   return (
     <div className="post-partido-banner">
       <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="post-partido-banner__item">
         {partido && (
           <span className="post-partido-banner__escudos">
-            <img src={ESCUDO_ZARAGOZA} alt="" />
+            {escudoLocal && <img src={escudoLocal} alt="" />}
             <span className="post-partido-banner__vs">VS</span>
-            {rivalCrest && <img src={rivalCrest} alt="" />}
+            {escudoVisitante && <img src={escudoVisitante} alt="" />}
           </span>
         )}
         <span className="post-partido-banner__text">
@@ -92,9 +95,9 @@ export default function PostPartidoBanner() {
           <span className="post-partido-banner__divider" aria-hidden="true" />
           <Link to={`/notas/${partido.partido_id}`} className="post-partido-banner__item">
             <span className="post-partido-banner__escudos">
-              <img src={ESCUDO_ZARAGOZA} alt="" />
+              {escudoLocal && <img src={escudoLocal} alt="" />}
               <span className="post-partido-banner__vs">VS</span>
-              {rivalCrest && <img src={rivalCrest} alt="" />}
+              {escudoVisitante && <img src={escudoVisitante} alt="" />}
             </span>
             <span className="post-partido-banner__text">
               <span className="post-partido-banner__full">
