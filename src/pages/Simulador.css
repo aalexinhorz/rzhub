@@ -39,8 +39,8 @@
 
 .sim-competicion { display: flex; align-items: center; gap: var(--space-3); }
 .sim-competicion__escudo { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
-.sim-competicion__texto { display: flex; flex-direction: column; line-height: 1.3; }
-.sim-competicion__texto strong { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--rz-text-primary); text-transform: uppercase; }
+.sim-competicion__texto { display: flex; flex-direction: column; line-height: 1.1; gap: 2px; }
+.sim-competicion__texto strong { font-family: var(--font-body); font-size: 16px; font-weight: var(--weight-bold); color: var(--rz-text-primary); text-transform: uppercase; }
 .sim-competicion__texto span { font-size: var(--text-xs); color: var(--rz-text-muted); }
 
 .sim-jornadas { display: flex; align-items: center; gap: var(--space-2); }
@@ -61,7 +61,7 @@
 .sim-jornada-btn.is-activa { background: var(--rz-yellow); color: #060D1A; border-color: var(--rz-yellow); }
 
 .sim-jornada-label {
-  font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--rz-text-primary);
+  font-family: var(--font-body); font-size: 17px; font-weight: var(--weight-bold); color: var(--rz-text-primary);
   text-transform: uppercase; margin: 0;
 }
 
@@ -95,7 +95,7 @@
 /* -------- Columna derecha: Clasificación -------- */
 .sim-right { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
 .sim-clasificacion__titulo {
-  font-family: var(--font-display); font-size: 24px; font-weight: 700; color: var(--rz-text-primary); text-transform: uppercase; margin: 0;
+  font-family: var(--font-body); font-size: 20px; font-weight: var(--weight-bold); color: var(--rz-text-primary); text-transform: uppercase; margin: 0;
 }
 
 .sim-tabla-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--rz-border); }
