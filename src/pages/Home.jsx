@@ -12,6 +12,7 @@ import NoticiasHome from '../components/NoticiasHome'
 import CommunitySection from '../components/CommunitySection'
 import EditorialSection from '../components/EditorialSection'
 import CalendarSection from '../components/CalendarSection'
+import DevlogSection from '../components/DevlogSection'
 import Footer from '../components/Footer'
 
 const STAT_ICON_PROPS = { width: 32, height: 32, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }
@@ -166,6 +167,9 @@ export default function Home() {
 
       {/* ── FINAL CTA ────────────────────────────────────────── */}
       <FinalCTA />
+
+      {/* ── DEVLOG ───────────────────────────────────────────── */}
+      <DevlogSection />
 
       {/* ── FOOTER ───────────────────────────────────────────── */}
       <Footer />

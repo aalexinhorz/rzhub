@@ -1,0 +1,149 @@
+/* ============================================================
+   DEVLOG SECTION — cierre de la landing: tabla de mejoras visibles
+   para el usuario (sin SEO ni refactors internos), estilo tarjeta
+   con cabecera colapsable y paginación, como una notification card.
+   ============================================================ */
+
+.devlog-section {
+  padding: 40px 32px 96px;
+}
+
+.devlog-section__container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.devlog-card {
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.devlog-card__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--rz-text-primary);
+}
+
+.devlog-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 200, 0, 0.12);
+  color: var(--rz-yellow);
+  flex-shrink: 0;
+}
+
+.devlog-card__title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.devlog-card__chevron {
+  flex-shrink: 0;
+  color: var(--rz-text-muted);
+  transition: transform 200ms ease;
+}
+.devlog-card__chevron.is-abierto { transform: rotate(180deg); }
+
+.devlog-table__head {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: var(--space-4);
+  padding: 0 var(--space-5) var(--space-2);
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rz-text-muted);
+  border-top: 1px solid var(--rz-border);
+  padding-top: var(--space-4);
+}
+
+.devlog-table__body {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.devlog-row {
+  display: grid;
+  grid-template-columns: 84px 1fr 16px;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--rz-border);
+}
+.devlog-row:first-child { border-top: none; }
+
+.devlog-row__fecha {
+  font-size: var(--text-sm);
+  color: var(--rz-text-muted);
+  white-space: nowrap;
+}
+
+.devlog-row__texto {
+  font-size: var(--text-sm);
+  color: var(--rz-text-secondary);
+  line-height: 1.4;
+}
+
+.devlog-row__flecha {
+  color: var(--rz-yellow);
+  opacity: 0.55;
+  align-self: center;
+}
+
+.devlog-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--rz-border);
+}
+
+.devlog-pagination__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  background: var(--rz-bg-3);
+  border: 1px solid var(--rz-border-md);
+  color: var(--rz-text-secondary);
+  cursor: pointer;
+}
+.devlog-pagination__btn:hover:not(:disabled) { border-color: var(--rz-border-strong); color: var(--rz-text-primary); }
+.devlog-pagination__btn:disabled { opacity: 0.3; cursor: default; }
+
+.devlog-pagination__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--rz-text-secondary);
+  min-width: 48px;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .devlog-table__head { grid-template-columns: 64px 1fr; }
+  .devlog-row { grid-template-columns: 64px 1fr 14px; padding: var(--space-3) var(--space-4); }
+  .devlog-row__fecha { font-size: var(--text-xs); }
+  .devlog-row__texto { font-size: 13px; }
+}
