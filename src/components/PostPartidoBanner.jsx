@@ -21,6 +21,7 @@ async function cargarPostPartido() {
     .from('videos_canal')
     .select('video_id, titulo, published_at')
     .eq('canal_handle', CANAL_HANDLE)
+    .eq('oculto_home', false)
     .order('published_at', { ascending: false })
     .limit(1)
 
