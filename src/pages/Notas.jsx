@@ -1,12 +1,53 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
 import usePartidos from '../hooks/usePartidos'
+import { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
 import './Notas.css'
 
 function formatFecha(dateStr) {
   return new Date(`${dateStr}T00:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+function formatMes(dateStr) {
+  const texto = new Date(`${dateStr}T00:00:00`).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+  return texto.charAt(0).toUpperCase() + texto.slice(1)
+}
+
+function useMvpDelMes() {
+  const [mvp, setMvp] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let activo = true
+    supabase.rpc('mvp_del_mes').then(({ data }) => {
+      if (activo) { setMvp(data?.[0] || null); setLoading(false) }
+    })
+    return () => { activo = false }
+  }, [])
+
+  return { mvp, loading }
+}
+
+function MvpDelMes() {
+  const { mvp, loading } = useMvpDelMes()
+  if (loading || !mvp) return null
+
+  return (
+    <div className="notas-mvp">
+      <div className="notas-mvp__foto">
+        <img src={mvp.photo} alt="" />
+      </div>
+      <div className="notas-mvp__info">
+        <p className="rz-eyebrow rz-eyebrow--yellow notas-mvp__eyebrow">MVP de {formatMes(mvp.mes)}</p>
+        <p className="notas-mvp__nombre">{mvp.nombre}</p>
+        <p className="notas-mvp__detalle">Elegido por la afición de RZ Hub · {mvp.num_votos} votos en {mvp.partidos_votados} partidos</p>
+      </div>
+      <div className="notas-mvp__nota">{mvp.media}</div>
+    </div>
+  )
 }
 
 function PartidoCard({ partido }) {
@@ -63,6 +104,8 @@ export default function Notas() {
 
       <div className="notas-page__body">
         <div className="notas-page__container">
+          <MvpDelMes />
+
           {loading ? (
             <p className="notas-page__state">Cargando partidos…</p>
           ) : partidos.length === 0 ? (

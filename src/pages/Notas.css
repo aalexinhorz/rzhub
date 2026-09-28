@@ -708,3 +708,57 @@
   .notas-mini-card__nota { font-size: 26px; }
   .notas-mini-card__nombre { font-size: 10px; }
 }
+
+/* -------- MVP del mes -------- */
+.notas-mvp {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  background: linear-gradient(135deg, rgba(255,200,0,0.10) 0%, var(--rz-bg-2) 45%);
+  border: 1px solid var(--rz-border-yellow);
+  border-radius: var(--radius-lg);
+}
+
+.notas-mvp__foto {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--rz-yellow);
+}
+.notas-mvp__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+.notas-mvp__info { flex: 1; min-width: 0; }
+.notas-mvp__eyebrow { margin: 0 0 4px; }
+
+.notas-mvp__nombre {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  line-height: 1;
+  margin: 0 0 6px;
+  color: var(--rz-text-primary);
+}
+
+.notas-mvp__detalle {
+  font-size: var(--text-sm);
+  color: var(--rz-text-muted);
+  margin: 0;
+}
+
+.notas-mvp__nota {
+  flex-shrink: 0;
+  font-family: var(--font-body);
+  font-size: 32px;
+  font-weight: var(--weight-black);
+  color: var(--rz-yellow);
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .notas-mvp { flex-wrap: wrap; }
+  .notas-mvp__nota { margin-left: auto; }
+}
