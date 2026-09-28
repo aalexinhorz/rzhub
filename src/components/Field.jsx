@@ -24,7 +24,7 @@ function measureTextWidth(text, font) {
   return ctx.measureText(text).width
 }
 
-export default function Field({ slotsLayout, slots, subs, teamName, setTeamName, formation, allPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer, onGuardar, user }) {
+export default function Field({ slotsLayout, slots, subs, teamName, setTeamName, formation, allPlayers, playersLoading, playersError, onRetryPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer, onGuardar, user }) {
   const fieldRef = useRef(null)
   const [editingName, setEditingName] = useState(false)
   const [showModal, setShowModal] = useState(false)
@@ -276,6 +276,9 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
               sub1={subs[slot.id]?.[0] || null}
               sub2={subs[slot.id]?.[1] || null}
               allPlayers={allPlayers}
+              playersLoading={playersLoading}
+              playersError={playersError}
+              onRetryPlayers={onRetryPlayers}
               onSelectPlayer={onSelectPlayer}
               onRemovePlayer={onRemovePlayer}
               onSelectSub={onSelectSub}

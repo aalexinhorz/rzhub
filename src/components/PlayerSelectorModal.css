@@ -1,0 +1,910 @@
+/* ============================================================
+   PlayerSelectorModal — selector de jugadores del Line-Up Builder.
+   Paleta: navy + azul + amarillo, igual que el resto de RZ Hub (Porra,
+   Home). En todos los anchos es un diálogo flotante con margen (no
+   pantalla completa): así se sigue viendo el campo/alineación detrás.
+   Mobile-first en pills de posición y una sola columna; a partir de
+   768px se amplía un poco el ancho; a partir de 1200px aparece la
+   barra lateral de posiciones y la rejilla pasa a 2 columnas.
+   ============================================================ */
+
+.psm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 16, 31, 0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.psm-modal {
+  /* Azul corporativo (#0D4491, el mismo que las cabeceras de los demás
+     modales del proyecto) en degradado hacia la superficie navy propia
+     de este selector. Colores sólidos (sin alpha): con transparencia
+     dejaba entrever el fondo de la página a través del propio modal. */
+  background: linear-gradient(180deg, #113a70 0%, #0a1c3e 45%, #081731 100%);
+  border: 1px solid rgba(13, 68, 145, 0.5);
+  color: #ffffff;
+  width: 100%;
+  height: auto;
+  max-height: 72vh;
+  border-radius: 20px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  outline: none;
+  font-family: 'Archivo', sans-serif;
+}
+
+@media (min-width: 768px) {
+  .psm-modal {
+    width: 100%;
+    max-width: 640px;
+    /* Altura fija (no "auto") para que el modal ocupe siempre lo mismo
+       en desktop sin importar la pestaña — antes cada una tenía una
+       altura de contenido distinta (Sugerencias con sus grupos, Más
+       buscados con sus 8 cards fijas, Plantilla según lo que hubiera) y
+       el modal "saltaba" de tamaño al cambiar de pestaña. Este valor es
+       el que ocupaba de forma natural "Más buscados"; el resto de
+       pestañas ahora scrollea dentro de ese mismo hueco en vez de
+       estirarlo. */
+    height: min(560px, 90vh);
+  }
+  /* En mobile las tabs necesitan scroll horizontal para cuando no
+     caben todas; en desktop hay ancho de sobra (y desde que se quitó
+     "Todos los jugadores" son solo 3), así que aquí no hace falta. */
+  .psm-tabs {
+    overflow-x: visible;
+    white-space: normal;
+  }
+}
+
+@media (min-width: 1200px) {
+  .psm-modal {
+    max-width: 960px;
+  }
+}
+
+/* -------- Header -------- */
+.psm-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 20px 16px;
+  flex-shrink: 0;
+}
+.psm-header__text {
+  /* Sin esto, un flex item usa min-width:auto por defecto — no se
+     encoge por debajo del ancho de su contenido, así que en mobile el
+     título empujaba .psm-header__side (chip + cerrar) fuera de la caja
+     y la X quedaba cortada por el overflow:hidden del modal. */
+  flex: 1;
+  min-width: 0;
+}
+.psm-header__title {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #ffffff;
+  margin: 0 0 4px;
+}
+.psm-header__subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+  max-width: 40ch;
+}
+.psm-header__side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.psm-position-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0d1b4b;
+  border: 1px solid rgba(13, 68, 145, 0.6);
+  border-radius: 10px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+.psm-position-chip__code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: #0d4491;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+.psm-position-chip__name {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 600;
+}
+
+.psm-current-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 20px 16px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #0d1b4b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.psm-current-player__photo {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #152445;
+  flex-shrink: 0;
+}
+.psm-current-player__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 15%;
+  display: block;
+}
+.psm-current-player__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.psm-current-player__label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.4);
+}
+.psm-current-player__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.psm-current-player__remove {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'Archivo', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.psm-current-player__remove:hover {
+  background: rgba(220, 60, 60, 0.15);
+  border-color: rgba(220, 60, 60, 0.5);
+  color: #ff8a8a;
+}
+
+.psm-close {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.psm-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.psm-close:focus-visible,
+.psm-modal :focus-visible {
+  outline: 2px solid #ffc800;
+  outline-offset: 2px;
+}
+/* El buscador ya muestra su propio estado de foco con el borde de
+   .psm-search (:focus-within) — el outline genérico de arriba encima
+   del input dibujaba un doble borde. */
+.psm-search__input:focus-visible {
+  outline: none;
+}
+
+/* -------- Toolbar: buscador + tabs -------- */
+.psm-toolbar {
+  padding: 0 20px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.psm-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #0d1b4b;
+  border: 1px solid rgba(13, 68, 145, 0.6);
+  border-radius: 12px;
+  height: 52px;
+  padding: 0 16px;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.psm-search:focus-within {
+  border-color: #ffc800;
+  background: #0f2058;
+}
+.psm-search__icon {
+  color: rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+.psm-search__input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-family: 'Archivo', sans-serif;
+  font-size: 16px;
+}
+.psm-search__input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.psm-tabs {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.psm-tabs::-webkit-scrollbar {
+  display: none;
+}
+.psm-tabs__item {
+  background: none;
+  border: none;
+  padding: 4px 2px 12px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  position: relative;
+  /* Con solo Sugerencias/Plantilla actual (se quitó "Más buscados"),
+     que cada una ocupe la mitad del ancho en vez de dejar hueco vacío
+     donde estaba la tercera pestaña. */
+  flex: 1;
+  text-align: center;
+  transition: color 150ms ease;
+}
+.psm-tabs__item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: #ffc800;
+  border-radius: 2px;
+  transform: scaleX(0);
+  transition: transform 180ms ease;
+}
+.psm-tabs__item--active {
+  color: #ffffff;
+}
+.psm-tabs__item--active::after {
+  transform: scaleX(1);
+}
+.psm-tabs__item:hover {
+  color: #ffffff;
+}
+
+/* -------- Filtro de posición: pills (mobile) / sidebar (desktop grande) --------
+   Las dos variantes renderizan el MISMO contenido (misma fuente de
+   verdad — allPlayers), solo cambia el layout por CSS según el ancho:
+   evita mantener dos listas duplicadas sincronizadas en JS. */
+.psm-position-filters--sidebar {
+  display: none;
+}
+.psm-position-filters--pills {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+  padding: 14px 20px 0;
+  flex-shrink: 0;
+}
+.psm-position-filters--pills::-webkit-scrollbar {
+  display: none;
+}
+.psm-position-filters--pills .psm-position-filters__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #0d1b4b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.psm-position-filters--pills .psm-position-filters__item--active {
+  background: rgba(255, 200, 0, 0.12);
+  border-color: #ffc800;
+  color: #ffffff;
+}
+.psm-position-filters__count {
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+}
+.psm-position-filters--pills .psm-position-filters__item--active .psm-position-filters__count {
+  color: rgba(255, 200, 0, 0.85);
+}
+.psm-position-filters__icon {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 150ms ease;
+}
+.psm-position-filters__item--active .psm-position-filters__icon {
+  color: #ffc800;
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  /* Zona intermedia: ni sidebar (comprimiría demasiado el contenido) ni
+     pills (redundantes con las tabs) — solo tabs + contexto de posición
+     del slot. */
+  .psm-position-filters--pills {
+    display: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  .psm-position-filters--pills {
+    display: none;
+  }
+  .psm-position-filters--sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 190px;
+    flex-shrink: 0;
+    padding-right: 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    overflow-y: auto;
+  }
+  .psm-position-filters--sidebar .psm-position-filters__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+    transition: background 150ms ease, color 150ms ease;
+  }
+  .psm-position-filters--sidebar .psm-position-filters__count {
+    margin-left: auto;
+  }
+  .psm-position-filters--sidebar .psm-position-filters__item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+  }
+  .psm-position-filters--sidebar .psm-position-filters__item--active {
+    background: #0d1b4b;
+    color: #ffffff;
+    border-color: rgba(13, 68, 145, 0.7);
+  }
+}
+
+/* -------- Cuerpo: sidebar (si aplica) + contenido con scroll -------- */
+.psm-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  /* Sin padding a la derecha aquí a propósito: esa separación vive en
+     el padding-right de .psm-content, para que la barra de scroll
+     quede pegada al borde real del modal en vez de flotar justo al
+     lado de las cards (se veía como si el scroll "atravesara" la
+     card). */
+  padding: 16px 0 20px 20px;
+  gap: 20px;
+  overflow: hidden;
+}
+.psm-content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 20px 4px 0;
+  /* Contenedor de tamaño para las cards (ver @container más abajo). Va
+     aquí y no en cada .psm-card: esta caja es un hijo flex normal, así
+     que su ancho se resuelve en una sola pasada — puesto directamente
+     en una card que vive dentro de una columna `fr` de .psm-grid,
+     Chromium a veces evalúa el @container contra un ancho de una
+     pasada de layout anterior (se ve venir 350px de columna en
+     desktop 2 columnas, pero el @container seguía "viendo" un ancho
+     de antes de repartir las columnas y aplicaba el estilo compacto
+     igualmente). */
+  container-type: inline-size;
+  container-name: psm-content;
+}
+
+.psm-section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+.psm-section-heading:first-child {
+  margin-top: 0;
+}
+.psm-section-heading h3 {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+.psm-section-heading p {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 2px 0 0;
+}
+.psm-ver-todos {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: #ffc800;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 2px;
+}
+.psm-ver-todos:hover {
+  filter: brightness(1.1);
+}
+
+/* -------- Rejilla de jugadores -------- */
+.psm-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+@media (min-width: 1200px) {
+  .psm-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.psm-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 12px 8px 8px;
+  border-radius: 12px;
+  background: #0d1b4b;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Archivo', sans-serif;
+  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+.psm-card:hover {
+  border-color: rgba(13, 68, 145, 0.8);
+  background: #102263;
+}
+.psm-card:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) {
+  .psm-card:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.psm-card__photo {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #152445;
+  flex-shrink: 0;
+}
+.psm-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 15%;
+  display: block;
+}
+
+.psm-card__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.psm-card__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.psm-card__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.psm-card__badge {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(13, 68, 145, 0.5);
+  border: 1px solid rgba(13, 68, 145, 0.8);
+  border-radius: 5px;
+  padding: 2px 6px;
+}
+.psm-card__team {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Texto de "sin resultados" antes de la card de alta como jugador
+   externo, dentro del propio grid de resultados de búsqueda. */
+.psm-search-empty {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 4px 0 0;
+}
+
+.psm-card--custom {
+  background: rgba(255, 200, 0, 0.06);
+  border: 1px dashed rgba(255, 200, 0, 0.4);
+}
+.psm-card--custom:hover {
+  background: rgba(255, 200, 0, 0.1);
+  border-color: rgba(255, 200, 0, 0.65);
+}
+.psm-card--custom .psm-card__add {
+  background: rgba(255, 200, 0, 0.12);
+  border-color: rgba(255, 200, 0, 0.5);
+  color: #ffc800;
+}
+.psm-card__custom-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffc800;
+}
+
+.psm-card__add {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+.psm-card:hover .psm-card__add {
+  background: rgba(13, 68, 145, 0.35);
+  border-color: #0d4491;
+}
+.psm-card:active .psm-card__add {
+  transform: scale(0.96);
+}
+@media (hover: hover) {
+  .psm-card:hover .psm-card__add {
+    transform: scale(1.04);
+  }
+}
+
+/* Card compacta cuando su contenedor real es estrecho (panel pequeño
+   de mobile, o la columna sola sin sidebar en la zona intermedia) —
+   .psm-card__add se queda igual en todos los tamaños porque es el
+   objetivo táctil (mínimo 44px, ver sección de accesibilidad). */
+@container psm-content (max-width: 400px) {
+  .psm-card {
+    gap: 8px;
+    padding: 6px 10px 6px 6px;
+  }
+  .psm-card__photo {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+  .psm-card__name {
+    font-size: 13px;
+  }
+  .psm-card__team {
+    font-size: 11px;
+  }
+  .psm-card__badge {
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+  .psm-skel--photo {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+}
+
+/* -------- Skeleton (loading) -------- */
+.psm-card--skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+.psm-skel {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06) 25%, rgba(255, 255, 255, 0.12) 37%, rgba(255, 255, 255, 0.06) 63%);
+  background-size: 400% 100%;
+  animation: psm-shimmer 1.4s ease infinite;
+}
+.psm-skel--photo {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+}
+.psm-skel--line {
+  height: 11px;
+  margin: 3px 0;
+}
+@keyframes psm-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .psm-skel {
+    animation: none;
+  }
+}
+
+/* -------- Estados vacío / error -------- */
+.psm-empty,
+.psm-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.6);
+}
+.psm-empty p,
+.psm-error p {
+  font-size: 13.5px;
+  margin: 0;
+  max-width: 34ch;
+}
+.psm-error {
+  color: rgba(255, 255, 255, 0.75);
+}
+.psm-error svg {
+  color: #ffc800;
+}
+.psm-empty__action,
+.psm-error__retry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(13, 68, 145, 0.18);
+  border: 1px solid rgba(13, 68, 145, 0.6);
+  color: #ffffff;
+  font-family: 'Archivo', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+.psm-empty__action:hover,
+.psm-error__retry:hover {
+  background: rgba(13, 68, 145, 0.32);
+  border-color: #0d4491;
+}
+
+/* Reduce todas las transiciones de este modal cuando el usuario pide
+   menos movimiento, en vez de dejarlas "instantáneas de golpe" caso por
+   caso. */
+@media (prefers-reduced-motion: reduce) {
+  .psm-modal,
+  .psm-card,
+  .psm-card__add,
+  .psm-close,
+  .psm-tabs__item::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Mobile: el header/buscador/tabs/pills ocupaban una franja fija todo
+   el rato (flex-shrink:0) y solo el contenido de abajo (.psm-content)
+   tenía su propio scroll interno — en pantallas bajas eso dejaba muy
+   poca altura real para ver jugadores. Aquí el modal entero pasa a
+   scrollear como una sola pieza: el header se va con el resto al bajar,
+   en vez de quedarse fijo restando espacio todo el rato. Va al final
+   del archivo a propósito: con la misma especificidad que las reglas
+   base de .psm-body/.psm-content de más arriba, gana la que aparece
+   después en la cascada. */
+@media (max-width: 767px) {
+  .psm-modal {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  .psm-body {
+    flex: none;
+    overflow: visible;
+  }
+  .psm-content {
+    overflow: visible;
+    /* OJO: .psm-body es un flex ROW (sidebar + contenido), así que en
+       .psm-content flex-grow/shrink/basis controla su ANCHO, no su
+       alto — poner flex:none aquí (como en .psm-body, que sí es hijo
+       de un flex COLUMN) encogía el ancho al contenido en vez de
+       llenar el hueco, y la card quedaba con un ancho fijo típico del
+       texto más largo en vez de escalar con el viewport. Lo que
+       hacía falta era solo dejar de ESTIRAR la ALTURA (eje cruzado
+       en un row, con align-items:stretch por defecto) — eso se
+       resuelve con align-self, sin tocar flex-grow del ancho. */
+    flex: 1 1 auto;
+    align-self: flex-start;
+  }
+  /* Texto de apoyo redundante en mobile, donde el espacio vertical ya
+     es el recurso más ajustado: el título "Añadir jugador" y el chip
+     de posición ya dicen lo mismo que estos subtítulos. */
+  .psm-header__subtitle,
+  .psm-section-heading p {
+    display: none;
+  }
+  /* Chip de posición y botón cerrar más compactos: en mobile compiten
+     por el mismo ancho estrecho que el título, así que cuanto menos
+     espacio pidan mejor. El cerrar baja de 44 a 36px — por debajo de
+     36 empieza a costar acertarle con el dedo, así que se queda ahí en
+     vez de igualarlo al resto de textos reducidos. */
+  .psm-position-chip {
+    gap: 5px;
+    padding: 4px 7px;
+    border-radius: 8px;
+  }
+  .psm-position-chip__code {
+    min-width: 22px;
+    height: 18px;
+    padding: 0 4px;
+    font-size: 9.5px;
+    border-radius: 5px;
+  }
+  .psm-position-chip__name {
+    font-size: 10.5px;
+  }
+  .psm-close {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 8px;
+  }
+  .psm-close svg {
+    width: 15px;
+    height: 15px;
+  }
+  /* Bottom sheet: anclado abajo (sin el padding/centrado que sí tiene
+     el resto de anchos) y con animación de entrada deslizándose desde
+     fuera de la pantalla hasta el 80% de alto — no el panel flotante
+     centrado que usan tablet/desktop. Cerrar sigue funcionando igual:
+     clicando fuera (.psm-overlay ya lo hacía) o con la X. */
+  .psm-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .psm-modal {
+    width: 100%;
+    height: 88vh;
+    max-height: 88vh;
+    border-radius: 20px 20px 0 0;
+    animation: psm-sheet-in 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* Al cerrar, PlayerSelectorModal.jsx sigue montando el modal 320ms
+     más (con esta clase) para dar tiempo a que se vea la animación
+     inversa en vez de desaparecer de golpe en cuanto se pide cerrar. */
+  .psm-modal--closing {
+    animation: psm-sheet-out 320ms cubic-bezier(0.4, 0, 1, 1) forwards;
+  }
+  /* Mismo margen a los dos lados de la card en todo el rango de
+     mobile: la base (padding-right:12px) y la versión compacta del
+     @container (padding-right:10px) dejaban bastante más aire a la
+     derecha del botón + que a la izquierda de la foto (padding-left
+     8px/6px) — va al final del archivo para ganar el empate de
+     especificidad contra esas dos reglas sin importar cuál esté
+     activa en cada ancho. */
+  .psm-card {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+@keyframes psm-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes psm-sheet-out {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}

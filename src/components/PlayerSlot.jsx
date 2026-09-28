@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useDroppable, useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
+import PlayerSelectorModal from './PlayerSelectorModal'
 
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
@@ -105,10 +106,10 @@ function scaleByFieldWidth(fieldWidth, min, max, refMin = 320, refMax = 620) {
   return min + (max - min) * t
 }
 
-export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer, capturing, fieldWidth }) {
+export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, playersLoading, playersError, onRetryPlayers, onSelectPlayer, onRemovePlayer, onSelectSub, onRemoveSub, onAddCustomPlayer, capturing, fieldWidth }) {
   const [showModal, setShowModal] = useState(false)
-  const [search, setSearch] = useState('')
-  const [results, setResults] = useState([])
+  const [showSelector, setShowSelector] = useState(false)
+  const plusRef = useRef(null)
   const [pendingSub1, setPendingSub1] = useState(null)
   const [pendingSub2, setPendingSub2] = useState(null)
   const [searchSub1, setSearchSub1] = useState('')
@@ -129,11 +130,6 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
   }, [showModal])
 
   useEffect(() => {
-    if (search.length < 2) { setResults([]); return }
-    setResults(allPlayers.filter(p => p.name.toLowerCase().includes(search.toLowerCase())).sort(byZaragozaFirst))
-  }, [search, allPlayers])
-
-  useEffect(() => {
     if (searchSub1.length < 2) { setResultsSub1([]); return }
     setResultsSub1(allPlayers.filter(p => p.name.toLowerCase().includes(searchSub1.toLowerCase())).sort(byZaragozaFirst))
   }, [searchSub1, allPlayers])
@@ -147,20 +143,29 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
     if (capturing) return
     setPendingSub1(sub1 || null)
     setPendingSub2(sub2 || null)
-    setSearch(''); setSearchSub1(''); setSearchSub2('')
-    setResults([]); setResultsSub1([]); setResultsSub2([])
+    setSearchSub1(''); setSearchSub2('')
+    setResultsSub1([]); setResultsSub2([])
     setShowModal(true)
+  }
+
+  // Selector de jugador rediseñado (PlayerSelectorModal): abre tanto
+  // para rellenar una posición vacía como para cambiar el titular de
+  // una ya ocupada (clic en la card). El modal de abajo (openModal)
+  // queda solo para editar los suplentes.
+  function openSelector() {
+    if (capturing) return
+    setShowSelector(true)
+  }
+
+  function handleSelectFromSelector(p) {
+    onSelectPlayer(slot.id, p)
+    setShowSelector(false)
   }
 
   function handleClose() {
     setShowModal(false)
-    setSearch(''); setSearchSub1(''); setSearchSub2('')
-    setResults([]); setResultsSub1([]); setResultsSub2([])
-  }
-
-  function handleSelectTitular(p) {
-    onSelectPlayer(slot.id, p)
-    setSearch(''); setResults([])
+    setSearchSub1(''); setSearchSub2('')
+    setResultsSub1([]); setResultsSub2([])
   }
 
   function handleConfirm() {
@@ -169,15 +174,6 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
     if (pendingSub2) onSelectSub(slot.id, 1, pendingSub2)
     else onRemoveSub(slot.id, 1)
     handleClose()
-  }
-
-  function handleAddCustom(name) {
-    if (!name || name.trim().length < 2) return
-    const customPlayer = onAddCustomPlayer({
-      name: name.trim(), shortName: name.trim(),
-      position: slot.label, photo: DEFAULT_PHOTO, team: '', teamLogo: '',
-    })
-    if (customPlayer) handleSelectTitular(customPlayer)
   }
 
   function handleAddCustomSub1(name) {
@@ -225,8 +221,8 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
         display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2,
       }}>
         {player ? (
-          <div data-card-container onClick={openModal}
-            ref={setDragRef} {...listeners} {...attributes}
+          <div data-card-container onClick={openSelector}
+            ref={node => { setDragRef(node); plusRef.current = node }} {...listeners} {...attributes}
             onMouseEnter={e => { if (isDragging) return; e.currentTarget.style.transform = 'translateY(-4px) scale(1.05)'; e.currentTarget.style.boxShadow = '0 10px 24px rgba(0,0,0,0.4)' }}
             onMouseLeave={e => { if (isDragging) return; e.currentTarget.style.transform = 'translateY(0) scale(1)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.25)' }}
             style={{
@@ -303,13 +299,14 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
             {[sub1, sub2].map((sub, i) => sub ? (
               <SubRow key={i} player={sub} onClick={e => { e.stopPropagation(); onRemoveSub(slot.id, i) }} />
             ) : (
-              <div key={i} data-sub-empty style={{ display: 'flex', alignItems: 'center', padding: '2px 4px', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box', height: '20px' }}>
+              <div key={i} data-sub-empty onClick={e => { e.stopPropagation(); openModal() }}
+                style={{ display: 'flex', alignItems: 'center', padding: '2px 4px', background: 'rgba(0,0,0,0.04)', borderTop: '1px dashed rgba(0,0,0,0.1)', width: '100%', boxSizing: 'border-box', height: '20px', cursor: 'pointer' }}>
                 <span style={{ fontSize: subFontSize, color: 'rgba(0,0,0,0.3)', fontFamily: 'Archivo, sans-serif' }}>+ suplente</span>
               </div>
             ))}
           </div>
         ) : (
-          <div onClick={openModal}
+          <div ref={plusRef} onClick={openSelector}
             onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.12)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', transition: 'transform 150ms ease' }}>
@@ -334,43 +331,12 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
           <div onClick={e => e.stopPropagation()} style={{ background: '#0A1628', borderRadius: '16px', width: '90%', maxWidth: '480px', margin: 'auto', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.6)', maxHeight: '90vh', border: '1px solid rgba(255,255,255,0.08)' }}>
             <div style={{ background: '#0D4491', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
               <span style={{ color: 'white', fontWeight: '700', fontSize: '16px', fontFamily: 'Archivo, sans-serif' }}>
-                {player ? 'Cambiar jugador' : `Seleccionar ${slot.label}`}
+                Suplentes de {player.name}
               </span>
               <button onClick={handleClose} style={{ background: 'none', border: 'none', color: 'white', fontSize: '20px', cursor: 'pointer' }}>✕</button>
             </div>
 
             <div style={{ overflowY: 'auto', flex: 1, padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: '#0F1E38', borderRadius: '12px', padding: '16px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', fontFamily: 'Archivo, sans-serif', marginBottom: '8px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>Jugador — {slot.label}</div>
-                <input autoFocus placeholder="Buscar jugador..." value={search} onChange={e => setSearch(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && results.length === 0 && search.trim().length >= 2) handleAddCustom(search) }}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '16px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none', background: '#0A1628', color: '#fff' }} />
-                {player && search.length < 2 && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '10px', padding: '8px 12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: `2px solid ${player.isZaragoza ? '#0D4491' : '#FFC800'}` }}>
-                      <PlayerPhoto src={player.photo} alt={player.name} />
-                    </div>
-                    <span style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '600', fontSize: '14px', flex: 1, color: '#fff' }}>{player.name}</span>
-                    <button onClick={() => { onRemovePlayer(slot.id); handleClose() }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: '16px' }}>✕</button>
-                  </div>
-                )}
-                {search.length >= 2 && (
-                  <div style={{ marginTop: '8px', maxHeight: '200px', overflowY: 'auto' }}>
-                    {results.map(p => <PlayerRow key={p.id} player={p} onClick={() => handleSelectTitular(p)} />)}
-                    {results.length === 0 && (
-                      <div onClick={() => handleAddCustom(search)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer', border: '2px dashed rgba(255,200,0,0.4)', background: 'rgba(255,200,0,0.06)', marginTop: '4px' }}>
-                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', background: '#152445', flexShrink: 0 }}>
-                          <PlayerPhoto src={DEFAULT_PHOTO} alt="" />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontFamily: 'Archivo, sans-serif', fontWeight: '600', fontSize: '14px', color: '#fff' }}>{search.trim()}</div>
-                          <div style={{ fontFamily: 'Archivo, sans-serif', fontSize: '12px', color: '#FFC800' }}>➕ Añadir como jugador externo</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
 
               {player && (
                 <SubSearch
@@ -409,6 +375,21 @@ export default function PlayerSlot({ slot, player, sub1, sub2, allPlayers, onSel
         </div>,
         document.body
       )}
+
+      <PlayerSelectorModal
+        open={showSelector && !capturing}
+        slot={slot}
+        currentPlayer={player}
+        allPlayers={allPlayers}
+        loading={playersLoading}
+        error={playersError}
+        onRetry={onRetryPlayers}
+        onSelect={handleSelectFromSelector}
+        onClose={() => setShowSelector(false)}
+        onAddCustomPlayer={onAddCustomPlayer}
+        onRemoveCurrent={() => onRemovePlayer(slot.id)}
+        triggerRef={plusRef}
+      />
     </>
   )
 }

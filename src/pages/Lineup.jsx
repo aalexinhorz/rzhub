@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import SEO, { SITE_URL } from '../components/SEO'
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import Field from '../components/Field'
@@ -12,7 +12,13 @@ import { formations, formationsList } from '../lib/formations'
 export { formationsList }
 
 export default function Lineup() {
-  const { players, loading, addCustomPlayer } = usePlayers()
+  const { players, loading, error: playersError, refetch: refetchPlayers, addCustomPlayer } = usePlayers()
+  // Solo bloquea la página entera en la carga inicial: un "Reintentar"
+  // desde el selector de jugadores (tras un error) vuelve a poner
+  // loading=true, y si eso desmontara Field/SidePanel se perdería el
+  // modal abierto y la posición que se estaba rellenando.
+  const [huboCargaInicial, setHuboCargaInicial] = useState(false)
+  useEffect(() => { if (!loading) setHuboCargaInicial(true) }, [loading])
   const { user } = useAuth()
   const [formation, setFormation] = useState('4-2-3-1')
   const [slots, setSlots] = useState({})
@@ -124,7 +130,7 @@ export default function Lineup() {
     if (error) throw error
   }
 
-  if (loading) return (
+  if (loading && !huboCargaInicial) return (
     <div style={{ minHeight: 'calc(100vh - 72px)', background: '#060D1A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <p style={{ fontFamily: 'Archivo, sans-serif', fontSize: '18px', color: 'rgba(255,255,255,0.4)' }}>Cargando plantilla...</p>
     </div>
@@ -179,6 +185,9 @@ export default function Lineup() {
             setTeamName={setTeamName}
             formation={formation}
             allPlayers={players}
+            playersLoading={loading}
+            playersError={playersError}
+            onRetryPlayers={refetchPlayers}
             onSelectPlayer={handleSelectPlayer}
             onRemovePlayer={handleRemovePlayer}
             onSelectSub={(slotId, subIndex, player) => setSubs(prev => ({ ...prev, [slotId]: { ...prev[slotId], [subIndex]: player } }))}

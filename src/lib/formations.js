@@ -63,9 +63,9 @@ export const formations = {
     { id: 'DEF4', x: 88, y: 73, label: 'DEF' },
     { id: 'MID1', x: 33, y: 55, label: 'MED' },
     { id: 'MID2', x: 67, y: 55, label: 'MED' },
-    { id: 'CAM1', x: 15, y: 40, label: 'MED' },
+    { id: 'CAM1', x: 15, y: 40, label: 'DEL' },
     { id: 'CAM2', x: 50, y: 44, label: 'MED' },
-    { id: 'CAM3', x: 85, y: 40, label: 'MED' },
+    { id: 'CAM3', x: 85, y: 40, label: 'DEL' },
     { id: 'FWD1', x: 50, y: 20, label: 'DEL' },
   ],
   '3-4-2-1': [

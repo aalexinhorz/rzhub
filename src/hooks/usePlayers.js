@@ -11,18 +11,21 @@ const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/objec
 export default function usePlayers() {
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     fetchPlayers()
   }, [])
 
   async function fetchPlayers() {
+    setLoading(true)
+    setError(null)
     const { data, error } = await supabase
       .from('players')
       .select('*')
       .order('name', { ascending: true })
 
-    if (error) { console.error(error); return }
+    if (error) { console.error(error); setError(error); setLoading(false); return }
 
     const mapped = data.map(p => ({
       id: `db_${p.id}`,
@@ -57,5 +60,5 @@ export default function usePlayers() {
     return newPlayer
   }
 
-  return { players, loading, addCustomPlayer }
+  return { players, loading, error, refetch: fetchPlayers, addCustomPlayer }
 }
