@@ -47,9 +47,10 @@
 
 .devlog-card__title {
   flex: 1;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: var(--text-lg);
   font-weight: var(--weight-bold);
+  line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.01em;
 }
