@@ -273,6 +273,8 @@ export default function Calendario() {
         }}
       />
 
+      <h1 className="sr-only">Calendario del Real Zaragoza</h1>
+
       <div className="cal2-container cal2-container--top">
         <SyncBar onApple={handleApple} onGoogle={handleGoogle} onCopiar={handleCopiar} copiado={copiado} />
       </div>

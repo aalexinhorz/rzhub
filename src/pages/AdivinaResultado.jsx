@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
 import useAuth, { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
@@ -191,6 +192,22 @@ export default function AdivinaResultado() {
 
   return (
     <div className="adivina-page">
+      <SEO
+        title="Adivina el Resultado | Real Zaragoza | RZ Hub"
+        description="Pon a prueba tu memoria zaragocista: acierta el marcador exacto de partidos reales del Real Zaragoza desde la temporada 2009-10."
+        keywords="adivina el resultado Real Zaragoza, juego marcador Real Zaragoza, quiz Real Zaragoza"
+        path="/adivina-resultado"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          name: 'Adivina el Resultado | RZ Hub',
+          url: `${SITE_URL}/adivina-resultado`,
+          applicationCategory: 'SportsApplication',
+          operatingSystem: 'Web',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+          description: 'Juego de preguntas sobre marcadores reales del Real Zaragoza a lo largo de su historia.',
+        }}
+      />
 
       <div className="adivina-page__hero">
         <p className="rz-eyebrow rz-eyebrow--yellow adivina-page__eyebrow">Real Zaragoza · Desde la 2009-10</p>

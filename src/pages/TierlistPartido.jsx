@@ -243,6 +243,8 @@ export default function TierlistPartido() {
           description: 'Herramienta para clasificar a los jugadores del Real Zaragoza según su actuación en el último partido.',
         }}
       />
+      <h1 className="sr-only">Tierlist del partido del Real Zaragoza</h1>
+
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px', flexWrap: 'wrap' }}>
