@@ -1,0 +1,187 @@
+.album-page { min-height: 100vh; }
+
+.album-page__hero {
+  background: linear-gradient(90deg, #06328a 0%, #05286d 50%, #041f5c 100%);
+  padding: 60px var(--padding-page) 50px;
+  text-align: center;
+}
+
+.album-page__title {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 9vw, 88px);
+  font-weight: var(--weight-bold);
+  line-height: 0.95;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--rz-yellow);
+  margin: 12px 0 16px;
+}
+
+.album-page__subtitle {
+  font-size: var(--text-md);
+  color: var(--rz-text-secondary);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.album-page__body { background: #03101f; padding: 40px 0 0; }
+
+.album-page__container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-inline: 32px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-10);
+}
+
+.album-page__state { text-align: center; padding: 60px 20px; color: var(--rz-text-muted); font-size: var(--text-md); }
+
+.album-login {
+  text-align: center;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--rz-text-secondary);
+}
+
+/* -------- Panel de progreso + abrir sobre -------- */
+.album-panel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  padding: var(--space-5);
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+  border-radius: var(--radius-lg);
+}
+
+.album-panel__progreso { flex: 1; min-width: 200px; }
+.album-panel__progreso-num {
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: var(--rz-text-primary);
+  margin: 0;
+  line-height: 1;
+}
+.album-panel__progreso-label { font-size: var(--text-sm); color: var(--rz-text-muted); margin: 4px 0 10px; }
+.album-panel__barra { height: 8px; border-radius: var(--radius-full); background: var(--rz-bg-3); overflow: hidden; max-width: 320px; }
+.album-panel__barra-relleno { height: 100%; background: var(--rz-yellow); border-radius: var(--radius-full); transition: width 300ms ease; }
+
+.album-panel__boton { flex-shrink: 0; }
+.album-panel__error { width: 100%; color: var(--rz-red, #e5484d); font-size: var(--text-sm); margin: 0; }
+
+/* -------- Secciones -------- */
+.album-seccion__titulo {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  color: var(--rz-text-primary);
+  margin: 0 0 var(--space-4);
+}
+
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: var(--space-3);
+}
+
+.album-cromo {
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  text-align: center;
+  position: relative;
+}
+.album-cromo--pendiente { opacity: 0.5; }
+.album-cromo--leyenda { border-color: var(--rz-border-yellow); }
+
+.album-cromo__foto {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--rz-bg-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.album-cromo__foto img { width: 100%; height: 100%; object-fit: cover; }
+.album-cromo__interrogante { font-family: var(--font-display); font-size: 28px; color: var(--rz-text-muted); }
+
+.album-cromo__nombre {
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  color: var(--rz-text-secondary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.album-cromo__dorsal {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(0,0,0,0.6);
+  color: var(--rz-text-primary);
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+}
+
+.album-cromo__repe {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--rz-yellow);
+  color: #060D1A;
+  font-size: 10px;
+  font-weight: var(--weight-bold);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+}
+
+/* -------- Revelación del sobre -------- */
+.album-reveal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.album-reveal__panel {
+  background: #0A1628;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.album-reveal__grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-2);
+}
+
+@media (max-width: 480px) {
+  .album-reveal__grid { grid-template-columns: repeat(3, 1fr); }
+}

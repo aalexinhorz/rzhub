@@ -28,6 +28,7 @@ const NAV_GROUPS = [
     type: 'group', id: 'juegos', label: 'Juegos', items: [
       { to: '/zaragozle', label: 'Zaragozle' },
       { to: '/adivina-resultado', label: 'Adivina el resultado' },
+      { to: '/album', label: 'Álbum de cromos' },
     ],
   },
   {
