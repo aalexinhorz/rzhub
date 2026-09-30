@@ -185,3 +185,157 @@
 @media (max-width: 480px) {
   .album-reveal__grid { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* -------- Sobre cerrado: bandazo + rasgado -------- */
+.album-sobre-zona { display: flex; flex-direction: column; align-items: center; gap: var(--space-5); padding: var(--space-4) 0; }
+
+.album-sobre {
+  position: relative;
+  width: 180px;
+  height: 250px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(150deg, #0B4390 0%, #05286d 55%, #041f5c 100%);
+  border: 2px solid rgba(255, 200, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+  animation: album-sobre-idle 2.4s ease-in-out infinite;
+}
+.album-sobre:hover { animation-play-state: paused; transform: scale(1.03); }
+
+.album-sobre__escudo {
+  font-family: var(--font-display);
+  font-size: 40px;
+  color: var(--rz-yellow);
+  line-height: 1;
+}
+.album-sobre__texto {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.08em;
+  text-align: center;
+  color: rgba(255,255,255,0.7);
+}
+
+.album-sobre__destello {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff9d6 0%, var(--rz-yellow) 40%, transparent 75%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes album-sobre-idle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(-1deg); }
+}
+
+@keyframes album-sobre-bandazo {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(-8deg) scale(1.02); }
+  40% { transform: rotate(7deg) scale(1.02); }
+  60% { transform: rotate(-5deg) scale(1.03); }
+  80% { transform: rotate(3deg) scale(1.03); }
+}
+
+@keyframes album-sobre-disolver {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes album-destello-flash {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(6); opacity: 0; }
+}
+
+.album-sobre--rasgando {
+  animation: album-sobre-bandazo 0.4s ease-in-out, album-sobre-disolver 0.4s ease-in 0.4s forwards;
+  pointer-events: none;
+}
+.album-sobre--rasgando .album-sobre__destello {
+  animation: album-destello-flash 0.5s ease-out 0.45s forwards;
+}
+
+/* -------- Cartas boca abajo con giro 3D -------- */
+.album-carta { width: 100%; aspect-ratio: 3/4; cursor: pointer; perspective: 900px; }
+
+.album-carta__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.album-carta__inner.is-flipped { transform: rotateY(180deg); }
+
+.album-carta__cara {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.album-carta__dorso {
+  background: linear-gradient(150deg, #0B4390 0%, #05286d 100%);
+  border: 2px solid rgba(255, 200, 0, 0.35);
+  color: var(--rz-yellow);
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+
+.album-carta__frente {
+  transform: rotateY(180deg);
+  background: var(--rz-bg-2);
+  border: 2px solid var(--rz-border-md);
+  justify-content: flex-start;
+  padding: 4px;
+  box-sizing: border-box;
+}
+.album-carta__frente.es-leyenda { border-color: var(--rz-yellow); box-shadow: 0 0 16px rgba(255, 200, 0, 0.5); }
+
+.album-carta__foto {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--rz-bg-3);
+}
+.album-carta__foto img { width: 100%; height: 100%; object-fit: cover; }
+
+.album-carta__nombre {
+  font-size: 9px;
+  font-weight: var(--weight-semibold);
+  color: var(--rz-text-secondary);
+  margin: 3px 0 0;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.album-reveal__saltar {
+  align-self: center;
+  background: none;
+  border: none;
+  color: var(--rz-text-muted);
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -60,23 +60,56 @@ function CromoCard({ cromo, cantidad }) {
   )
 }
 
-function RevelacionSobre({ cromos, onClose }) {
+// Simula la apertura de un sobre físico: 1) sobre cerrado que el
+// usuario "rasga" con un click (bandazo + destello de luz + el
+// sobre se desintegra), 2) los 5 cromos boca abajo, que se revelan
+// uno a uno con un giro 3D al tocarlos — mismo patrón que Panini
+// Collection/FUT en vez de mostrarlos todos de golpe.
+function SobreOverlay({ datos, fase, flipped, onRasgar, onFlip, onRevelarTodas, onCerrar }) {
+  const todasReveladas = flipped.every(Boolean)
+
   return (
-    <div className="album-reveal" onClick={onClose}>
+    <div className="album-reveal" onClick={todasReveladas ? onCerrar : undefined}>
       <div className="album-reveal__panel" onClick={e => e.stopPropagation()}>
-        <p className="rz-eyebrow rz-eyebrow--yellow" style={{ textAlign: 'center' }}>Tu sobre de hoy</p>
-        <div className="album-reveal__grid">
-          {cromos.map((c, i) => (
-            <div key={i} className={`album-cromo${c.out_categoria === 'leyenda' ? ' album-cromo--leyenda' : ''}`}>
-              <div className="album-cromo__foto">
-                <img src={c.out_foto || DEFAULT_PHOTO} alt="" />
-              </div>
-              <p className="album-cromo__nombre">{c.out_nombre}</p>
-              {c.out_cantidad > 1 && <span className="album-cromo__repe">×{c.out_cantidad}</span>}
+        {fase !== 'revelando' ? (
+          <div className="album-sobre-zona">
+            <p className="rz-eyebrow rz-eyebrow--yellow" style={{ textAlign: 'center' }}>
+              {fase === 'rasgando' ? 'Abriendo…' : 'Toca el sobre para abrirlo'}
+            </p>
+            <div className={`album-sobre${fase === 'rasgando' ? ' album-sobre--rasgando' : ''}`} onClick={fase === 'cerrado' ? onRasgar : undefined}>
+              <span className="album-sobre__escudo">RZ</span>
+              <span className="album-sobre__texto">RZ HUB<br />TEMPORADA 26/27</span>
+              <span className="album-sobre__destello" aria-hidden="true" />
             </div>
-          ))}
-        </div>
-        <button className="rz-btn rz-btn--primary" onClick={onClose}>Guardar en el álbum</button>
+          </div>
+        ) : (
+          <>
+            <p className="rz-eyebrow rz-eyebrow--yellow" style={{ textAlign: 'center' }}>Tu sobre de hoy</p>
+            <div className="album-reveal__grid">
+              {datos.map((c, i) => (
+                <div key={i} className="album-carta" onClick={() => onFlip(i)}>
+                  <div className={`album-carta__inner${flipped[i] ? ' is-flipped' : ''}`}>
+                    <div className="album-carta__cara album-carta__dorso">
+                      <span>RZ</span>
+                    </div>
+                    <div className={`album-carta__cara album-carta__frente${c.out_categoria === 'leyenda' ? ' es-leyenda' : ''}`}>
+                      <div className="album-carta__foto">
+                        <img src={c.out_foto || DEFAULT_PHOTO} alt="" />
+                      </div>
+                      <p className="album-carta__nombre">{c.out_nombre}</p>
+                      {c.out_cantidad > 1 && <span className="album-cromo__repe">×{c.out_cantidad}</span>}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {!todasReveladas ? (
+              <button className="album-reveal__saltar" onClick={onRevelarTodas}>Revelar todas</button>
+            ) : (
+              <button className="rz-btn rz-btn--primary" onClick={onCerrar}>Guardar en el álbum</button>
+            )}
+          </>
+        )}
       </div>
     </div>
   )
@@ -88,7 +121,9 @@ export default function Album() {
   const { coleccion, estado, loading, refrescar } = useColeccion(user)
   const [abriendo, setAbriendo] = useState(false)
   const [error, setError] = useState(null)
-  const [revelacion, setRevelacion] = useState(null)
+  const [datosSobre, setDatosSobre] = useState(null)
+  const [faseSobre, setFaseSobre] = useState(null) // null | 'cerrado' | 'rasgando' | 'revelando'
+  const [flipped, setFlipped] = useState([])
 
   const plantilla = cromos.filter(c => c.categoria === 'plantilla')
   const leyendas = cromos.filter(c => c.categoria === 'leyenda')
@@ -101,8 +136,25 @@ export default function Album() {
     const { data, error: err } = await supabase.rpc('album_abrir_sobre')
     setAbriendo(false)
     if (err) { setError(err.message); return }
-    setRevelacion(data)
+    setDatosSobre(data)
+    setFlipped(new Array(data.length).fill(false))
+    setFaseSobre('cerrado')
     refrescar()
+  }
+
+  function rasgarSobre() {
+    setFaseSobre('rasgando')
+    setTimeout(() => setFaseSobre('revelando'), 750)
+  }
+
+  function flipCarta(i) {
+    setFlipped(prev => prev.map((v, idx) => idx === i ? true : v))
+  }
+
+  function cerrarSobre() {
+    setFaseSobre(null)
+    setDatosSobre(null)
+    setFlipped([])
   }
 
   return (
@@ -175,7 +227,17 @@ export default function Album() {
         <Footer />
       </div>
 
-      {revelacion && <RevelacionSobre cromos={revelacion} onClose={() => setRevelacion(null)} />}
+      {faseSobre && (
+        <SobreOverlay
+          datos={datosSobre}
+          fase={faseSobre}
+          flipped={flipped}
+          onRasgar={rasgarSobre}
+          onFlip={flipCarta}
+          onRevelarTodas={() => setFlipped(prev => prev.map(() => true))}
+          onCerrar={cerrarSobre}
+        />
+      )}
     </div>
   )
 }
