@@ -26,6 +26,22 @@ export const TOOLS = [
     ),
   },
   {
+    id: 'pizarra',
+    title: 'La Pizarra',
+    description: 'Monta tu jugada: coloca a los jugadores del Real Zaragoza donde quieras y descarga tu táctica.',
+    href: '/pizarra',
+    badge: 'Nuevo',
+    icon: (
+      <svg {...ICON_PROPS}>
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="12" cy="7.5" r="1.1" fill="currentColor" stroke="none" />
+        <circle cx="7.5" cy="16.5" r="1.1" fill="currentColor" stroke="none" />
+        <circle cx="16.5" cy="16.5" r="1.1" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
     id: 'mercado',
     title: 'Mercado',
     description: 'Sigue los movimientos de jugadores del Real Zaragoza.',

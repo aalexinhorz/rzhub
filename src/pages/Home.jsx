@@ -5,6 +5,7 @@ import useAuth from '../hooks/useAuth'
 import { ESCUDOS_CLUBS, fetchEscudoFallback } from '../lib/escudos'
 import PreviaBanner from '../components/PreviaBanner'
 import PostPartidoBanner from '../components/PostPartidoBanner'
+import PizarraBanner from '../components/PizarraBanner'
 import HeroSection from '../components/HeroSection'
 import CommunityStats from '../components/CommunityStats'
 import ToolsSection from '../components/ToolsSection'
@@ -142,6 +143,9 @@ export default function Home() {
           },
         }}
       />
+
+      {/* ── AVISO LANZAMIENTO LA PIZARRA (quitar a mano cuando deje de ser novedad) ─── */}
+      <PizarraBanner />
 
       {/* ── AVISO POST PARTIDO (automático, según videos_canal) ─── */}
       <PostPartidoBanner />
