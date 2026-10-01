@@ -124,12 +124,11 @@ export async function drawPizarraCanvas(fichas, balon) {
   if (bg) ctx.drawImage(bg, 0, 0, W, H)
 
   ctx.fillStyle = '#ffffff'
-  ctx.font = '700 11px Archivo, sans-serif'
-  ctx.textAlign = 'right'
-  ctx.textBaseline = 'bottom'
+  ctx.font = '700 20px Archivo, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
   const pitchTopY = H * (179 / 1350)
-  const pitchRightX = W * (997.409 / 1080)
-  ctx.fillText('rzhub.es', pitchRightX, pitchTopY - 8)
+  ctx.fillText('rzhub.es', W / 2, pitchTopY / 2)
   ctx.textAlign = 'left'
 
   for (const ficha of fichas) {

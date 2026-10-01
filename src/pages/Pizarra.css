@@ -185,6 +185,17 @@
   margin-bottom: var(--space-3);
 }
 
+/* Misma marca que ya lleva dentro la imagen/vídeo exportado, para que
+   se vea también en pantalla justo encima del campo. */
+.pizarra-marca {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  color: var(--rz-text-primary);
+  text-align: center;
+  margin: 0 0 var(--space-2);
+}
+
 /* -------- Panel de jugadores: buscador, chips, grid -------- */
 .pizarra-jugadores { display: flex; flex-direction: column; gap: var(--space-3); }
 

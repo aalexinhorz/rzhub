@@ -102,6 +102,7 @@ export default function Pizarra() {
   const [instantaneas, setInstantaneas] = useState([])
   const [exportando, setExportando] = useState(false)
   const [grabandoVideo, setGrabandoVideo] = useState(false)
+  const [estadoVideo, setEstadoVideo] = useState('')
   const [errorVideo, setErrorVideo] = useState(null)
   const campoRef = useRef(null)
 
@@ -161,11 +162,12 @@ export default function Pizarra() {
     setErrorVideo(null)
     setGrabandoVideo(true)
     try {
-      await descargarVideoPizarra(instantaneas)
+      await descargarVideoPizarra(instantaneas, setEstadoVideo)
     } catch (err) {
       setErrorVideo(err.message || 'No se pudo grabar el vídeo.')
     } finally {
       setGrabandoVideo(false)
+      setEstadoVideo('')
     }
   }
 
@@ -250,6 +252,7 @@ export default function Pizarra() {
                     {exportando ? 'Generando…' : '⬇ Descargar imagen'}
                   </button>
                 </div>
+                <p className="pizarra-marca">rzhub.es</p>
                 <PizarraCampo
                   fichas={fichasVisibles}
                   onMoverFicha={moverFicha}
@@ -310,7 +313,7 @@ export default function Pizarra() {
                       onClick={handleDescargarVideo}
                       disabled={reproduciendo || grabandoVideo || instantaneas.length < 2}
                     >
-                      {grabandoVideo ? 'Grabando vídeo…' : '🎥 Descargar vídeo'}
+                      {grabandoVideo ? (estadoVideo || 'Preparando…') : '🎥 Descargar vídeo (.mp4)'}
                     </button>
                   )}
                   {errorVideo && <p className="pizarra-panel-bloque__ayuda">{errorVideo}</p>}

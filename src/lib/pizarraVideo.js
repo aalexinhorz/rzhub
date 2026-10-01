@@ -9,6 +9,8 @@
 // cada fotograma — cargarlas de nuevo en cada tick de la animación
 // sería demasiado lento para ir a 30fps.
 
+import { FFmpeg } from '@ffmpeg/ffmpeg'
+import { toBlobURL, fetchFile } from '@ffmpeg/util'
 import { DEFAULT_PHOTO, W, H, CARD_W, CARD_H, NAME_BAR_H, loadImage, roundRect, drawCover, truncate } from './pizarraCanvas'
 import { DURACION_TRANSICION_MS, interpolarInstantaneas } from './pizarraInterpolacion'
 
@@ -75,12 +77,11 @@ function dibujarFrameSync(ctx, fichas, balon, imagenes) {
   if (bg) ctx.drawImage(bg, 0, 0, W, H)
 
   ctx.fillStyle = '#ffffff'
-  ctx.font = '700 11px Archivo, sans-serif'
-  ctx.textAlign = 'right'
-  ctx.textBaseline = 'bottom'
+  ctx.font = '700 20px Archivo, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
   const pitchTopY = H * (179 / 1350)
-  const pitchRightX = W * (997.409 / 1080)
-  ctx.fillText('rzhub.es', pitchRightX, pitchTopY - 8)
+  ctx.fillText('rzhub.es', W / 2, pitchTopY / 2)
   ctx.textAlign = 'left'
 
   for (const ficha of fichas) dibujarFichaSync(ctx, ficha, imagenes)
@@ -165,11 +166,51 @@ export async function grabarVideoPizarra(instantaneas, { fps = 30, pausaInicialM
   return new Blob(chunks, { type: recorder.mimeType || 'video/webm' })
 }
 
-export async function descargarVideoPizarra(instantaneas) {
-  const blob = await grabarVideoPizarra(instantaneas)
-  const url = URL.createObjectURL(blob)
+// MediaRecorder solo graba de forma fiable en .webm en Chrome/Firefox
+// (no hay soporte real de .mp4 nativo multiplataforma) — pero .webm
+// no se puede subir a Twitter/X ni a Instagram. La solución es
+// convertirlo a .mp4 en el propio navegador con ffmpeg.wasm (FFmpeg
+// compilado a WebAssembly, sin servidor): se graba el .webm como
+// siempre y luego se transcodifica a H.264/.mp4. El núcleo de FFmpeg
+// (~25MB) se carga una sola vez desde un CDN la primera vez que hace
+// falta, no se empaqueta con el sitio.
+const FFMPEG_CORE_BASE = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm'
+
+let ffmpegPromise = null
+function cargarFfmpeg() {
+  if (!ffmpegPromise) {
+    ffmpegPromise = (async () => {
+      const ffmpeg = new FFmpeg()
+      await ffmpeg.load({
+        coreURL: await toBlobURL(`${FFMPEG_CORE_BASE}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${FFMPEG_CORE_BASE}/ffmpeg-core.wasm`, 'application/wasm'),
+      })
+      return ffmpeg
+    })()
+  }
+  return ffmpegPromise
+}
+
+async function transcodificarAMp4(blobWebm) {
+  const ffmpeg = await cargarFfmpeg()
+  await ffmpeg.writeFile('entrada.webm', await fetchFile(blobWebm))
+  await ffmpeg.exec(['-i', 'entrada.webm', '-c:v', 'libx264', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', 'salida.mp4'])
+  const datos = await ffmpeg.readFile('salida.mp4')
+  await ffmpeg.deleteFile('entrada.webm')
+  await ffmpeg.deleteFile('salida.mp4')
+  return new Blob([datos.buffer], { type: 'video/mp4' })
+}
+
+export async function descargarVideoPizarra(instantaneas, onEstado) {
+  onEstado?.('Grabando…')
+  const webm = await grabarVideoPizarra(instantaneas)
+
+  onEstado?.('Convirtiendo a MP4…')
+  const mp4 = await transcodificarAMp4(webm)
+
+  const url = URL.createObjectURL(mp4)
   const link = document.createElement('a')
-  link.download = 'pizarra-real-zaragoza.webm'
+  link.download = 'pizarra-real-zaragoza.mp4'
   link.href = url
   document.body.appendChild(link)
   link.click()
