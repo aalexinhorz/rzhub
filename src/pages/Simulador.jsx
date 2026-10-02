@@ -135,8 +135,15 @@ export default function Simulador() {
     supabase.from('liga_calendario').select('*').order('jornada').order('id').then(({ data }) => {
       const fixtures = data || []
       setCalendario(fixtures)
-      const primeraSinJugar = fixtures.find(f => f.goles_local === null)
-      setJornada(primeraSinJugar ? primeraSinJugar.jornada : 1)
+      // La jornada por defecto se fija por el partido del Real Zaragoza,
+      // no por "¿está completo el calendario de toda la jornada?" — un
+      // aplazamiento entre otros dos equipos (p. ej. Cartagena-Murcia en
+      // la J5) no debe dejar el simulador anclado ahí si el Zaragoza ya
+      // jugó su partido de esa jornada.
+      const primerPartidoZaragozaSinJugar = fixtures.find(f =>
+        (f.equipo_local === 'Real Zaragoza' || f.equipo_visitante === 'Real Zaragoza') && f.goles_local === null
+      )
+      setJornada(primerPartidoZaragozaSinJugar ? primerPartidoZaragozaSinJugar.jornada : 1)
       setLoading(false)
     })
   }, [])
