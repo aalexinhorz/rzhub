@@ -89,6 +89,63 @@ async function drawFicha(ctx, ficha) {
   ctx.stroke()
 }
 
+export function drawOposicionToken(ctx, token) {
+  const cx = (W * token.x) / 100
+  const cy = (H * token.y) / 100
+  const size = 18
+  ctx.save()
+  ctx.globalAlpha = token.opacity ?? 1
+  ctx.beginPath()
+  ctx.arc(cx, cy, size / 2, 0, Math.PI * 2)
+  ctx.fillStyle = '#f5c400'
+  ctx.fill()
+  ctx.lineWidth = 2
+  ctx.strokeStyle = '#8a6800'
+  ctx.stroke()
+  ctx.restore()
+}
+
+// Línea + cabeza de flecha dibujadas a mano (sin librerías), igual que
+// el resto de este archivo — puntos en % del campo, convertidos aquí a
+// px de W/H.
+export function drawFlecha(ctx, flecha) {
+  const x1 = (W * flecha.x1) / 100
+  const y1 = (H * flecha.y1) / 100
+  const x2 = (W * flecha.x2) / 100
+  const y2 = (H * flecha.y2) / 100
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const len = Math.hypot(dx, dy) || 1
+  const ux = dx / len
+  const uy = dy / len
+  const grosor = Math.max(1.5, W * 0.008)
+  const cabezaLargo = Math.max(8, W * 0.035)
+  const cabezaAncho = cabezaLargo * 0.7
+  const baseX = x2 - ux * cabezaLargo
+  const baseY = y2 - uy * cabezaLargo
+  const px = -uy
+  const py = ux
+
+  ctx.save()
+  ctx.globalAlpha = flecha.opacity ?? 1
+  ctx.lineCap = 'round'
+  ctx.strokeStyle = '#ffffff'
+  ctx.lineWidth = grosor
+  ctx.beginPath()
+  ctx.moveTo(x1, y1)
+  ctx.lineTo(baseX, baseY)
+  ctx.stroke()
+
+  ctx.beginPath()
+  ctx.moveTo(x2, y2)
+  ctx.lineTo(baseX + (px * cabezaAncho) / 2, baseY + (py * cabezaAncho) / 2)
+  ctx.lineTo(baseX - (px * cabezaAncho) / 2, baseY - (py * cabezaAncho) / 2)
+  ctx.closePath()
+  ctx.fillStyle = '#ffffff'
+  ctx.fill()
+  ctx.restore()
+}
+
 async function drawBalon(ctx, balon) {
   const cx = (W * balon.x) / 100
   const cy = (H * balon.y) / 100
@@ -105,7 +162,7 @@ async function drawBalon(ctx, balon) {
   ctx.restore()
 }
 
-export async function drawPizarraCanvas(fichas, balon) {
+export async function drawPizarraCanvas(fichas, balon, oposicion = [], flechas = []) {
   const scale = 2
   const canvas = document.createElement('canvas')
   canvas.width = W * scale
@@ -131,6 +188,8 @@ export async function drawPizarraCanvas(fichas, balon) {
   ctx.fillText('rzhub.es', W / 2, pitchTopY / 2)
   ctx.textAlign = 'left'
 
+  for (const flecha of flechas) drawFlecha(ctx, flecha)
+  for (const token of oposicion) drawOposicionToken(ctx, token)
   for (const ficha of fichas) {
     await drawFicha(ctx, ficha)
   }
@@ -139,8 +198,8 @@ export async function drawPizarraCanvas(fichas, balon) {
   return canvas
 }
 
-export async function descargarPizarra(fichas, balon) {
-  const canvas = await drawPizarraCanvas(fichas, balon)
+export async function descargarPizarra(fichas, balon, oposicion = [], flechas = []) {
+  const canvas = await drawPizarraCanvas(fichas, balon, oposicion, flechas)
   const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')

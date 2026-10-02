@@ -5,6 +5,7 @@ import Footer from '../components/Footer'
 import PizarraCampo from '../components/PizarraCampo'
 import usePlayers from '../hooks/usePlayers'
 import usePizarraPlayback from '../hooks/usePizarraPlayback'
+import { formations } from '../lib/formations'
 import { descargarPizarra } from '../lib/pizarraCanvas'
 import { descargarVideoPizarra, soportaGrabacionVideo } from '../lib/pizarraVideo'
 import './Pizarra.css'
@@ -99,6 +100,8 @@ export default function Pizarra() {
   const zaragozaPlayers = useMemo(() => players.filter(p => p.isZaragoza), [players])
   const [fichas, setFichas] = useState([])
   const [balon, setBalon] = useState(null)
+  const [oposicion, setOposicion] = useState([])
+  const [flechas, setFlechas] = useState([])
   const [instantaneas, setInstantaneas] = useState([])
   const [exportando, setExportando] = useState(false)
   const [grabandoVideo, setGrabandoVideo] = useState(false)
@@ -113,6 +116,8 @@ export default function Pizarra() {
       id: `inst_${Date.now()}`,
       fichas: fichas.map(f => ({ ...f })),
       balon: balon ? { ...balon } : null,
+      oposicion: oposicion.map(o => ({ ...o })),
+      flechas: flechas.map(f => ({ ...f })),
     }])
   }
 
@@ -142,17 +147,72 @@ export default function Pizarra() {
     setBalon(prev => prev ? { x: clamp(prev.x + dxPct), y: clamp(prev.y + dyPct) } : prev)
   }
 
+  function agregarOposicion() {
+    const jitterX = (Math.random() - 0.5) * 14
+    const jitterY = (Math.random() - 0.5) * 14
+    setOposicion(prev => [...prev, {
+      id: `op_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      x: clamp(50 + jitterX), y: clamp(50 + jitterY),
+    }])
+  }
+
+  // Las coordenadas de formations.js están pensadas para "tu" equipo
+  // (portero abajo, ataca hacia arriba) — la oposición defiende la
+  // portería contraria, así que se espeja en vertical (100 - y) para
+  // que las dos elevenas queden encaradas en el campo.
+  function agregarOnceOposicion() {
+    const posiciones = formations['4-2-3-1']
+    setOposicion(prev => [
+      ...prev,
+      ...posiciones.map((p, i) => ({
+        id: `op_${Date.now()}_${i}_${Math.random().toString(36).slice(2, 7)}`,
+        x: p.x,
+        y: 100 - p.y,
+      })),
+    ])
+  }
+
+  function quitarOposicion(id) {
+    setOposicion(prev => prev.filter(o => o.id !== id))
+  }
+
+  function moverOposicion(id, dxPct, dyPct) {
+    setOposicion(prev => prev.map(o => o.id === id ? { ...o, x: clamp(o.x + dxPct), y: clamp(o.y + dyPct) } : o))
+  }
+
+  function agregarFlecha() {
+    setFlechas(prev => [...prev, {
+      id: `flecha_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      x1: 35, y1: 50, x2: 65, y2: 50,
+    }])
+  }
+
+  function quitarFlecha(id) {
+    setFlechas(prev => prev.filter(f => f.id !== id))
+  }
+
+  function moverExtremoFlecha(id, extremo, dxPct, dyPct) {
+    setFlechas(prev => prev.map(f => {
+      if (f.id !== id) return f
+      return extremo === 'inicio'
+        ? { ...f, x1: clamp(f.x1 + dxPct), y1: clamp(f.y1 + dyPct) }
+        : { ...f, x2: clamp(f.x2 + dxPct), y2: clamp(f.y2 + dyPct) }
+    }))
+  }
+
   function limpiarPizarra() {
     detener()
     setFichas([])
     setBalon(null)
+    setOposicion([])
+    setFlechas([])
   }
 
   async function handleDescargar() {
     setExportando(true)
     await new Promise(r => setTimeout(r, 30)) // deja repintar sin los botones ✕ (capturing=true)
     try {
-      await descargarPizarra(fichas, balon)
+      await descargarPizarra(fichas, balon, oposicion, flechas)
     } finally {
       setExportando(false)
     }
@@ -171,9 +231,11 @@ export default function Pizarra() {
     }
   }
 
-  const tableroVacio = fichas.length === 0 && !balon
+  const tableroVacio = fichas.length === 0 && !balon && oposicion.length === 0 && flechas.length === 0
   const fichasVisibles = reproduciendo && frame ? frame.fichas : fichas
   const balonVisible = reproduciendo && frame ? frame.balon : balon
+  const oposicionVisible = reproduciendo && frame ? frame.oposicion : oposicion
+  const flechasVisibles = reproduciendo && frame ? frame.flechas : flechas
 
   return (
     <div className="pizarra-page">
@@ -260,6 +322,12 @@ export default function Pizarra() {
                   balon={balonVisible}
                   onMoverBalon={moverBalon}
                   onRemoveBalon={() => setBalon(null)}
+                  oposicion={oposicionVisible}
+                  onMoverOposicion={moverOposicion}
+                  onRemoveOposicion={quitarOposicion}
+                  flechas={flechasVisibles}
+                  onMoverExtremoFlecha={moverExtremoFlecha}
+                  onRemoveFlecha={quitarFlecha}
                   capturing={exportando || reproduciendo}
                   campoRef={campoRef}
                 />
@@ -272,14 +340,33 @@ export default function Pizarra() {
 
                 <div className="pizarra-panel-bloque">
                   <p className="pizarra-panel-bloque__titulo">Balón</p>
-                  <button className="rz-btn rz-btn--ghost pizarra-panel-bloque__boton" onClick={agregarBalon} disabled={!!balon || reproduciendo}>
+                  <button className="rz-btn pizarra-btn-azul pizarra-panel-bloque__boton" onClick={agregarBalon} disabled={!!balon || reproduciendo}>
                     {balon ? 'Balón ya en el campo' : '⚽ Añadir balón'}
                   </button>
                 </div>
 
                 <div className="pizarra-panel-bloque">
+                  <p className="pizarra-panel-bloque__titulo">Oposición</p>
+                  <button className="rz-btn pizarra-btn-azul pizarra-panel-bloque__boton" onClick={agregarOposicion} disabled={reproduciendo}>
+                    🟡 Añadir oposición
+                  </button>
+                  <button className="rz-btn pizarra-btn-azul pizarra-panel-bloque__boton" onClick={agregarOnceOposicion} disabled={reproduciendo}>
+                    🟡 Añadir once de oposición
+                  </button>
+                  <p className="pizarra-panel-bloque__ayuda">Fichas genéricas para marcar rivales, sin jugador real asociado.</p>
+                </div>
+
+                <div className="pizarra-panel-bloque">
+                  <p className="pizarra-panel-bloque__titulo">Flechas</p>
+                  <button className="rz-btn pizarra-btn-azul pizarra-panel-bloque__boton" onClick={agregarFlecha} disabled={reproduciendo}>
+                    ➜ Añadir flecha
+                  </button>
+                  <p className="pizarra-panel-bloque__ayuda">Arrastra cada extremo para marcar hacia dónde quieres que vaya un jugador.</p>
+                </div>
+
+                <div className="pizarra-panel-bloque">
                   <p className="pizarra-panel-bloque__titulo">Animación</p>
-                  <button className="rz-btn rz-btn--ghost pizarra-panel-bloque__boton" onClick={tomarInstantanea} disabled={reproduciendo || tableroVacio}>
+                  <button className="rz-btn pizarra-btn-azul pizarra-panel-bloque__boton" onClick={tomarInstantanea} disabled={reproduciendo || tableroVacio}>
                     📸 Tomar instantánea
                   </button>
 
@@ -323,7 +410,7 @@ export default function Pizarra() {
                   <button className="rz-btn rz-btn--outline-yellow" onClick={handleDescargar} disabled={exportando || reproduciendo || tableroVacio}>
                     {exportando ? 'Generando…' : '⬇ Descargar imagen'}
                   </button>
-                  <button className="rz-btn rz-btn--ghost" onClick={limpiarPizarra} disabled={reproduciendo || tableroVacio}>
+                  <button className="rz-btn pizarra-btn-azul" onClick={limpiarPizarra} disabled={reproduciendo || tableroVacio}>
                     Limpiar pizarra
                   </button>
                 </div>

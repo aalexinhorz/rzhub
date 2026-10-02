@@ -7,35 +7,48 @@ export const DURACION_TRANSICION_MS = 1200
 
 function lerp(a, b, t) { return a + (b - a) * t }
 
-// Las fichas que existen en ambas instantáneas se deslizan en línea
-// recta (match por ficha.id, que no cambia al moverla — solo al
-// crearla/quitarla), las que solo están en "desde" se quedan quietas
-// mientras se desvanecen (se van del tablero), y las que solo están
-// en "hasta" aparecen ya en su sitio desvaneciéndose hacia dentro
-// (entran al tablero a mitad de la jugada).
-export function interpolarInstantaneas(desde, hasta, t) {
+const lerpPunto = (d, h, t) => ({ x: lerp(d.x, h.x, t), y: lerp(d.y, h.y, t) })
+const lerpFlecha = (d, h, t) => ({
+  x1: lerp(d.x1, h.x1, t), y1: lerp(d.y1, h.y1, t),
+  x2: lerp(d.x2, h.x2, t), y2: lerp(d.y2, h.y2, t),
+})
+
+// Empareja dos listas por `id` (no cambia al mover un elemento, solo al
+// crearlo/quitarlo): los que existen en ambas se interpolan con
+// `lerpCampos`, los que solo están en "desde" se quedan quietos
+// mientras se desvanecen, y los que solo están en "hasta" aparecen ya
+// en su sitio desvaneciéndose hacia dentro. Usado para fichas, fichas
+// de oposición y flechas — balón se trata aparte porque es un único
+// objeto, no una lista.
+function interpolarListaPorId(listaDesde, listaHasta, t, lerpCampos) {
   const porId = new Map()
-  desde.fichas.forEach(f => porId.set(f.id, { desde: f, hasta: null }))
-  hasta.fichas.forEach(f => {
-    const actual = porId.get(f.id)
-    if (actual) actual.hasta = f
-    else porId.set(f.id, { desde: null, hasta: f })
+  listaDesde.forEach(item => porId.set(item.id, { desde: item, hasta: null }))
+  listaHasta.forEach(item => {
+    const actual = porId.get(item.id)
+    if (actual) actual.hasta = item
+    else porId.set(item.id, { desde: null, hasta: item })
   })
 
-  const fichas = [...porId.values()].map(({ desde: d, hasta: h }) => {
-    if (d && h) return { ...h, x: lerp(d.x, h.x, t), y: lerp(d.y, h.y, t), opacity: 1 }
+  return [...porId.values()].map(({ desde: d, hasta: h }) => {
+    if (d && h) return { ...h, ...lerpCampos(d, h, t), opacity: 1 }
     if (d && !h) return { ...d, opacity: 1 - t }
     return { ...h, opacity: t }
   })
+}
+
+export function interpolarInstantaneas(desde, hasta, t) {
+  const fichas = interpolarListaPorId(desde.fichas, hasta.fichas, t, lerpPunto)
+  const oposicion = interpolarListaPorId(desde.oposicion || [], hasta.oposicion || [], t, lerpPunto)
+  const flechas = interpolarListaPorId(desde.flechas || [], hasta.flechas || [], t, lerpFlecha)
 
   let balon = null
   if (desde.balon && hasta.balon) {
-    balon = { x: lerp(desde.balon.x, hasta.balon.x, t), y: lerp(desde.balon.y, hasta.balon.y, t), opacity: 1 }
+    balon = { ...lerpPunto(desde.balon, hasta.balon, t), opacity: 1 }
   } else if (desde.balon && !hasta.balon) {
     balon = { ...desde.balon, opacity: 1 - t }
   } else if (!desde.balon && hasta.balon) {
     balon = { ...hasta.balon, opacity: t }
   }
 
-  return { fichas, balon }
+  return { fichas, oposicion, flechas, balon }
 }

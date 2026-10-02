@@ -128,6 +128,16 @@
 
 .pizarra-panel-bloque__boton { width: 100%; margin-top: var(--space-3); }
 
+/* Botones secundarios del panel (balón, oposición, flechas, instantánea,
+   limpiar) — degradado en el azul del Real Zaragoza en vez del "ghost"
+   transparente genérico del resto del sitio. */
+.pizarra-btn-azul {
+  background: linear-gradient(180deg, #11509e 0%, #0B4390 55%, #072c5e 100%);
+  color: #ffffff;
+}
+.pizarra-btn-azul:hover { background: linear-gradient(180deg, #1559ab 0%, #0d4a9c 55%, #0a356f 100%); transform: translateY(-1px); }
+.pizarra-btn-azul:disabled { background: linear-gradient(180deg, #3a4a63 0%, #2b3850 100%); color: rgba(255,255,255,0.5); cursor: not-allowed; transform: none; }
+
 .pizarra-panel-bloque__ayuda { font-size: 11px; color: var(--rz-text-muted); margin: var(--space-2) 0 0; }
 
 .pizarra-instantaneas {

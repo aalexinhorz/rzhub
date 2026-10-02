@@ -11,7 +11,7 @@
 
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { toBlobURL, fetchFile } from '@ffmpeg/util'
-import { DEFAULT_PHOTO, W, H, CARD_W, CARD_H, NAME_BAR_H, loadImage, roundRect, drawCover, truncate } from './pizarraCanvas'
+import { DEFAULT_PHOTO, W, H, CARD_W, CARD_H, NAME_BAR_H, loadImage, roundRect, drawCover, truncate, drawOposicionToken, drawFlecha } from './pizarraCanvas'
 import { DURACION_TRANSICION_MS, interpolarInstantaneas } from './pizarraInterpolacion'
 
 const ESCALA = 2
@@ -69,7 +69,7 @@ function dibujarBalonSync(ctx, balon, imagenes) {
   ctx.restore()
 }
 
-function dibujarFrameSync(ctx, fichas, balon, imagenes) {
+function dibujarFrameSync(ctx, fichas, balon, oposicion, flechas, imagenes) {
   ctx.clearRect(0, 0, W, H)
   ctx.fillStyle = '#060D1A'
   ctx.fillRect(0, 0, W, H)
@@ -84,6 +84,8 @@ function dibujarFrameSync(ctx, fichas, balon, imagenes) {
   ctx.fillText('rzhub.es', W / 2, pitchTopY / 2)
   ctx.textAlign = 'left'
 
+  for (const flecha of flechas) drawFlecha(ctx, flecha)
+  for (const token of oposicion) drawOposicionToken(ctx, token)
   for (const ficha of fichas) dibujarFichaSync(ctx, ficha, imagenes)
   if (balon) dibujarBalonSync(ctx, balon, imagenes)
 }
@@ -110,7 +112,7 @@ function animarTransicion(ctx, desde, hasta, imagenes, duracionMs) {
       if (inicio === null) inicio = ts
       const t = Math.min(1, (ts - inicio) / duracionMs)
       const frame = interpolarInstantaneas(desde, hasta, t)
-      dibujarFrameSync(ctx, frame.fichas, frame.balon, imagenes)
+      dibujarFrameSync(ctx, frame.fichas, frame.balon, frame.oposicion, frame.flechas, imagenes)
       if (t >= 1) resolve()
       else requestAnimationFrame(tick)
     }
@@ -143,7 +145,7 @@ export async function grabarVideoPizarra(instantaneas, { fps = 30, pausaInicialM
   await document.fonts.ready
   const imagenes = await precargarImagenes(instantaneas)
 
-  dibujarFrameSync(ctx, instantaneas[0].fichas, instantaneas[0].balon, imagenes)
+  dibujarFrameSync(ctx, instantaneas[0].fichas, instantaneas[0].balon, instantaneas[0].oposicion || [], instantaneas[0].flechas || [], imagenes)
 
   const mimeType = elegirMimeType()
   const stream = canvas.captureStream(fps)

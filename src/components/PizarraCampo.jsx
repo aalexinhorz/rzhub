@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
 import PizarraFicha from './PizarraFicha'
 import PizarraBalon from './PizarraBalon'
+import PizarraOposicion from './PizarraOposicion'
+import PizarraFlecha from './PizarraFlecha'
 
 function scaleByFieldWidth(fieldWidth, min, max, refMin = 320, refMax = 620) {
   if (!fieldWidth) return max
@@ -11,7 +13,13 @@ function scaleByFieldWidth(fieldWidth, min, max, refMin = 320, refMax = 620) {
 // Mismo campo de siempre (mismo SVG, mismas posiciones % de fichas y
 // balón, mismo export a Canvas — nada de eso cambia), en vertical,
 // igual que el Lineup Builder — sin ningún giro.
-export default function PizarraCampo({ fichas, onMoverFicha, onRemoveFicha, balon, onMoverBalon, onRemoveBalon, capturing, campoRef: externalRef }) {
+export default function PizarraCampo({
+  fichas, onMoverFicha, onRemoveFicha,
+  balon, onMoverBalon, onRemoveBalon,
+  oposicion = [], onMoverOposicion, onRemoveOposicion,
+  flechas = [], onMoverExtremoFlecha, onRemoveFlecha,
+  capturing, campoRef: externalRef,
+}) {
   const localRef = useRef(null)
   const outerRef = externalRef || localRef
   const [tamano, setTamano] = useState({ width: 0, height: 0 })
@@ -28,6 +36,7 @@ export default function PizarraCampo({ fichas, onMoverFicha, onRemoveFicha, balo
 
   const fichaSize = scaleByFieldWidth(tamano.width, 34, 66)
   const balonSize = fichaSize * 0.45
+  const oposicionSize = fichaSize * 0.55
 
   return (
     <div ref={medirCampo} style={{ width: '100%', aspectRatio: '540 / 675', position: 'relative', borderRadius: '12px', overflow: 'hidden' }}>
@@ -35,6 +44,29 @@ export default function PizarraCampo({ fichas, onMoverFicha, onRemoveFicha, balo
         style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'fill' }} />
 
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 2 }}>
+        {flechas.map(flecha => (
+          <PizarraFlecha
+            key={flecha.id}
+            flecha={flecha}
+            ancho={tamano.width}
+            alto={tamano.height}
+            capturing={capturing}
+            onRemove={onRemoveFlecha}
+            onMoverExtremo={onMoverExtremoFlecha}
+          />
+        ))}
+        {oposicion.map(token => (
+          <PizarraOposicion
+            key={token.id}
+            token={token}
+            size={oposicionSize}
+            ancho={tamano.width}
+            alto={tamano.height}
+            capturing={capturing}
+            onRemove={onRemoveOposicion}
+            onMover={(dx, dy) => onMoverOposicion(token.id, dx, dy)}
+          />
+        ))}
         {fichas.map(ficha => (
           <PizarraFicha
             key={ficha.id}
