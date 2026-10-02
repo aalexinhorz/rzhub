@@ -70,9 +70,15 @@ export default function Field({ slotsLayout, slots, subs, teamName, setTeamName,
       // un data:/blob: URL no descarga nada: el navegador simplemente
       // ignora el atributo y no pasa nada al hacer click(). La única vía
       // fiable de "descargar" en iOS es la hoja nativa de compartir, que
-      // sí ofrece "Guardar imagen".
+      // sí ofrece "Guardar imagen". Fuera de iOS, navigator.share con
+      // archivos también está soportado (Chrome/Edge de escritorio y
+      // Android) pero ahí el <a download> normal SÍ funciona, así que
+      // usar share ahí solo cambia una descarga directa por un
+      // desplegable innecesario de "compartir" — se restringe a iOS.
+      const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
       const archivo = new File([blob], nombreArchivo, { type: 'image/png' })
-      if (navigator.canShare?.({ files: [archivo] })) {
+      if (esIOS && navigator.canShare?.({ files: [archivo] })) {
         await navigator.share({ files: [archivo] })
         return
       }
