@@ -3,14 +3,15 @@ import { Link } from 'react-router-dom'
 import { ESCUDO_ZARAGOZA, ESCUDOS_CLUBS } from '../lib/escudos'
 import './NotasBanner.css'
 
-// Aviso puntual de que ya se puede votar en Las Notas del Zaragoza-Antequera
-// (J2). Se oculta solo cuando cierra la votación de ese partido (7 días
+// Aviso puntual de que ya se puede votar en Las Notas del Zaragoza-Teruel
+// (J6). Se oculta solo cuando cierra la votación de ese partido (7 días
 // tras el partido, o el día del siguiente si llega antes: ver
-// calcularVentana en usePartidos.js). Fecha límite en hora española
-// explícita (+02:00, CEST) para que no dependa de la zona horaria del
-// navegador de quien lo visite.
-const LIMITE = new Date('2026-09-12T23:59:00+02:00')
-const NOTAS_URL = '/notas/2026-09-05-antequera'
+// calcularVentana en usePartidos.js — aquí coinciden, el siguiente
+// partido es el 11/10). Fecha límite en hora española explícita
+// (+02:00, CEST) para que no dependa de la zona horaria del navegador
+// de quien lo visite.
+const LIMITE = new Date('2026-10-11T23:59:00+02:00')
+const NOTAS_URL = '/notas/2026-10-04-teruel'
 
 export default function NotasBanner() {
   const [visible] = useState(() => new Date() < LIMITE)
@@ -29,14 +30,14 @@ export default function NotasBanner() {
       <span style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
         <img src={ESCUDO_ZARAGOZA} alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
         <span style={{ color: 'rgba(255,255,255,0.4)', fontFamily: 'Archivo, sans-serif', fontSize: '12px', fontWeight: '700' }}>VS</span>
-        <img src={ESCUDOS_CLUBS['Antequera CF']} alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+        <img src={ESCUDOS_CLUBS['CD Teruel']} alt="" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
       </span>
       <span className="notas-banner__text" style={{ color: '#fff', fontFamily: 'Archivo, sans-serif', fontSize: '13px', textAlign: 'center' }}>
         <span className="notas-banner__full">
-          <strong style={{ color: '#f5c400' }}>Ya puedes poner tus notas</strong> del partido VS Antequera
+          <strong style={{ color: '#f5c400' }}>Ya puedes poner tus notas</strong> del partido VS Teruel
         </span>
         <span className="notas-banner__short">
-          <strong style={{ color: '#f5c400' }}>Ya puedes votar:</strong> Real Zaragoza-Antequera
+          <strong style={{ color: '#f5c400' }}>Ya puedes votar:</strong> Real Zaragoza-Teruel
         </span>
       </span>
       <span style={{
