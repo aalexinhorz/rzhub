@@ -5,7 +5,6 @@ import useAuth from '../hooks/useAuth'
 import { ESCUDOS_CLUBS, fetchEscudoFallback } from '../lib/escudos'
 import PreviaBanner from '../components/PreviaBanner'
 import PostPartidoBanner from '../components/PostPartidoBanner'
-import NotasBanner from '../components/NotasBanner'
 import HeroSection from '../components/HeroSection'
 import CommunityStats from '../components/CommunityStats'
 import ToolsSection from '../components/ToolsSection'
@@ -143,9 +142,6 @@ export default function Home() {
           },
         }}
       />
-
-      {/* ── AVISO NOTAS (temporal, se oculta solo) ──────────────── */}
-      <NotasBanner />
 
       {/* ── AVISO POST PARTIDO (automático, según videos_canal) ─── */}
       <PostPartidoBanner />
