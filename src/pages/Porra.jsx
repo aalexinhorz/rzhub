@@ -63,8 +63,16 @@ function isCerrada(partido) {
 }
 
 function getPartidoActivo(partidos) {
-  const abierto = partidos.find(p => p.abierto)
-  if (abierto) return abierto
+  // Lo normal es que solo haya un partido con abierto=true a la vez,
+  // pero si por despiste se cierra uno sin desmarcarlo (pasó con el
+  // Teruel: se finalizó sin poner abierto=false) puede haber más de
+  // uno marcado — ignoramos los ya finalizados y, entre los que
+  // queden, nos quedamos con el de kickoff más reciente en vez del
+  // primero en orden cronológico ascendente.
+  const abiertos = partidos.filter(p => p.abierto && !p.finalizado)
+  if (abiertos.length > 0) {
+    return [...abiertos].sort((a, b) => new Date(b.kickoff) - new Date(a.kickoff))[0]
+  }
   const ahora = new Date()
   const proximos = partidos.filter(p => new Date(p.kickoff) > ahora)
   if (proximos.length > 0) return proximos[0]
