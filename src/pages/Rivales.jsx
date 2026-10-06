@@ -6,6 +6,11 @@ import { supabase } from '../hooks/useAuth'
 import { useEscudo } from '../lib/escudos'
 import './Rivales.css'
 
+// "Villarreal CF B" en `rivales.nombre` vs `Villarreal CF "B"` en
+// liga_calendario (ver nota más completa en Rival.jsx, que hace el
+// mismo cálculo para la ficha de un solo rival).
+const sinComillas = n => (n || '').replace(/[""]/g, '').trim()
+
 function useRivales() {
   const [rivales, setRivales] = useState([])
   const [loading, setLoading] = useState(true)
@@ -14,12 +19,35 @@ function useRivales() {
     Promise.all([
       supabase.from('rivales').select('*').order('nombre'),
       supabase.from('rivales_plantilla').select('rival_id'),
-      supabase.from('rivales_enfrentamientos').select('rival_id'),
-    ]).then(([{ data: rivalesData }, { data: plantillaData }, { data: enfData }]) => {
+      supabase.from('rivales_enfrentamientos').select('rival_id, fecha'),
+      // liga_calendario se actualiza solo (cron fetch-liga-calendario) —
+      // se usa para contar también los enfrentamientos de esta temporada
+      // que no se hayan metido a mano en rivales_enfrentamientos, así el
+      // número no se queda desfasado en cuanto se juega una jornada.
+      supabase.from('liga_calendario')
+        .select('fecha, equipo_local, equipo_visitante, goles_local')
+        .or('equipo_local.eq.Real Zaragoza,equipo_visitante.eq.Real Zaragoza')
+        .not('goles_local', 'is', null),
+    ]).then(([{ data: rivalesData }, { data: plantillaData }, { data: enfData }, { data: ligaData }]) => {
       const conteoPlantilla = new Map()
       plantillaData?.forEach(p => conteoPlantilla.set(p.rival_id, (conteoPlantilla.get(p.rival_id) || 0) + 1))
+
       const conteoEnf = new Map()
-      enfData?.forEach(e => conteoEnf.set(e.rival_id, (conteoEnf.get(e.rival_id) || 0) + 1))
+      const fechasManualesPorRival = new Map()
+      enfData?.forEach(e => {
+        conteoEnf.set(e.rival_id, (conteoEnf.get(e.rival_id) || 0) + 1)
+        if (!fechasManualesPorRival.has(e.rival_id)) fechasManualesPorRival.set(e.rival_id, new Set())
+        fechasManualesPorRival.get(e.rival_id).add(e.fecha)
+      })
+
+      ;(rivalesData || []).forEach(r => {
+        const delRival = (ligaData || []).filter(f =>
+          sinComillas(f.equipo_local) === sinComillas(r.nombre) || sinComillas(f.equipo_visitante) === sinComillas(r.nombre)
+        )
+        const yaContadas = fechasManualesPorRival.get(r.id) || new Set()
+        const nuevos = delRival.filter(f => !yaContadas.has(f.fecha)).length
+        if (nuevos > 0) conteoEnf.set(r.id, (conteoEnf.get(r.id) || 0) + nuevos)
+      })
 
       setRivales((rivalesData || []).map(r => ({
         ...r,
