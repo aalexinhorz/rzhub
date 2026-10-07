@@ -1,0 +1,180 @@
+.entrenadores-page { min-height: 100vh; }
+
+.entrenadores-hero {
+  position: relative;
+  padding: 56px var(--padding-page, 24px) 44px;
+  isolation: isolate;
+  overflow: hidden;
+  text-align: center;
+}
+.entrenadores-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(3, 16, 31, 0.92) 0%, rgba(9, 45, 95, 0.88) 60%, rgba(3, 16, 31, 0.96) 100%),
+    url('/images/estadio-comunidad.webp') center 30% / cover no-repeat;
+}
+
+.entrenadores-hero__eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rz-yellow);
+  margin: 0 0 var(--space-3);
+}
+
+.entrenadores-hero__title {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  font-size: clamp(40px, 7vw, 68px);
+  line-height: 0.98;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0 0 var(--space-4);
+}
+.entrenadores-hero__title span { color: var(--rz-yellow); }
+
+.entrenadores-hero__subtitle {
+  font-size: var(--text-md);
+  color: var(--rz-text-secondary);
+  max-width: 600px;
+  margin: 0 auto var(--space-3);
+  line-height: 1.55;
+}
+
+.entrenadores-hero__total {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  color: #060D1A;
+  background: var(--rz-yellow);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  margin: 0;
+}
+
+.entrenadores-body {
+  padding: 40px 0 0;
+  background: var(--rz-bg-1, #060D1A);
+}
+
+.entrenadores-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 20px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.entrenador-card {
+  display: flex;
+  gap: var(--space-4);
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+.entrenador-card--actual {
+  border-color: var(--rz-yellow);
+  background: linear-gradient(135deg, rgba(255, 200, 0, 0.08), var(--rz-bg-2) 40%);
+}
+
+.entrenador-card__foto {
+  position: relative;
+  flex-shrink: 0;
+  width: 84px;
+  height: 108px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #152445;
+}
+.entrenador-card__foto img { width: 100%; height: 100%; object-fit: cover; }
+.entrenador-card__badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--rz-yellow);
+  color: #060D1A;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 0;
+}
+
+.entrenador-card__cuerpo { flex: 1; min-width: 0; }
+
+.entrenador-card__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.entrenador-card__nombre {
+  font-family: var(--font-body);
+  font-size: 19px;
+  font-weight: var(--weight-bold);
+  color: #ffffff;
+  margin: 0;
+}
+
+.entrenador-card__etapa {
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  color: var(--rz-yellow);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.entrenador-card__fechas {
+  font-size: 13.5px;
+  color: var(--rz-text-muted);
+  margin: 2px 0 var(--space-3);
+}
+
+.entrenador-card__stats {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: 10px;
+}
+.entrenador-card__stat { display: flex; flex-direction: column; align-items: center; min-width: 30px; }
+.entrenador-card__stat-valor { font-family: var(--font-body); font-size: 18px; font-weight: var(--weight-bold); color: #ffffff; line-height: 1.1; }
+.entrenador-card__stat-label { font-size: 10px; color: var(--rz-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.entrenador-card__stat--g .entrenador-card__stat-valor { color: #4ade80; }
+.entrenador-card__stat--e .entrenador-card__stat-valor { color: #fbbf24; }
+.entrenador-card__stat--p .entrenador-card__stat-valor { color: #f87171; }
+
+.entrenador-card__barra {
+  display: flex;
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  background: var(--rz-bg-3, #152445);
+}
+.entrenador-card__barra-g { background: #4ade80; }
+.entrenador-card__barra-e { background: #fbbf24; }
+.entrenador-card__barra-p { background: #f87171; }
+
+.entrenador-card__pct {
+  font-size: 12px;
+  color: var(--rz-text-muted);
+  margin: 6px 0 0;
+}
+
+@media (max-width: 480px) {
+  .entrenador-card { gap: var(--space-3); padding: var(--space-3); }
+  .entrenador-card__foto { width: 64px; height: 84px; }
+  .entrenador-card__stats { gap: var(--space-3); }
+}

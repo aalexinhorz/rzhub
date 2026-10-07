@@ -40,6 +40,7 @@ const Simulador = lazy(() => import('./pages/Simulador'))
 const Zaragozle = lazy(() => import('./pages/Zaragozle'))
 const Pizarra = lazy(() => import('./pages/Pizarra'))
 const GuiaAlcala = lazy(() => import('./pages/GuiaAlcala'))
+const Entrenadores = lazy(() => import('./pages/Entrenadores'))
 const Sobre = lazy(() => import('./pages/Sobre'))
 const Terminos = lazy(() => import('./pages/Terminos'))
 const Privacidad = lazy(() => import('./pages/Privacidad'))
@@ -93,6 +94,7 @@ export default function App() {
           <Route path="/zaragozle" element={<Zaragozle />} />
           <Route path="/pizarra" element={<Pizarra />} />
           <Route path="/guia-alcala" element={<GuiaAlcala />} />
+          <Route path="/entrenadores" element={<Entrenadores />} />
           <Route path="/sobre-rz-hub" element={<Sobre />} />
           <Route path="/terminos" element={<Terminos />} />
           <Route path="/privacidad" element={<Privacidad />} />
