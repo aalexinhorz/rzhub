@@ -28,6 +28,7 @@ const ESCUDOS = {
   'Hércules de Alicante CF': '/escudos/Hercules_CF_crest.svg',
   'Algeciras CF': '/escudos/spain_algeciras.football-logos.cc.svg',
   'UE Sant Andreu': '/escudos/ue-sant-andreu-vector-logo.png',
+  'CD Tudelano': '/escudos/CD_Tudelano_logo.svg',
 }
 
 const ESCUDO_ZARAGOZA = '/escudos/Real_Zaragoza_logo (3).svg'
@@ -60,6 +61,21 @@ function haEmpezado(kickoff) {
 
 function isCerrada(partido) {
   return !partido.abierto || haEmpezado(partido.kickoff)
+}
+
+// La mayoría de partidos son de liga (sin `competicion` en la fila, se
+// calcula "Primera Federación · Jornada N" a partir de `jornada`); los
+// que no lo son (Copa del Rey, etc.) no tienen jornada de liga y
+// guardan su propio texto libre en `competicion` — ver migración
+// add_competicion_a_porra_partidos.
+function competicionTexto(p) {
+  return p.competicion || `Primera Federación · Jornada ${p.jornada}`
+}
+
+// Para las tarjetas pequeñas (última/próxima jornada): "J6" normalmente,
+// o "Copa" cuando no hay jornada de liga.
+function metaJornada(p) {
+  return p.jornada ? `J${p.jornada}` : 'Copa'
 }
 
 function getPartidoActivo(partidos) {
@@ -146,7 +162,7 @@ function JornadaFinalCard({ p, pred }) {
   return (
     <div className="porra-jornada-card">
       <div className="porra-jornada-card__top">
-        <span className="porra-jornada-card__meta">J{p.jornada} · {p.rival}</span>
+        <span className="porra-jornada-card__meta">{metaJornada(p)} · {p.rival}</span>
         <span className="porra-badge porra-badge--closed">Final</span>
       </div>
       <div className="porra-jornada-card__score">
@@ -178,7 +194,7 @@ function JornadaProximaCard({ p }) {
   return (
     <div className="porra-jornada-card">
       <div className="porra-jornada-card__top">
-        <span className="porra-jornada-card__meta">J{p.jornada} · {p.rival}</span>
+        <span className="porra-jornada-card__meta">{metaJornada(p)} · {p.rival}</span>
         <span className={`porra-badge ${abiertaP ? 'porra-badge--open' : 'porra-badge--closed'}`}>
           {abiertaP ? 'Abierta' : 'Próximamente'}
         </span>
@@ -264,7 +280,7 @@ function intentarRasterizarImagen(url, size) {
 //    degradado en una sola capa (.porra-export-card en Porra.css).
 //  - Altura libre: sin alto fijo, se adapta al contenido real.
 function PorraExportCard({
-  width, jornada, badgeAbierta, badgeTexto, fecha, venue,
+  width, competicion, badgeAbierta, badgeTexto, fecha, venue,
   nombreLocal, nombreVisitante, crestLocalSrc, crestVisitanteSrc, inicialLocal, inicialVisitante,
   cerrada, marcadorLocal, marcadorVisitante, mostrarGoleadores, goleadoresTexto,
   ctaTexto, ctaGuardado, bloqueado, avatares, participantesTexto,
@@ -273,7 +289,7 @@ function PorraExportCard({
     <div className="porra-match-card porra-export-card" style={{ width: `${width}px`, height: 'auto' }}>
       <div className="porra-match-card__top">
         <div className="porra-match-card__comp">
-          Primera Federación · Jornada {jornada}
+          {competicion}
           <span className={`porra-badge ${badgeAbierta ? 'porra-badge--open' : 'porra-badge--closed'}`}><span className="porra-badge__text">{badgeTexto}</span></span>
         </div>
         <div className="porra-match-card__when">
@@ -739,7 +755,7 @@ export default function Porra() {
 
     const props = {
       width: matchCardRef.current.offsetWidth || 360,
-      jornada: partidoActivo.jornada,
+      competicion: competicionTexto(partidoActivo),
       badgeAbierta: abiertaDeVerdad,
       badgeTexto: abiertaDeVerdad ? 'Porra abierta' : 'Porra cerrada',
       fecha: formatFechaHora(partidoActivo.kickoff),
@@ -1051,7 +1067,7 @@ export default function Porra() {
             <div className="porra-match-card" ref={matchCardRef}>
               <div className="porra-match-card__top">
                 <div className="porra-match-card__comp">
-                  Primera Federación · Jornada {partidoActivo.jornada}
+                  {competicionTexto(partidoActivo)}
                   <span className={`porra-badge ${abiertaDeVerdad ? 'porra-badge--open' : 'porra-badge--closed'}`}>
                     {abiertaDeVerdad ? 'Porra abierta' : 'Porra cerrada'}
                   </span>
