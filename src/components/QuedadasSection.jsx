@@ -90,15 +90,15 @@ export default function QuedadasSection({ partido }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h2 style={{ fontFamily: 'Humane, sans-serif', fontSize: 'clamp(28px, 5vw, 40px)', color: 'white', textTransform: 'uppercase', margin: 0, lineHeight: 1 }}>
-            Quedadas
+            Desplazamiento
           </h2>
           <p style={{ fontFamily: 'sans-serif', fontSize: '13px', color: 'rgba(255,255,255,0.6)', margin: '4px 0 0' }}>
-            Para quien no viaja desde Zaragoza — organiza dónde veros antes del partido
+            Quedadas antes del partido, coche compartido, lo que necesites para llegar — propón cualquier cosa del desplazamiento
           </p>
         </div>
         {user ? (
           <button onClick={abrirModal} className="hero-cta" style={{ width: 'auto', padding: '10px 20px' }}>
-            + Proponer quedada
+            + Proponer algo
           </button>
         ) : (
           <button onClick={signInWithGoogle} className="hero-cta" style={{ width: 'auto', padding: '10px 20px' }}>
@@ -112,7 +112,7 @@ export default function QuedadasSection({ partido }) {
       ) : quedadas.length === 0 ? (
         <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '24px', textAlign: 'center' }}>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif', fontSize: '14px', margin: 0 }}>
-            Todavía no hay ninguna quedada propuesta para este partido. ¡Sé el primero!
+            Todavía no hay nada propuesto para este partido. ¡Sé el primero! (quedada, coche compartido...)
           </p>
         </div>
       ) : (
@@ -127,7 +127,7 @@ export default function QuedadasSection({ partido }) {
         <div onClick={() => setShowModal(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#0A1628', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', width: '100%', maxWidth: '420px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.6)' }}>
             <div style={{ background: '#0D4491', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ color: 'white', fontWeight: '700', fontSize: '16px', fontFamily: 'Archivo, sans-serif' }}>Proponer quedada</span>
+              <span style={{ color: 'white', fontWeight: '700', fontSize: '16px', fontFamily: 'Archivo, sans-serif' }}>Proponer algo para el desplazamiento</span>
               <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '20px', cursor: 'pointer' }}>✕</button>
             </div>
             <div style={{ padding: '24px' }}>
@@ -142,12 +142,12 @@ export default function QuedadasSection({ partido }) {
                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: '#152445', color: '#fff', fontSize: '15px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none', marginBottom: '16px' }}
               />
               <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontFamily: 'Archivo, sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '8px' }}>
-                Sitio
+                Qué propones
               </label>
               <input
                 value={lugar}
                 onChange={e => setLugar(e.target.value)}
-                placeholder="Ej. Bar Cervantes, Plaza Mayor"
+                placeholder="Ej. Bar Cervantes, Plaza Mayor — o 2 plazas libres en coche"
                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: '#152445', color: '#fff', fontSize: '15px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none', marginBottom: '16px' }}
               />
               <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontFamily: 'Archivo, sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '8px' }}>
@@ -156,7 +156,7 @@ export default function QuedadasSection({ partido }) {
               <input
                 value={hora}
                 onChange={e => setHora(e.target.value)}
-                placeholder="Ej. 2 horas antes del partido"
+                placeholder="Ej. 2 horas antes del partido — o salida 10:00 desde Zaragoza"
                 style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: '#152445', color: '#fff', fontSize: '15px', fontFamily: 'Archivo, sans-serif', boxSizing: 'border-box', outline: 'none', marginBottom: '16px' }}
               />
               <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontFamily: 'Archivo, sans-serif', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', display: 'block', marginBottom: '8px' }}>
