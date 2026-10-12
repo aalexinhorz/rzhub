@@ -33,6 +33,12 @@ function horaDe(kickoff) {
 function estadioDe(partido) {
   return partido.sede === 'local' ? ESTADIO_LOCAL : 'Fuera de casa'
 }
+// La mayoría de partidos son de liga (con jornada); los que no
+// (Copa del Rey, etc.) no tienen jornada de liga y guardan su propio
+// texto libre en `competicion` — ver migración add_competicion_a_porra_partidos.
+function jornadaTexto(partido) {
+  return partido.jornada ? `Jornada ${String(partido.jornada).padStart(2, '0')}` : (partido.competicion || 'Copa')
+}
 
 function useCalendario() {
   const [partidos, setPartidos] = useState([])
@@ -86,7 +92,7 @@ function FilaPartido({ partido, esProximo, fichasRivales }) {
       onClick={slugRival ? () => navigate(`/rival/${slugRival}`) : undefined}
     >
       <div className="cal2-fila__meta">
-        <span className="cal2-fila__jornada">Jornada {String(partido.jornada).padStart(2, '0')}</span>
+        <span className="cal2-fila__jornada">{jornadaTexto(partido)}</span>
         <span className="cal2-fila__fecha">{fechaCorta(partido.fecha)}{hora ? ` · ${hora}` : ''}</span>
       </div>
       <span className="cal2-fila__lugar">
@@ -143,7 +149,7 @@ function ProximoPartido({ partido }) {
       <div className="cal2-proximo__contenido">
         <div className="cal2-proximo__texto">
           <p className="cal2-proximo__eyebrow">Próximo partido</p>
-          <p className="cal2-proximo__meta">Primera Federación · Jornada {String(partido.jornada).padStart(2, '0')}</p>
+          <p className="cal2-proximo__meta">{partido.jornada ? `Primera Federación · ${jornadaTexto(partido)}` : jornadaTexto(partido)}</p>
         </div>
 
         <div className="cal2-proximo__enfrentamiento">

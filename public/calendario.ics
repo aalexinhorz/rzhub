@@ -160,6 +160,15 @@ LOCATION:Can Dragó
 END:VEVENT
 
 BEGIN:VEVENT
+UID:rz-copa1-2026@rzhub.es
+SUMMARY:CD Tudelano vs Real Zaragoza (Copa del Rey)
+DTSTART;TZID=Europe/Madrid:20261027T210000
+DTEND;TZID=Europe/Madrid:20261027T230000
+DESCRIPTION:1ª Eliminatoria - Copa del Rey 2026/2027
+LOCATION:Estadio Ciudad de Tudela
+END:VEVENT
+
+BEGIN:VEVENT
 UID:rz-j10-2026@rzhub.es
 SUMMARY:Real Zaragoza vs Villarreal CF B (J10)
 DTSTART;TZID=Europe/Madrid:20261031T210000
