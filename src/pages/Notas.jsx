@@ -31,9 +31,18 @@ function useMvpDelMes() {
   return { mvp, loading }
 }
 
+// Se enseña solo en los últimos días del mes: mientras va de mitad
+// hacia el principio todavía hay pocos partidos votados y el "MVP del
+// mes" cambiaría de cara varias veces sin que signifique nada todavía.
+function esFinalDeMes() {
+  const hoy = new Date()
+  const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate()
+  return hoy.getDate() >= ultimoDia - 4
+}
+
 function MvpDelMes() {
   const { mvp, loading } = useMvpDelMes()
-  if (loading || !mvp) return null
+  if (loading || !mvp || !esFinalDeMes()) return null
 
   return (
     <div className="notas-mvp">
