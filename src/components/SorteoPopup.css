@@ -1,0 +1,29 @@
+/* Tamaños por defecto (escritorio) — más pequeños solo en móvil (ver
+   media query abajo). Solo lo que cambia según el viewport vive aquí;
+   el resto (colores, posición) sigue en el style inline del componente. */
+.sorteo-popup {
+  max-width: 280px;
+}
+.sorteo-popup__cerrar {
+  width: 26px;
+  height: 26px;
+  top: 8px;
+  right: 8px;
+  font-size: 13px;
+}
+.sorteo-popup__cta-wrap {
+  padding: 12px;
+}
+.sorteo-popup__cta {
+  padding: 9px 14px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  gap: 6px;
+}
+
+@media (max-width: 480px) {
+  .sorteo-popup { max-width: 200px; }
+  .sorteo-popup__cerrar { width: 20px; height: 20px; top: 6px; right: 6px; font-size: 11px; }
+  .sorteo-popup__cta-wrap { padding: 8px; }
+  .sorteo-popup__cta { padding: 7px 10px; border-radius: 6px; font-size: 11px; gap: 5px; }
+}
