@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
 import { supabase } from '../hooks/useAuth'
-import { useEscudo } from '../lib/escudos'
+import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
 import './Calendario.css'
 
 const ICS_URL = 'https://rzhub.es/calendario.ics'
@@ -65,7 +65,12 @@ function useFichasRivales() {
 }
 
 function EscudoEquipo({ nombre, size = 32 }) {
-  const src = useEscudo(nombre)
+  // "Real Zaragoza" no está en ESCUDOS_CLUBS (ese mapa es solo de
+  // rivales) — useEscudo() lo buscaría ahí y acabaría cayendo al
+  // fallback de TheSportsDB, que no siempre lo resuelve bien.
+  const esZaragoza = nombre === 'Real Zaragoza'
+  const fallbackSrc = useEscudo(esZaragoza ? null : nombre)
+  const src = esZaragoza ? ESCUDO_ZARAGOZA : fallbackSrc
   if (!src) return <span className="cal2-escudo cal2-escudo--placeholder" style={{ width: size, height: size }}>{nombre?.[0]}</span>
   return <img src={src} alt="" className="cal2-escudo" style={{ width: size, height: size }} onError={e => { e.target.style.display = 'none' }} />
 }
