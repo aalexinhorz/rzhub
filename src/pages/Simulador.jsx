@@ -25,7 +25,12 @@ function guardarEdits(edits) {
 }
 
 function EscudoEquipo({ nombre }) {
-  const src = useEscudo(nombre)
+  // "Real Zaragoza" no está en ESCUDOS_CLUBS (ese mapa es solo de
+  // rivales) — useEscudo() lo buscaría ahí y acabaría cayendo al
+  // fallback de TheSportsDB, que no siempre lo resuelve bien.
+  const esZaragoza = nombre === 'Real Zaragoza'
+  const fallbackSrc = useEscudo(esZaragoza ? null : nombre)
+  const src = esZaragoza ? ESCUDO_ZARAGOZA : fallbackSrc
   if (!src) return <span className="sim-escudo sim-escudo--placeholder">{nombre[0]}</span>
   return <img src={src} alt="" className="sim-escudo" onError={e => { e.target.style.display = 'none' }} />
 }

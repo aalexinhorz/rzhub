@@ -42,6 +42,9 @@ export const ESCUDOS_CLUBS = {
   'Real Madrid':               '/escudos/Real_Madrid_CF.svg',
   'Villarreal B':              '/escudos/Villarreal_CF_logo-en.svg',
   'Villarreal CF B':           '/escudos/Villarreal_CF_logo-en.svg',
+  // liga_calendario lo guarda con comillas literales alrededor de la B
+  // (así lo copia fetch-liga-calendario de la plantilla de Wikipedia).
+  'Villarreal CF "B"':         '/escudos/Villarreal_CF_logo-en.svg',
   'Villarreal CF':             '/escudos/Villarreal CF.png',
   'SD Huesca':                 '/escudos/Logo_of_SD_Huesca.svg',
   'Huesca':                    '/escudos/huesca.png',
