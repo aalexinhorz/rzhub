@@ -1008,7 +1008,7 @@ export default function Porra() {
                 name: '¿Cómo se juega la Porra del Real Zaragoza?',
                 acceptedAnswer: {
                   '@type': 'Answer',
-                  text: 'Cada jornada eliges el resultado exacto del partido del Real Zaragoza y, si quieres, también los goleadores. Se ganan 5 puntos por acertar el resultado exacto y 3 puntos más por acertar todos los goleadores.',
+                  text: 'Cada jornada eliges el resultado exacto del partido del Real Zaragoza y, si quieres, también los goleadores. Se ganan 5 puntos por acertar el resultado exacto y 3 puntos más por acertar todos los goleadores. Si fallas el resultado exacto pero aciertas si el Real Zaragoza gana, empata o pierde, ganas 1 punto.',
                 },
               },
               {
@@ -1426,7 +1426,11 @@ export default function Porra() {
               </div>
               <div className="porra-howto-box__item">
                 <span className="porra-howto-box__pts">3 PTS</span>
-                <span className="porra-howto-box__label">Todos los goleadores</span>
+                <span className="porra-howto-box__label">Extra si aciertas también todos los goleadores</span>
+              </div>
+              <div className="porra-howto-box__item">
+                <span className="porra-howto-box__pts">1 PT</span>
+                <span className="porra-howto-box__label">Si fallas el resultado exacto pero aciertas quién gana (o el empate)</span>
               </div>
               <div className="porra-howto-premio">
                 <span className="porra-howto-premio__icono" aria-hidden="true">👕</span>
