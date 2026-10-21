@@ -2,7 +2,6 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import ScrollToTop from './components/ScrollToTop'
-import SorteoPopup from './components/SorteoPopup'
 import Home from './pages/Home'
 
 // Solo la Home se carga en el bundle inicial (es la puerta de entrada
@@ -56,7 +55,6 @@ export default function App() {
     <div style={{ minHeight: '100vh' }}>
       <ScrollToTop />
       <Navbar />
-      <SorteoPopup />
       <Suspense fallback={<CargandoPagina />}>
         <Routes>
           <Route path="/" element={<Home />} />
