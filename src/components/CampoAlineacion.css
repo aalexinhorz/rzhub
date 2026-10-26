@@ -1,0 +1,98 @@
+/* Réplica de solo lectura del campo y las cartas del Lineup Builder
+   (Field.jsx / PlayerSlot.jsx): mismas proporciones, colores y escalado. */
+.campo-al {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 540 / 675;
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: 'Archivo', sans-serif;
+}
+.campo-al__fondo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+
+.campo-al__cabecera {
+  position: absolute; top: calc(17px * var(--k)); left: calc(16px * var(--k)); right: calc(16px * var(--k)); z-index: 3;
+  display: flex; flex-wrap: wrap; align-items: flex-start;
+  column-gap: calc(12px * var(--k)); row-gap: calc(4px * var(--k));
+}
+.campo-al__titulo {
+  font-family: 'Humane', sans-serif; font-weight: 700; text-transform: uppercase;
+  color: #ffffff; font-size: calc(60px * var(--k)); line-height: 1;
+}
+.campo-al__formacion {
+  margin-top: calc(7px * var(--k));
+  height: calc(18px * var(--k)); line-height: calc(18px * var(--k));
+  padding: 0 calc(8px * var(--k)); border-radius: calc(4px * var(--k));
+  background: #ffc800; color: #060d1a; font-size: calc(10px * var(--k)); font-weight: 800;
+  flex-shrink: 0;
+}
+
+.carta-al {
+  position: absolute; z-index: 2;
+  transform: translate(-50%, -50%);
+  width: var(--carta-w);
+  display: flex; flex-direction: column;
+  border: 2px solid #0b4390;
+  border-radius: 6px;
+  overflow: visible;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #c5d8f0 0%, #ddeaf8 40%, #eef4fc 70%, #f5f8fd 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+a.carta-al:hover { transform: translate(-50%, -50%) translateY(-4px) scale(1.05); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4); z-index: 4; }
+.carta-al--externo {
+  border-color: #f5c400;
+  background: linear-gradient(180deg, #f5e6b0 0%, #faf0cc 40%, #fdf7e8 70%, #fefcf3 100%);
+}
+
+.carta-al__foto {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: var(--carta-foto-h);
+  background-color: #152445;
+  background-size: cover;
+  background-position: 50% 15%;
+  border-radius: 4px 4px 0 0;
+}
+.carta-al__nombre {
+  display: block;
+  height: 18px; line-height: 18px;
+  padding: 0 4px;
+  background: #0b4390; color: #ffffff;
+  font-size: var(--carta-nombre-fs); font-weight: 700; text-align: center;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.carta-al__nombre--externo { background: #f5c400; color: #000000; }
+
+.carta-al__nota {
+  position: absolute; top: -7px; right: -9px;
+  background: #ffc800; color: #060d1a; border: 1px solid #060d1a;
+  font-size: 10px; font-weight: 900; line-height: 1; border-radius: 5px; padding: 2px 4px;
+}
+.carta-al__salida {
+  position: absolute; bottom: 2px; left: 2px;
+  background: #e11d2e; color: #ffffff;
+  font-size: 9px; font-weight: 800; line-height: 1; border-radius: 4px; padding: 2px 3px;
+}
+
+.carta-al__suplente {
+  display: flex; align-items: center; gap: 2px; padding: 2px 3px;
+  background: #0b4390; color: #ffffff; border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+.carta-al__suplente--externo { background: #f5c400; color: #000000; }
+.carta-al__suplente-foto {
+  width: 14px; height: 14px; flex-shrink: 0;
+  background-color: rgba(0, 0, 0, 0.2); background-size: cover; background-position: 50% 10%;
+}
+.carta-al__suplente-nombre {
+  font-size: var(--carta-sub-fs); font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+@media (max-width: 520px) {
+  .carta-al__nota { font-size: 8.5px; top: -6px; right: -7px; }
+  .carta-al__salida { font-size: 7.5px; }
+}

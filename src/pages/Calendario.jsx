@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
+import PorraCTA from '../components/PorraCTA'
 import { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
+import { slugPartido } from '../lib/partidoSeo'
 import './Calendario.css'
 
 const ICS_URL = 'https://rzhub.es/calendario.ics'
@@ -52,18 +54,6 @@ function useCalendario() {
   return { partidos, loading }
 }
 
-// Solo los rivales con ficha ya construida en /rival/:slug son clicables
-// desde el calendario — hoy en día únicamente UD Ibiza.
-function useFichasRivales() {
-  const [porNombre, setPorNombre] = useState(new Map())
-  useEffect(() => {
-    supabase.from('rivales').select('id, nombre').then(({ data }) => {
-      setPorNombre(new Map((data || []).map(r => [r.nombre, r.id])))
-    })
-  }, [])
-  return porNombre
-}
-
 function EscudoEquipo({ nombre, size = 32 }) {
   // "Real Zaragoza" no está en ESCUDOS_CLUBS (ese mapa es solo de
   // rivales) — useEscudo() lo buscaría ahí y acabaría cayendo al
@@ -81,21 +71,16 @@ function EstadoBadge({ partido, esProximo }) {
   return <span className="cal2-badge cal2-badge--sin-jugar">Sin jugar</span>
 }
 
-function FilaPartido({ partido, esProximo, fichasRivales }) {
-  const navigate = useNavigate()
+function FilaPartido({ partido, esProximo }) {
   const esLocal = partido.sede === 'local'
   const equipoLocal = esLocal ? EQUIPO : partido.rival
   const equipoVisitante = esLocal ? partido.rival : EQUIPO
   const hora = horaDe(partido.kickoff)
   const golesLocal = esLocal ? partido.goles_zaragoza : partido.goles_rival
   const golesVisitante = esLocal ? partido.goles_rival : partido.goles_zaragoza
-  const slugRival = fichasRivales.get(partido.rival)
 
   return (
-    <div
-      className={`cal2-fila${esProximo ? ' cal2-fila--proxima' : ''}${slugRival ? '' : ' cal2-fila--sin-click'}`}
-      onClick={slugRival ? () => navigate(`/rival/${slugRival}`) : undefined}
-    >
+    <Link to={`/partido/${slugPartido(partido)}`} className={`cal2-fila${esProximo ? ' cal2-fila--proxima' : ''}`}>
       <div className="cal2-fila__meta">
         <span className="cal2-fila__jornada">{jornadaTexto(partido)}</span>
         <span className="cal2-fila__fecha">{fechaCorta(partido.fecha)}{hora ? ` · ${hora}` : ''}</span>
@@ -117,11 +102,11 @@ function FilaPartido({ partido, esProximo, fichasRivales }) {
 
       <EstadoBadge partido={partido} esProximo={esProximo} />
       <svg className="cal2-fila__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
-    </div>
+    </Link>
   )
 }
 
-function GrupoMes({ mes, partidos, proximoId, abierto, onToggle, fichasRivales }) {
+function GrupoMes({ mes, partidos, proximoId, abierto, onToggle }) {
   return (
     <div className="cal2-grupo">
       <button className="cal2-grupo__header" onClick={onToggle}>
@@ -132,7 +117,7 @@ function GrupoMes({ mes, partidos, proximoId, abierto, onToggle, fichasRivales }
       </button>
       {abierto && (
         <div className="cal2-grupo__filas">
-          {partidos.map(p => <FilaPartido key={p.id} partido={p} esProximo={p.id === proximoId} fichasRivales={fichasRivales} />)}
+          {partidos.map(p => <FilaPartido key={p.id} partido={p} esProximo={p.id === proximoId} />)}
         </div>
       )}
     </div>
@@ -140,7 +125,6 @@ function GrupoMes({ mes, partidos, proximoId, abierto, onToggle, fichasRivales }
 }
 
 function ProximoPartido({ partido }) {
-  const navigate = useNavigate()
   if (!partido) return null
   const esLocal = partido.sede === 'local'
   const equipoLocal = esLocal ? EQUIPO : partido.rival
@@ -180,7 +164,7 @@ function ProximoPartido({ partido }) {
           </span>
         </div>
 
-        <button className="cal2-proximo__btn" onClick={() => navigate('/porra')}>Participa en la porra →</button>
+        <Link className="cal2-proximo__btn" to="/porra">Participa en la porra →</Link>
       </div>
     </div>
   )
@@ -216,7 +200,6 @@ function SyncBar({ onApple, onGoogle, onCopiar, copiado }) {
 
 export default function Calendario() {
   const { partidos, loading } = useCalendario()
-  const fichasRivales = useFichasRivales()
   const [filtro, setFiltro] = useState('todos')
   const [copiado, setCopiado] = useState(false)
   const [gruposAbiertos, setGruposAbiertos] = useState(null)
@@ -315,7 +298,6 @@ export default function Calendario() {
                   proximoId={proximo?.id}
                   abierto={abiertosEfectivo.has(g.clave)}
                   onToggle={() => toggleGrupo(g.clave)}
-                  fichasRivales={fichasRivales}
                 />
               ))}
             </div>
@@ -335,6 +317,7 @@ export default function Calendario() {
         )}
       </div>
 
+      <PorraCTA />
       <Footer />
     </div>
   )

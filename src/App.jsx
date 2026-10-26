@@ -46,6 +46,8 @@ const Terminos = lazy(() => import('./pages/Terminos'))
 const Privacidad = lazy(() => import('./pages/Privacidad'))
 const Ayuda = lazy(() => import('./pages/Ayuda'))
 const NoEncontrada = lazy(() => import('./pages/NoEncontrada'))
+const Partido = lazy(() => import('./pages/Partido'))
+const ProximoPartido = lazy(() => import('./pages/ProximoPartido'))
 
 function CargandoPagina() {
   return <div style={{ minHeight: '60vh' }} />
@@ -91,6 +93,8 @@ export default function App() {
           <Route path="/fantasy" element={<Fantasy />} />
           <Route path="/rivales" element={<Rivales />} />
           <Route path="/rival/:slug" element={<Rival />} />
+          <Route path="/partido/:slug" element={<Partido />} />
+          <Route path="/proximo-partido" element={<ProximoPartido />} />
           <Route path="/simulador" element={<Simulador />} />
           <Route path="/zaragozle" element={<Zaragozle />} />
           <Route path="/pizarra" element={<Pizarra />} />

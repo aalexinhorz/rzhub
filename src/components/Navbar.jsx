@@ -11,6 +11,7 @@ const NAV_GROUPS = [
   { type: 'link', to: '/porra', label: 'Porra' },
   {
     type: 'group', id: 'partidos', label: 'Partidos', items: [
+      { to: '/proximo-partido', label: 'Vestuario Blanquillo' },
       { to: '/rivales', label: 'Rivales' },
       { to: '/calendario', label: 'Calendario' },
       { to: '/on-tour', label: 'On Tour' },

@@ -43,6 +43,15 @@
   margin: 0 0 26px;
 }
 
+.porra-hero__title-sub {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.34em;
+  line-height: 1;
+  letter-spacing: 1px;
+  color: #ffc800;
+}
+
 .porra-hero__row {
   display: flex;
   align-items: baseline;
@@ -829,6 +838,34 @@
   padding: 24px;
   flex: 0 0 auto;
 }
+
+.porra-premio {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(90deg, rgba(255, 200, 0, 0.12) 0%, rgba(255, 200, 0, 0) 85%);
+}
+.porra-premio--integrado {
+  padding: 0;
+  border-top: 0;
+  background: none;
+  margin-bottom: 10px;
+}
+.porra-premio__img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #ffc800;
+}
+.porra-premio__texto { min-width: 0; font-family: 'Archivo', sans-serif; }
+.porra-premio__texto p { margin: 0; }
+.porra-premio__eyebrow { color: #ffc800; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+.porra-premio__titulo { color: #ffffff; font-size: 14.5px; font-weight: 800; line-height: 1.25; margin-top: 2px !important; }
 .porra-season__title {
   font-family: 'Archivo', sans-serif;
   font-size: 12.5px;
@@ -1548,4 +1585,44 @@
   .porra-teams__sep {
     font-size: 16px;
   }
+}
+
+/* -------- Pronóstico de la afición y preguntas frecuentes -------- */
+.porra-opinion { margin-top: 40px; display: flex; flex-direction: column; gap: 12px; }
+.porra-opinion__enlace { color: #ffc800; font-family: 'Archivo', sans-serif; font-weight: 300; font-size: 14.5px; text-decoration: none; }
+.porra-opinion__enlace:hover { text-decoration: underline; }
+
+.porra-faq { margin: 8px 0 64px; font-family: 'Archivo', sans-serif; }
+.porra-faq__titulo {
+  font-family: 'Humane', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(28px, 6vw, 38px);
+  line-height: 1;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  margin: 0 0 14px;
+}
+.porra-faq__item {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 14px 0;
+}
+.porra-faq__item:last-child { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+.porra-faq__item summary {
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.porra-faq__item summary::-webkit-details-marker { display: none; }
+.porra-faq__item summary::after { content: '+'; color: #ffc800; font-weight: 700; }
+.porra-faq__item[open] summary::after { content: '−'; }
+.porra-faq__item p { color: #a9bcdc; font-size: 14px; line-height: 1.55; margin: 10px 0 0; }
+
+@media (max-width: 768px) {
+  .porra-container .porra-faq { margin-bottom: 48px; }
 }

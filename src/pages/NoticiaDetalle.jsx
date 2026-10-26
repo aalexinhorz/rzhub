@@ -1,5 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import PorraCTA from '../components/PorraCTA'
 import SEO, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/SEO'
 import { supabase } from '../hooks/useAuth'
 import './NoticiaDetalle.css'
@@ -147,6 +148,7 @@ export default function NoticiaDetalle() {
           <button className="rz-btn rz-btn--primary" onClick={() => navigate('/noticias')}>← Ver todas las noticias</button>
         </div>
       </div>
+      <PorraCTA />
     </div>
   )
 }

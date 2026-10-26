@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
+import PorraCTA from '../components/PorraCTA'
 import { supabase } from '../hooks/useAuth'
 import './Jugador.css'
 
@@ -130,13 +131,24 @@ export default function Jugador() {
         title={`${jugador.name} | Estadísticas del Real Zaragoza | RZ Hub`}
         description={`Partidos jugados, minutos, goles y nota media de la afición de ${jugador.name}, ${posicionLabel.toLowerCase()} del Real Zaragoza, en la temporada 26/27.`}
         path={`/jugador/${jugador.id}`}
-        jsonLd={{
-          '@context': 'https://schema.org',
-          '@type': 'ProfilePage',
-          name: jugador.name,
-          url: `${SITE_URL}/jugador/${jugador.id}`,
-          isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
-        }}
+        jsonLd={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'ProfilePage',
+            name: jugador.name,
+            url: `${SITE_URL}/jugador/${jugador.id}`,
+            isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE_URL}/` },
+              { '@type': 'ListItem', position: 2, name: 'Estadísticas', item: `${SITE_URL}/estadisticas` },
+              { '@type': 'ListItem', position: 3, name: jugador.name, item: `${SITE_URL}/jugador/${jugador.id}` },
+            ],
+          },
+        ]}
       />
 
       <div className="jugador-page__body">
@@ -242,6 +254,7 @@ export default function Jugador() {
           </p>
         </div>
 
+        <PorraCTA />
         <Footer />
       </div>
     </div>

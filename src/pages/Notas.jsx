@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
+import PorraCTA from '../components/PorraCTA'
 import usePartidos from '../hooks/usePartidos'
 import { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
@@ -126,6 +127,7 @@ export default function Notas() {
           )}
         </div>
 
+        <PorraCTA />
         <Footer />
       </div>
     </div>

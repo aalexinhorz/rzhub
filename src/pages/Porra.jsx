@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { createRoot } from 'react-dom/client'
+import { Link } from 'react-router-dom'
 import html2canvas from 'html2canvas'
 import SEO, { SITE_URL } from '../components/SEO'
 import { seoPorra, PORRA_OG_IMAGE, PORRA_CARTEL } from '../lib/seoPorra'
+import OpinionAficion from '../components/OpinionAficion'
+import { slugPartido, nombresPartido } from '../lib/partidoSeo'
 import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
 import usePlayers from '../hooks/usePlayers'
@@ -69,6 +72,49 @@ function isCerrada(partido) {
 // que no lo son (Copa del Rey, etc.) no tienen jornada de liga y
 // guardan su propio texto libre en `competicion` — ver migración
 // add_competicion_a_porra_partidos.
+// Visibles en la página y en el FAQPage de datos estructurados: Google
+// solo tiene en cuenta las preguntas que el usuario puede leer.
+const PREGUNTAS_PORRA = [
+  {
+    pregunta: '¿Cómo se juega la Porra del Real Zaragoza?',
+    respuesta: 'Cada jornada eliges el resultado exacto del partido del Real Zaragoza y, si quieres, también los goleadores. Se ganan 5 puntos por acertar el resultado exacto y 3 puntos más por acertar todos los goleadores. Si fallas el resultado exacto pero aciertas si el Real Zaragoza gana, empata o pierde, ganas 1 punto.',
+  },
+  {
+    pregunta: '¿Qué premio tiene la Porra del Real Zaragoza de RZ Hub?',
+    respuesta: 'Quien termine primero en la clasificación general al final de la temporada gana una camiseta oficial del Real Zaragoza.',
+  },
+  {
+    pregunta: '¿Es gratis jugar a la Porra del Real Zaragoza?',
+    respuesta: 'Sí, participar en la Porra de RZ Hub es totalmente gratuito para cualquier aficionado del Real Zaragoza. Solo tienes que iniciar sesión con tu cuenta de Google.',
+  },
+  {
+    pregunta: '¿Hasta cuándo puedo hacer mi pronóstico?',
+    respuesta: 'Puedes hacer o cambiar tu pronóstico hasta la hora de inicio del partido. En cuanto empieza, la porra de ese partido se cierra.',
+  },
+  {
+    pregunta: '¿Entran los partidos de Copa del Rey?',
+    respuesta: 'Sí. La porra incluye todos los partidos oficiales del Real Zaragoza de la temporada, tanto de Primera Federación como de Copa del Rey, y todos suman para la clasificación general.',
+  },
+]
+
+function PremioCamiseta() {
+  return (
+    <>
+      <img
+        className="porra-premio__img"
+        src="/images/porra-camiseta-recorte.webp"
+        alt="Camiseta oficial del Real Zaragoza, premio de la Porra"
+        width="44"
+        height="44"
+      />
+      <div className="porra-premio__texto">
+        <p className="porra-premio__eyebrow">Premio de la temporada</p>
+        <p className="porra-premio__titulo">Camiseta oficial del Real Zaragoza para el 1.º</p>
+      </div>
+    </>
+  )
+}
+
 function competicionTexto(p) {
   return p.competicion || `Primera Federación · Jornada ${p.jornada}`
 }
@@ -442,6 +488,7 @@ export default function Porra() {
   const matchCardRef = useRef(null)
   const sidebarRef = useRef(null)
   const seasonRef = useRef(null)
+  const premioRef = useRef(null)
   const rankingHeaderRef = useRef(null)
   const rankingFooterRef = useRef(null)
   const modalRankingRef = useRef(null)
@@ -528,9 +575,10 @@ export default function Porra() {
         return
       }
       const season = seasonRef.current?.clientHeight || 0
+      const premio = premioRef.current?.offsetHeight || 0
       const header = rankingHeaderRef.current?.clientHeight || 0
       const footer = rankingFooterRef.current?.clientHeight || 0
-      const disponible = Math.max(0, cardH - season - header - footer)
+      const disponible = Math.max(0, cardH - season - premio - header - footer)
       const filas = Math.max(3, Math.floor(disponible / RANKING_ROW_HEIGHT))
       setRowsToShow(prev => (prev === filas ? prev : filas))
     }
@@ -539,6 +587,7 @@ export default function Porra() {
     const ro = new ResizeObserver(recompute)
     ro.observe(card)
     if (seasonRef.current) ro.observe(seasonRef.current)
+    if (premioRef.current) ro.observe(premioRef.current)
     if (rankingHeaderRef.current) ro.observe(rankingHeaderRef.current)
     if (rankingFooterRef.current) ro.observe(rankingFooterRef.current)
     mq.addEventListener('change', recompute)
@@ -546,7 +595,7 @@ export default function Porra() {
       ro.disconnect()
       mq.removeEventListener('change', recompute)
     }
-  }, [loading, partidoActivo])
+  }, [loading, partidoActivo, user])
 
   useModalA11y(modalRankingAbierto, modalRankingRef, modalRankingTriggerRef, () => setModalRankingAbierto(false))
   useModalA11y(modalComoSeJuegaAbierto, modalComoSeJuegaRef, modalComoSeJuegaTriggerRef, () => setModalComoSeJuegaAbierto(false))
@@ -1003,32 +1052,11 @@ export default function Porra() {
           {
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
-            mainEntity: [
-              {
-                '@type': 'Question',
-                name: '¿Cómo se juega la Porra del Real Zaragoza?',
-                acceptedAnswer: {
-                  '@type': 'Answer',
-                  text: 'Cada jornada eliges el resultado exacto del partido del Real Zaragoza y, si quieres, también los goleadores. Se ganan 5 puntos por acertar el resultado exacto y 3 puntos más por acertar todos los goleadores. Si fallas el resultado exacto pero aciertas si el Real Zaragoza gana, empata o pierde, ganas 1 punto.',
-                },
-              },
-              {
-                '@type': 'Question',
-                name: '¿Qué premio tiene la Porra del Real Zaragoza de RZ Hub?',
-                acceptedAnswer: {
-                  '@type': 'Answer',
-                  text: 'Quien termine primero en la clasificación general al final de la temporada gana una camiseta oficial del Real Zaragoza.',
-                },
-              },
-              {
-                '@type': 'Question',
-                name: '¿Es gratis jugar a la Porra del Real Zaragoza?',
-                acceptedAnswer: {
-                  '@type': 'Answer',
-                  text: 'Sí, participar en la Porra de RZ Hub es totalmente gratuito para cualquier aficionado del Real Zaragoza.',
-                },
-              },
-            ],
+            mainEntity: PREGUNTAS_PORRA.map(q => ({
+              '@type': 'Question',
+              name: q.pregunta,
+              acceptedAnswer: { '@type': 'Answer', text: q.respuesta },
+            })),
           },
         ]}
       />
@@ -1041,7 +1069,7 @@ export default function Porra() {
       {/* CABECERA */}
       <div className="porra-hero">
         <div className="porra-hero__inner">
-          <h1 className="porra-hero__title">La Porra</h1>
+          <h1 className="porra-hero__title">La Porra <span className="porra-hero__title-sub">del Real Zaragoza</span></h1>
           <div className="porra-hero__row">
             <p className="porra-hero__subtitle">Participa cada jornada y gana una camiseta oficial del Real Zaragoza si terminas primero al final de la temporada.</p>
             <button className="porra-hero__howto" onClick={abrirModalComoSeJuega}>
@@ -1259,12 +1287,20 @@ export default function Porra() {
                   <p className="porra-season__empty">Aún no tienes puntos — haz tu primer pronóstico.</p>
                 ) : (
                   <div className="porra-season__guest">
-                    <p className="porra-season__headline">Cada jornada cuenta</p>
-                    <p className="porra-season__empty">Inicia sesión para guardar tus pronósticos y seguir tus puntos y tu posición en la clasificación.</p>
+                    <div className="porra-premio porra-premio--integrado">
+                      <PremioCamiseta />
+                    </div>
+                    <p className="porra-season__empty">Inicia sesión, pronostica cada partido y suma puntos para llevártela.</p>
                     <button className="porra-season__login" onClick={signInWithGoogle}>Iniciar sesión</button>
                   </div>
                 )}
               </div>
+
+              {user && (
+                <div className="porra-premio" ref={premioRef}>
+                  <PremioCamiseta />
+                </div>
+              )}
 
               <div className="porra-ranking">
                 <div className="porra-ranking__header" ref={rankingHeaderRef}>
@@ -1314,6 +1350,15 @@ export default function Porra() {
       </div>
 
       <div className="porra-container">
+        {!loading && partidoActivo && (
+          <div className="porra-opinion">
+            <OpinionAficion partido={partidoActivo} titulo="Pronóstico de la afición" />
+            <Link to={`/partido/${slugPartido(partidoActivo)}`} className="porra-opinion__enlace">
+              Previa, cara a cara y datos del {nombresPartido(partidoActivo).local} - {nombresPartido(partidoActivo).visitante} →
+            </Link>
+          </div>
+        )}
+
         {/* ÚLTIMAS / PRÓXIMAS JORNADAS */}
         {!loading && partidos.length > 0 && (
           <div className="porra-jornadas">
@@ -1358,6 +1403,18 @@ export default function Porra() {
             )}
           </div>
         )}
+      </div>
+
+      <div className="porra-container">
+        <section className="porra-faq" aria-labelledby="porra-faq-titulo">
+          <h2 id="porra-faq-titulo" className="porra-faq__titulo">Preguntas frecuentes sobre la Porra del Real Zaragoza</h2>
+          {PREGUNTAS_PORRA.map(q => (
+            <details key={q.pregunta} className="porra-faq__item">
+              <summary>{q.pregunta}</summary>
+              <p>{q.respuesta}</p>
+            </details>
+          ))}
+        </section>
       </div>
 
       {modalRankingAbierto && (

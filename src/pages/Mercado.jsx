@@ -5,6 +5,7 @@ import MarketHero from '../components/MarketHero'
 import MarketFilters from '../components/MarketFilters'
 import TransferTimeline from '../components/TransferTimeline'
 import Footer from '../components/Footer'
+import PorraCTA from '../components/PorraCTA'
 import './Mercado.css'
 
 const FILTER_NOUN = { entradas: 'entradas', salidas: 'salidas' }
@@ -101,6 +102,7 @@ export default function Mercado() {
           </div>
         </div>
 
+        <PorraCTA />
         <Footer />
       </div>
     </div>

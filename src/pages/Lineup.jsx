@@ -4,6 +4,7 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from 
 import Field from '../components/Field'
 import SidePanel from '../components/SidePanel'
 import Footer from '../components/Footer'
+import PorraCTA from '../components/PorraCTA'
 import usePlayers from '../hooks/usePlayers'
 import useAuth from '../hooks/useAuth'
 import { supabase } from '../hooks/useAuth'
@@ -216,6 +217,7 @@ export default function Lineup() {
           />
         </DndContext>
       </div>
+      <PorraCTA />
       <Footer />
       </div>
     </div>

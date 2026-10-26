@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
+import PorraCTA from '../components/PorraCTA'
 import { supabase } from '../hooks/useAuth'
 import './Estadisticas.css'
 
@@ -322,6 +323,7 @@ export default function Estadisticas() {
           {loading && <p className="estadisticas-page__state">Cargando estadísticas…</p>}
         </div>
 
+        <PorraCTA />
         <Footer />
       </div>
     </div>

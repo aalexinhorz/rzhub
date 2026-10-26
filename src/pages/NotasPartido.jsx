@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
+import PorraCTA from '../components/PorraCTA'
 import usePlayers from '../hooks/usePlayers'
 import usePartidos, { usePartido } from '../hooks/usePartidos'
 import useAuth, { supabase } from '../hooks/useAuth'
@@ -296,6 +297,15 @@ export default function NotasPartido() {
           path={`/notas/${partido.partido_id}`}
           jsonLd={[
             {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE_URL}/` },
+              { '@type': 'ListItem', position: 2, name: 'Las Notas', item: `${SITE_URL}/notas` },
+              { '@type': 'ListItem', position: 3, name: `Notas: Real Zaragoza vs ${partido.rival}`, item: `${SITE_URL}/notas/${partido.partido_id}` },
+            ],
+          },
+            {
               '@context': 'https://schema.org',
               '@type': 'WebPage',
               name: `Las Notas: Real Zaragoza vs ${partido.rival}`,
@@ -556,6 +566,7 @@ export default function NotasPartido() {
           )}
         </div>
 
+        <PorraCTA />
         <Footer />
       </div>
     </div>

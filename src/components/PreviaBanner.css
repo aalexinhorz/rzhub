@@ -27,20 +27,6 @@
   flex-shrink: 0;
 }
 
-.previa-banner__escudo {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.previa-banner__divider {
-  width: 1px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.15);
-  flex-shrink: 0;
-}
-
 .previa-banner__text {
   color: #fff;
   font-family: 'Archivo', sans-serif;
@@ -49,7 +35,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: min(60vw, 460px);
+  max-width: 60vw;
 }
 .previa-banner__text strong { color: #f5c400; }
 .previa-banner__text .previa-banner__full { display: inline; }
@@ -77,10 +63,6 @@
 @keyframes previa-banner-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
-}
-
-@media (max-width: 900px) {
-  .previa-banner__divider { display: none; }
 }
 
 @media (max-width: 480px) {

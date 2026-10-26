@@ -1,0 +1,52 @@
+.porra-cta-bloque {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 32px 48px;
+  box-sizing: border-box;
+}
+
+.porra-cta-bloque__card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: linear-gradient(100deg, #0b4390 0%, #0a1f4a 70%);
+  border: 1px solid rgba(255, 200, 0, 0.35);
+  text-decoration: none;
+  font-family: 'Archivo', sans-serif;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.porra-cta-bloque__card:hover { border-color: #ffc800; transform: translateY(-1px); }
+
+.porra-cta-bloque__camiseta {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #ffc800;
+}
+
+.porra-cta-bloque__texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.porra-cta-bloque__eyebrow { color: #ffc800; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.porra-cta-bloque__titulo { color: #ffffff; font-size: 17px; font-weight: 800; }
+.porra-cta-bloque__sub { color: #c9d6ee; font-size: 13px; line-height: 1.4; }
+.porra-cta-bloque__sub strong { color: #ffc800; }
+
+.porra-cta-bloque__pill {
+  flex-shrink: 0;
+  background: #ffc800;
+  color: #060d1a;
+  font-size: 14px;
+  font-weight: 300;
+  padding: 9px 16px;
+  border-radius: 999px;
+}
+
+@media (max-width: 640px) {
+  .porra-cta-bloque { padding: 0 16px 36px; }
+  .porra-cta-bloque__card { flex-wrap: wrap; padding: 16px; gap: 12px; }
+  .porra-cta-bloque__camiseta { width: 52px; height: 52px; }
+  .porra-cta-bloque__pill { width: 100%; text-align: center; }
+}

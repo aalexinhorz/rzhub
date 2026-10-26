@@ -55,6 +55,7 @@
 .cal2-proximo__btn {
   flex-shrink: 0; background: var(--rz-yellow); color: #060D1A; border: none;
   border-radius: var(--radius-full); padding: 12px 24px; font-size: var(--text-sm); font-weight: var(--weight-bold); cursor: pointer;
+  text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
 }
 .cal2-proximo__btn:hover { background: var(--rz-yellow-hover); }
 
@@ -90,11 +91,9 @@
   display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;
   padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
   background: var(--rz-bg-2); border: 1px solid var(--rz-border); cursor: pointer;
+  text-decoration: none; color: inherit;
 }
 .cal2-fila:hover { border-color: var(--rz-border-md); }
-.cal2-fila--sin-click { cursor: default; }
-.cal2-fila--sin-click:hover { border-color: var(--rz-border); }
-.cal2-fila--sin-click .cal2-fila__chevron { visibility: hidden; }
 .cal2-fila--proxima { border-color: var(--rz-border-blue); background: rgba(13, 68, 145, 0.12); }
 
 .cal2-fila__meta { display: flex; flex-direction: column; gap: 2px; min-width: 110px; }

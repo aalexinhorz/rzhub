@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
+import PorraCTA from '../components/PorraCTA'
 import { supabase } from '../hooks/useAuth'
 import './Noticias.css'
 
@@ -151,6 +152,7 @@ export default function Noticias() {
           )}
         </div>
 
+        <PorraCTA />
         <Footer />
       </div>
     </div>

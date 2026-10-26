@@ -16,11 +16,17 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { loadEnv } from 'vite'
 import { seoPorra, PORRA_OG_IMAGE } from '../src/lib/seoPorra.js'
+import { slugPartido, seoPartido, seoProximoPartido } from '../src/lib/partidoSeo.js'
+import { proximoDeLista } from '../src/lib/reglasPartido.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = join(ROOT, 'dist')
 const SITE_URL = 'https://www.rzhub.es'
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`
+// Clave IndexNow: el fichero public/<clave>.txt demuestra a Bing & cía que el
+// sitio es nuestro. Si se cambia, renombrar también ese fichero.
+const INDEXNOW_KEY = 'e3e666e445dfefca211f8014c25ae106'
+const HOY = new Date().toISOString().slice(0, 10)
 
 const env = loadEnv('production', ROOT, '')
 const SUPABASE_URL = env.VITE_SUPABASE_URL
@@ -82,16 +88,32 @@ function posicionJugador(pos) {
 }
 
 async function rutasDinamicas() {
-  const [porraAbierta, noticias, jugadores, rivales, partidos] = await Promise.all([
+  const [porraAbierta, noticias, jugadores, rivales, partidos, calendario] = await Promise.all([
     consulta('porra_partidos', 'select=rival,sede,kickoff,jornada,competicion&abierto=eq.true&finalizado=eq.false&order=kickoff.asc&limit=1'),
     consulta('noticias', 'select=slug,titulo,meta_titulo,meta_descripcion,excerpt,imagen_url,og_imagen,created_at,updated_at&publicada=eq.true&order=created_at.desc'),
     consulta('players', 'select=id,name,position&is_zaragoza=eq.true'),
     consulta('rivales', 'select=id,nombre'),
     consulta('partidos', 'select=partido_id,rival,fecha,local,goles_local,goles_visitante&order=fecha.desc'),
+    consulta('porra_partidos', 'select=rival,sede,kickoff,fecha,jornada,competicion,goles_zaragoza,goles_rival,goleadores,finalizado,tv&kickoff=not.is.null&order=kickoff.asc'),
   ])
 
   const porra = seoPorra(porraAbierta[0])
-  const rutas = [{ path: '/porra', ...porra, image: PORRA_OG_IMAGE, changefreq: 'daily', priority: '1.0' }]
+  const rutas = [{ path: '/porra', ...porra, image: PORRA_OG_IMAGE, lastmod: HOY, changefreq: 'daily', priority: '1.0' }]
+
+  const proximo = proximoDeLista(calendario)
+  if (proximo) {
+    rutas.push({ path: '/proximo-partido', ...seoProximoPartido(proximo), image: PORRA_OG_IMAGE, lastmod: HOY, changefreq: 'daily', priority: '1.0' })
+  }
+  for (const p of calendario) {
+    rutas.push({
+      path: `/partido/${slugPartido(p)}`,
+      ...seoPartido(p),
+      image: p.finalizado ? DEFAULT_OG_IMAGE : PORRA_OG_IMAGE,
+      lastmod: p.finalizado ? p.fecha : p === proximo ? HOY : undefined,
+      changefreq: p.finalizado ? 'monthly' : 'daily',
+      priority: p === proximo ? '0.9' : p.finalizado ? '0.6' : '0.5',
+    })
+  }
 
   for (const n of noticias) {
     if (!n.slug) continue
@@ -175,10 +197,9 @@ function bloqueSeo(r) {
 }
 
 function sitemap(rutas) {
-  const hoy = new Date().toISOString().slice(0, 10)
   const urls = rutas.filter(r => !r.noindex).map(r => {
     const partes = [`<loc>${esc(`${SITE_URL}${r.path}`)}</loc>`]
-    partes.push(`<lastmod>${(r.lastmod || hoy).slice(0, 10)}</lastmod>`)
+    if (r.lastmod) partes.push(`<lastmod>${r.lastmod.slice(0, 10)}</lastmod>`)
     if (r.changefreq) partes.push(`<changefreq>${r.changefreq}</changefreq>`)
     if (r.priority) partes.push(`<priority>${r.priority}</priority>`)
     if (r.sitemapImage) partes.push(`<image:image><image:loc>${esc(r.sitemapImage)}</image:loc></image:image>`)
@@ -189,12 +210,34 @@ function sitemap(rutas) {
 
 const PRIORIDAD_FIJAS = { '/': '1.0', '/noticias': '0.9', '/lineup': '0.9', '/mercado': '0.9', '/notas': '0.8', '/calendario': '0.8', '/estadisticas': '0.8', '/rivales': '0.8' }
 
+// Avisa a Bing/Yandex/Seznam (IndexNow) de las URLs que han cambiado hace
+// poco. Solo en el despliegue de producción de Vercel; nunca falla el build.
+async function avisarIndexNow(rutas) {
+  if (process.env.VERCEL_ENV !== 'production') return
+  const limite = new Date(Date.now() - 3 * 86400_000).toISOString().slice(0, 10)
+  const urls = rutas
+    .filter(r => !r.noindex && (r.path === '/' || (r.lastmod && r.lastmod.slice(0, 10) >= limite)))
+    .map(r => `${SITE_URL}${r.path}`)
+  if (!urls.length) return
+  try {
+    const res = await fetch('https://api.indexnow.org/indexnow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ host: 'www.rzhub.es', key: INDEXNOW_KEY, keyLocation: `${SITE_URL}/${INDEXNOW_KEY}.txt`, urlList: urls }),
+      signal: AbortSignal.timeout(10_000),
+    })
+    console.log(`[prerender-seo] IndexNow: ${urls.length} URLs → HTTP ${res.status}`)
+  } catch (e) {
+    console.warn(`[prerender-seo] IndexNow no disponible: ${e.message}`)
+  }
+}
+
 async function main() {
   const plantilla = readFileSync(join(DIST, 'index.html'), 'utf8')
   if (!/<!--seo:start-->[\s\S]*<!--seo:end-->/.test(plantilla)) throw new Error('dist/index.html no tiene el bloque <!--seo:start--> … <!--seo:end-->')
 
   const fijas = rutasFijas()
-    .filter(r => r.path !== '/porra')
+    .filter(r => r.path !== '/porra' && r.path !== '/proximo-partido')
     .map(r => ({ ...r, changefreq: 'daily', priority: PRIORIDAD_FIJAS[r.path] || '0.7' }))
 
   let dinamicas = []
@@ -218,6 +261,7 @@ async function main() {
   writeFileSync(join(DIST, 'sitemap.xml'), sitemap(rutas))
   const indexables = rutas.filter(r => !r.noindex).length
   console.log(`[prerender-seo] ${rutas.length} páginas (${fijas.length} fijas, ${dinamicas.length} dinámicas); ${indexables} en sitemap.xml`)
+  await avisarIndexNow(rutas)
 }
 
 main().catch(e => {

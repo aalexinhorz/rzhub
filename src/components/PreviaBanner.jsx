@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { supabase } from '../hooks/useAuth'
-import { useEscudo } from '../lib/escudos'
 import './PreviaBanner.css'
 
 const CANAL_HANDLE = 'elrinconzaragocista'
@@ -27,9 +25,8 @@ async function cargarPrevia(proximo, desde) {
   return data?.[0] || null
 }
 
-export default function PreviaBanner({ proximo, desde, slugRival }) {
+export default function PreviaBanner({ proximo, desde }) {
   const [previa, setPrevia] = useState(null)
-  const rivalCrest = useEscudo(proximo.rival)
 
   useEffect(() => {
     let activo = true
@@ -43,38 +40,24 @@ export default function PreviaBanner({ proximo, desde, slugRival }) {
 
   const cierrePrevia = new Date(proximo.kickoff).getTime() - HORAS_ANTES_CIERRE * 3600_000
   const previaVisible = previa && Date.now() < cierrePrevia
-  if (!previaVisible && !slugRival) return null
+  if (!previaVisible) return null
 
   return (
     <div className="previa-banner">
-      {previaVisible && (
-        <a href={`https://www.youtube.com/watch?v=${previa.video_id}`} target="_blank" rel="noopener noreferrer" className="previa-banner__item">
-          <img src={CANAL_AVATAR} alt="" className="previa-banner__avatar" />
-          <span className="previa-banner__text">
-            <span className="previa-banner__full">
-              <strong>El Rincón Zaragocista</strong> — {previa.titulo}
-            </span>
-            <span className="previa-banner__short">
-              <strong>La previa</strong> vs {proximo.rival}
-            </span>
+      <a href={`https://www.youtube.com/watch?v=${previa.video_id}`} target="_blank" rel="noopener noreferrer" className="previa-banner__item">
+        <img src={CANAL_AVATAR} alt="" className="previa-banner__avatar" />
+        <span className="previa-banner__text">
+          <span className="previa-banner__full">
+            <strong>El Rincón Zaragocista</strong> — {previa.titulo}
           </span>
-          <span className={`previa-banner__pill${previa.directo_activo ? ' previa-banner__pill--directo' : ''}`}>
-            {previa.directo_activo ? '🔴 En directo' : '▶ Ver previa'}
+          <span className="previa-banner__short">
+            <strong>La previa</strong> vs {proximo.rival}
           </span>
-        </a>
-      )}
-
-      {previaVisible && slugRival && <span className="previa-banner__divider" aria-hidden="true" />}
-
-      {slugRival && (
-        <Link to={`/rival/${slugRival}`} className="previa-banner__item">
-          {rivalCrest && <img src={rivalCrest} alt="" className="previa-banner__escudo" />}
-          <span className="previa-banner__text">
-            <strong>Conoce al rival:</strong> {proximo.rival}
-          </span>
-          <span className="previa-banner__pill">Ver ficha →</span>
-        </Link>
-      )}
+        </span>
+        <span className={`previa-banner__pill${previa.directo_activo ? ' previa-banner__pill--directo' : ''}`}>
+          {previa.directo_activo ? '🔴 En directo' : '▶ Ver previa'}
+        </span>
+      </a>
     </div>
   )
 }

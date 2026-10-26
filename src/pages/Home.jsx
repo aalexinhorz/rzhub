@@ -4,6 +4,7 @@ import SEO, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/SEO'
 import useAuth from '../hooks/useAuth'
 import { ESCUDOS_CLUBS, fetchEscudoFallback } from '../lib/escudos'
 import HomeBanners from '../components/HomeBanners'
+import MatchCenterStrip from '../components/MatchCenterStrip'
 import HeroSection from '../components/HeroSection'
 import CommunityStats from '../components/CommunityStats'
 import ToolsSection from '../components/ToolsSection'
@@ -144,6 +145,9 @@ export default function Home() {
 
       {/* ── BANNERS AUTOMÁTICOS: previa/rival o post partido/notas ─── */}
       <HomeBanners />
+
+      {/* ── VESTUARIO BLANQUILLO: partido que toca, cambia solo con las fechas ─── */}
+      <MatchCenterStrip />
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <HeroSection />

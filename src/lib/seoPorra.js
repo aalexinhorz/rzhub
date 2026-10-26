@@ -1,15 +1,17 @@
 // Título y descripción de /porra según el partido abierto. Lo usan Porra.jsx
 // (navegador) y scripts/prerender-seo.mjs (HTML estático para WhatsApp, X…),
 // así que debe seguir siendo JS puro, sin JSX ni imports de Vite.
-// "Pronóstico <local> - <visitante>" es la búsqueda que más se hace antes de
-// cada partido; el título del partido concreto compite por ella.
+// "Pronóstico <local> - <visitante>" lo trabaja la página del partido
+// (/partido/:slug, ver partidoSeo.js); aquí manda "porra Real Zaragoza" y el
+// gancho es el premio (camiseta oficial al 1.º de la temporada). El partido
+// abierto solo va en la descripción, para no competir las dos URLs.
 
 const fechaCorta = iso => new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', timeZone: 'Europe/Madrid' })
 
 const BASE = {
-  title: 'La Porra del Real Zaragoza | Pronósticos y Ranking | RZ Hub',
-  description: 'Pronostica el resultado y los goleadores de cada partido del Real Zaragoza, suma puntos en el ranking de la afición y gana una camiseta oficial del Real Zaragoza. Gratis.',
-  keywords: 'porra Real Zaragoza, quiniela Real Zaragoza, pronósticos Real Zaragoza, predicciones Real Zaragoza, ranking porra Real Zaragoza, camiseta Real Zaragoza, porra gratis Real Zaragoza, porra Primera Federación',
+  title: 'La Porra del Real Zaragoza | Gana una camiseta oficial',
+  description: 'Gana una camiseta oficial del Real Zaragoza: pronostica el resultado y los goleadores de cada partido, suma puntos y termina primero en la clasificación de la temporada. Gratis.',
+  keywords: 'porra Real Zaragoza, camiseta Real Zaragoza, quiniela Real Zaragoza, pronósticos Real Zaragoza, predicciones Real Zaragoza, ranking porra Real Zaragoza, porra gratis Real Zaragoza, porra Primera Federación',
 }
 
 export function seoPorra(partido) {
@@ -18,8 +20,8 @@ export function seoPorra(partido) {
   const enfrentamiento = local ? `Real Zaragoza - ${partido.rival}` : `${partido.rival} - Real Zaragoza`
   const competicion = partido.competicion ? partido.competicion.split(' · ')[0] : `Primera Federación, J${partido.jornada}`
   return {
-    title: `Pronóstico ${enfrentamiento} | La Porra del Real Zaragoza`,
-    description: `Haz tu pronóstico del ${enfrentamiento} (${competicion}, ${fechaCorta(partido.kickoff)}) en la Porra del Real Zaragoza: gratis, con ranking de la afición y una camiseta oficial de premio.`,
+    title: BASE.title,
+    description: `Gana una camiseta oficial del Real Zaragoza: pronostica el ${enfrentamiento} (${competicion}, ${fechaCorta(partido.kickoff)}) y cada partido de la temporada. Gratis.`,
     keywords: `pronóstico ${partido.rival} Real Zaragoza, ${enfrentamiento}, ${BASE.keywords}`,
   }
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
+import PorraCTA from '../components/PorraCTA'
 import { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
 import './Rival.css'
@@ -173,6 +174,15 @@ export default function Rival() {
         title={`${rival.nombre} | Ficha del rival | RZ Hub`}
         description={`Historia, plantilla completa y enfrentamientos del Real Zaragoza contra el ${rival.nombre}.`}
         path={`/rival/${slug}`}
+        jsonLd={{
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE_URL}/` },
+              { '@type': 'ListItem', position: 2, name: 'Rivales', item: `${SITE_URL}/rivales` },
+              { '@type': 'ListItem', position: 3, name: rival.nombre, item: `${SITE_URL}/rival/${slug}` },
+            ],
+          }}
       />
 
       <div className="rival-page__body">
@@ -241,6 +251,7 @@ export default function Rival() {
         </div>
       </div>
 
+      <PorraCTA />
       <Footer />
     </div>
   )
