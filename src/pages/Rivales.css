@@ -21,6 +21,23 @@
 .rivales-container { width: 100%; max-width: 1000px; margin: 0 auto; padding-inline: 32px; padding-bottom: 64px; }
 .rivales-state { text-align: center; padding: 60px 20px; color: var(--rz-text-muted); font-size: var(--text-md); }
 
+.rivales-tabs { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-5); }
+.rivales-tab {
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border-md);
+  color: var(--rz-text-secondary);
+  border-radius: var(--radius-full);
+  padding: 8px 18px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+}
+.rivales-tab:hover { border-color: var(--rz-border-yellow); color: var(--rz-text-primary); }
+.rivales-tab.is-active { background: var(--rz-yellow); border-color: var(--rz-yellow); color: #060D1A; }
+
 .rivales-grid { display: flex; flex-direction: column; gap: var(--space-3); }
 
 .rivales-tarjeta {

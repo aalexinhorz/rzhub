@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
 import { supabase } from '../hooks/useAuth'
@@ -10,6 +10,23 @@ import './Rivales.css'
 // liga_calendario (ver nota más completa en Rival.jsx, que hace el
 // mismo cálculo para la ficha de un solo rival).
 const sinComillas = n => (n || '').replace(/[""]/g, '').trim()
+
+const PESTANAS = [
+  {
+    id: 'liga',
+    competicion: 'Primera RFEF',
+    label: 'Primera RFEF',
+    eyebrow: 'Primera Federación · Grupo 2 · 2026/2027',
+    subtitulo: 'Historia, plantilla completa y cara a cara del Real Zaragoza contra todos los equipos del grupo.',
+  },
+  {
+    id: 'copa',
+    competicion: 'Copa del Rey',
+    label: 'Copa del Rey',
+    eyebrow: 'Copa del Rey · 2026/2027',
+    subtitulo: 'Historia, plantilla completa y cara a cara del Real Zaragoza contra sus rivales de Copa.',
+  },
+]
 
 function useRivales() {
   const [rivales, setRivales] = useState([])
@@ -93,6 +110,13 @@ function TarjetaRival({ rival }) {
 
 export default function Rivales() {
   const { rivales, loading } = useRivales()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const pestana = PESTANAS.find(p => p.id === searchParams.get('competicion')) || PESTANAS[0]
+  const visibles = rivales.filter(r => r.competicion === pestana.competicion)
+
+  function cambiarPestana(id) {
+    setSearchParams(id === PESTANAS[0].id ? {} : { competicion: id }, { replace: true })
+  }
 
   return (
     <div className="rivales-page">
@@ -110,20 +134,35 @@ export default function Rivales() {
       />
 
       <div className="rivales-hero">
-        <p className="rivales-hero__eyebrow">Primera Federación · Grupo 2 · 2026/2027</p>
+        <p className="rivales-hero__eyebrow">{pestana.eyebrow}</p>
         <h1 className="rivales-hero__title">Rivales</h1>
-        <p className="rivales-hero__subtitle">Historia, plantilla completa y cara a cara del Real Zaragoza contra todos los equipos del grupo.</p>
+        <p className="rivales-hero__subtitle">{pestana.subtitulo}</p>
       </div>
 
       <div className="rivales-body">
         <div className="rivales-container">
+          <div className="rivales-tabs" role="tablist">
+            {PESTANAS.map(p => (
+              <button
+                key={p.id}
+                type="button"
+                role="tab"
+                aria-selected={pestana.id === p.id}
+                className={`rivales-tab${pestana.id === p.id ? ' is-active' : ''}`}
+                onClick={() => cambiarPestana(p.id)}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
           {loading ? (
             <p className="rivales-state">Cargando rivales…</p>
-          ) : rivales.length === 0 ? (
+          ) : visibles.length === 0 ? (
             <p className="rivales-state">Todavía no hay fichas de rivales.</p>
           ) : (
             <div className="rivales-grid">
-              {rivales.map(r => <TarjetaRival key={r.id} rival={r} />)}
+              {visibles.map(r => <TarjetaRival key={r.id} rival={r} />)}
             </div>
           )}
         </div>
