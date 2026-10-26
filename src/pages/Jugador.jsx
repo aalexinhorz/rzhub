@@ -115,6 +115,7 @@ export default function Jugador() {
   if (estado === 'no-encontrado') {
     return (
       <div className="jugador-page">
+        <SEO title="Jugador no encontrado | RZ Hub" description="No hemos encontrado a este jugador." noindex />
         <p className="jugador-page__state">No hemos encontrado a este jugador.</p>
         <p className="jugador-page__state"><Link to="/estadisticas" className="jugador-volver">‹ Volver a Estadísticas</Link></p>
       </div>

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createRoot } from 'react-dom/client'
 import html2canvas from 'html2canvas'
 import SEO, { SITE_URL } from '../components/SEO'
+import { seoPorra, PORRA_OG_IMAGE, PORRA_CARTEL } from '../lib/seoPorra'
 import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
 import usePlayers from '../hooks/usePlayers'
@@ -984,16 +985,16 @@ export default function Porra() {
   return (
     <div className="porra-page">
       <SEO
-        title="La Porra del Real Zaragoza | Pronósticos y Ranking | RZ Hub"
-        description="Predice los resultados y goleadores del Real Zaragoza cada jornada, compite en el ranking y gana una camiseta oficial al ganador de la temporada."
-        keywords="porra Real Zaragoza, quiniela Real Zaragoza, pronósticos Real Zaragoza, predicciones Real Zaragoza, ranking porra Real Zaragoza, premios porra Real Zaragoza, camiseta Real Zaragoza, porra gratis Real Zaragoza, porra Primera Federación, afición Real Zaragoza"
+        {...seoPorra(partidoActivo)}
         path="/porra"
+        image={PORRA_OG_IMAGE}
         jsonLd={[
           {
             '@context': 'https://schema.org',
             '@type': 'WebApplication',
             name: 'La Porra del Real Zaragoza | RZ Hub',
             url: `${SITE_URL}/porra`,
+            image: [PORRA_OG_IMAGE, PORRA_CARTEL],
             applicationCategory: 'GameApplication',
             operatingSystem: 'Web',
             offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },

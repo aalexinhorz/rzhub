@@ -6,6 +6,12 @@ import { HelmetProvider } from 'react-helmet-async'
 import './index.css'
 import App from './App.jsx'
 
+// Las etiquetas SEO escritas en el HTML (index.html y las páginas que genera
+// scripts/prerender-seo.mjs) son para quien no ejecuta JavaScript (WhatsApp,
+// X, Telegram…). En el navegador las pone cada página con <SEO>, así que se
+// quitan para que no queden duplicadas.
+document.querySelectorAll('[data-seo-static]').forEach(el => el.remove())
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <HelmetProvider>

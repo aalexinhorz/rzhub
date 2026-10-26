@@ -153,6 +153,7 @@ export default function Rival() {
   if (!rival) {
     return (
       <div className="rival-page">
+        <SEO title="Rival no encontrado | RZ Hub" description="No hay ficha para este rival todavía." noindex />
         <p className="rival-page__state">No hay ficha para este rival todavía.</p>
       </div>
     )

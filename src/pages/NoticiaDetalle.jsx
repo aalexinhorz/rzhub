@@ -53,6 +53,7 @@ export default function NoticiaDetalle() {
 
   if (!post) return (
     <div className="noticia-detalle__state">
+      <SEO title="Noticia no encontrada | RZ Hub" description="Esta noticia no existe o ya no está publicada." noindex />
       <p>No se encontró la noticia.</p>
       <button className="rz-btn rz-btn--primary" onClick={() => navigate('/noticias')}>Volver a noticias</button>
     </div>
@@ -67,6 +68,9 @@ export default function NoticiaDetalle() {
         description={post.meta_descripcion || post.excerpt || post.titulo}
         path={`/noticias/${post.slug}`}
         image={post.og_imagen || post.imagen_url || DEFAULT_OG_IMAGE}
+        type="article"
+        // Tweets importados: contenido de terceros, fuera del índice (ver scripts/prerender-seo.mjs).
+        noindex={post.slug?.startsWith('tweet-')}
         jsonLd={[
           {
             '@context': 'https://schema.org',

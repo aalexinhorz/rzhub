@@ -45,6 +45,7 @@ const Sobre = lazy(() => import('./pages/Sobre'))
 const Terminos = lazy(() => import('./pages/Terminos'))
 const Privacidad = lazy(() => import('./pages/Privacidad'))
 const Ayuda = lazy(() => import('./pages/Ayuda'))
+const NoEncontrada = lazy(() => import('./pages/NoEncontrada'))
 
 function CargandoPagina() {
   return <div style={{ minHeight: '60vh' }} />
@@ -99,6 +100,7 @@ export default function App() {
           <Route path="/terminos" element={<Terminos />} />
           <Route path="/privacidad" element={<Privacidad />} />
           <Route path="/ayuda" element={<Ayuda />} />
+          <Route path="*" element={<NoEncontrada />} />
         </Routes>
       </Suspense>
     </div>

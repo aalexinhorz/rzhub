@@ -121,7 +121,7 @@ export default function OnTour() {
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#060D1A' }}>
       <SEO
         title="On Tour · Desplazamientos del Real Zaragoza 26/27 | RZ Hub"
-        description={`Todos los desplazamientos del Real Zaragoza en la temporada 26/27. ${D.length} viajes, hasta ${total.toLocaleString()} km en total. Planifica tu viaje con Google Maps.`}
+        description="Todos los desplazamientos del Real Zaragoza en la temporada 26/27: kilómetros, estadios y ruta en Google Maps para planificar tu viaje con la afición."
         keywords="desplazamientos Real Zaragoza, viajes afición Real Zaragoza, afición visitante Real Zaragoza, kilómetros Real Zaragoza 26/27, on tour Real Zaragoza"
         path="/on-tour"
         jsonLd={{
