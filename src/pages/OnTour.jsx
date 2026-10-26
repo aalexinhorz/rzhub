@@ -38,8 +38,19 @@ function icono(escudo, color) {
   return L.divIcon({ className: '', html: html, iconSize: [40, 40], iconAnchor: [20, 20] })
 }
 
+// Desplazamientos fuera de la liga (Copa): solo alimentan la tarjeta de
+// "Próximo desplazamiento", no cuentan en el mapa ni en los totales.
+const D_COPA = [
+  { club: 'CD Tudelano', direccion: 'Estadio Ciudad de Tudela, Av. de las Merindades, 31500 Tudela, Navarra' },
+]
+
 function getMapsUrl(lat, lng) {
   return 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng
+}
+
+function getTripMapsUrl(trip) {
+  if (trip.direccion) return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(trip.direccion)
+  return getMapsUrl(trip.lat, trip.lng)
 }
 
 // Alias para filiales cuyo nombre en el calendario no coincide con el
@@ -63,7 +74,7 @@ function findTrip(rivalName) {
   if (!rivalName) return null
   const norm = normalizeRival(rivalName)
   const aliased = RIVAL_ALIASES[norm] || norm
-  return D.find(d => {
+  return [...D, ...D_COPA].find(d => {
     const dNorm = normalizeRival(d.club)
     return dNorm.includes(aliased) || aliased.includes(dNorm)
   }) || null
@@ -142,7 +153,7 @@ export default function OnTour() {
               </div>
             ))}
             <div
-              onClick={nextTrip ? () => window.open(getMapsUrl(nextTrip.lat, nextTrip.lng), '_blank') : undefined}
+              onClick={nextTrip ? () => window.open(getTripMapsUrl(nextTrip), '_blank') : undefined}
               className={nextTrip ? 'hero-cta' : undefined}
               style={{
                 background: nextTrip ? undefined : 'rgba(255,255,255,0.1)',
