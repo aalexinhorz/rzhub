@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import SEO, { SITE_URL, DEFAULT_OG_IMAGE } from '../components/SEO'
 import useAuth from '../hooks/useAuth'
 import { ESCUDOS_CLUBS, fetchEscudoFallback } from '../lib/escudos'
-import PostPartidoBanner from '../components/PostPartidoBanner'
+import HomeBanners from '../components/HomeBanners'
 import HeroSection from '../components/HeroSection'
 import CommunityStats from '../components/CommunityStats'
 import ToolsSection from '../components/ToolsSection'
@@ -142,8 +142,8 @@ export default function Home() {
         }}
       />
 
-      {/* ── AVISO DEL POST PARTIDO (automático, según videos_canal) ─── */}
-      <PostPartidoBanner />
+      {/* ── BANNERS AUTOMÁTICOS: previa/rival o post partido/notas ─── */}
+      <HomeBanners />
 
       {/* ── HERO ─────────────────────────────────────────────── */}
       <HeroSection />

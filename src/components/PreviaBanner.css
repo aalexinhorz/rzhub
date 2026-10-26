@@ -2,6 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 24px;
   padding: 12px 20px;
   background: #0B4390;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -25,6 +27,20 @@
   flex-shrink: 0;
 }
 
+.previa-banner__escudo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.previa-banner__divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
 .previa-banner__text {
   color: #fff;
   font-family: 'Archivo', sans-serif;
@@ -33,7 +49,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 60vw;
+  max-width: min(60vw, 460px);
 }
 .previa-banner__text strong { color: #f5c400; }
 .previa-banner__text .previa-banner__full { display: inline; }
@@ -63,8 +79,12 @@
   50% { opacity: 0.7; }
 }
 
+@media (max-width: 900px) {
+  .previa-banner__divider { display: none; }
+}
+
 @media (max-width: 480px) {
-  .previa-banner { padding: 10px 14px; }
+  .previa-banner { padding: 10px 14px; gap: 10px 8px; }
   .previa-banner__item { gap: 8px; }
   .previa-banner__text {
     font-size: 11px;

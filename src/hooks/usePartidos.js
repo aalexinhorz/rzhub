@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './useAuth'
 
-const DIAS_VOTACION = 7
+const DIAS_VOTACION = 4
 
-// Abierta desde que se juega el partido hasta lo que ocurra antes:
-// DIAS_VOTACION días después, o el día del siguiente partido.
+// Abierta desde que se abren las notas (created_at de la fila) hasta lo
+// que ocurra antes: DIAS_VOTACION días después, o el día del siguiente
+// partido con notas.
 // "futuro" y "cerrada" son estados distintos aunque en ambos abierta=false:
 // uno es "todavía no ha pasado" y el otro "ya pasó y venció el plazo".
 // votacion_cerrada permite cerrarla a mano antes de que llegue ese plazo
 // (p. ej. si se quiere dar por zanjada la votación de un partido).
-function calcularVentana(partido, siguiente) {
+export function calcularVentana(partido, siguiente) {
   const inicio = new Date(`${partido.fecha}T00:00:00`)
 
   if (partido.votacion_cerrada) {
@@ -18,8 +19,8 @@ function calcularVentana(partido, siguiente) {
     return { abierta, cierre: inicio, estado }
   }
 
-  const limitePorDias = new Date(inicio)
-  limitePorDias.setDate(limitePorDias.getDate() + DIAS_VOTACION)
+  const apertura = partido.created_at ? new Date(partido.created_at) : inicio
+  const limitePorDias = new Date(apertura.getTime() + DIAS_VOTACION * 86400_000)
 
   const limitePorSiguiente = siguiente ? new Date(`${siguiente.fecha}T00:00:00`) : null
   const cierre = limitePorSiguiente && limitePorSiguiente < limitePorDias ? limitePorSiguiente : limitePorDias

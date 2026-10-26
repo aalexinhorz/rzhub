@@ -44,7 +44,7 @@ function rawPlayerId(player) {
 }
 
 // Cuenta atrás real hasta partido.cierre (calculado en usePartidos: la
-// fecha del partido + 7 días, o el día del siguiente partido si es
+// apertura de las notas + 4 días, o el día del siguiente partido si es
 // antes — nunca un plazo inventado).
 function useCuentaAtras(cierre) {
   const [restante, setRestante] = useState(null)
