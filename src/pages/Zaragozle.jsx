@@ -2,11 +2,9 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
 import usePlayers from '../hooks/usePlayers'
+import { fechaHoyMadrid, numeroPuzzle, calcularRacha } from '../lib/zaragozleRacha'
 import './Zaragozle.css'
 
-// Día en el que se lanzó el juego — el número de puzzle (#1, #2...) se
-// cuenta a partir de aquí, uno más cada día, como en el Wordle real.
-const LANZAMIENTO = '2026-09-14'
 
 // Solo jugadores con is_zaragoza=true (de momento nada de vocabulario
 // genérico de fútbol/afición). La palabra es el apellido/nombre corto
@@ -60,19 +58,10 @@ const FILAS_TECLADO = [
   ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BORRAR'],
 ]
 
-function fechaHoyMadrid() {
-  return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' })
-}
-
 function hashString(str) {
   let h = 0
   for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0
   return h
-}
-
-function numeroPuzzle(fechaStr) {
-  const dias = Math.round((new Date(`${fechaStr}T00:00:00Z`) - new Date(`${LANZAMIENTO}T00:00:00Z`)) / 86400000)
-  return Math.max(1, dias + 1)
 }
 
 // Algoritmo estándar de Wordle: primero se marcan los aciertos exactos
@@ -113,6 +102,16 @@ function Tecla({ letra, estado, onClick }) {
     >
       {letra === 'BORRAR' ? '⌫' : letra === 'ENTER' ? 'ENTER' : letra}
     </button>
+  )
+}
+
+function RachaZaragozle({ fecha }) {
+  const { actual, mejor } = calcularRacha(fecha)
+  return (
+    <div className="zaragozle-racha">
+      <span className="zaragozle-racha__dato"><strong>🔥 {actual}</strong> {actual === 1 ? 'día seguido' : 'días seguidos'}</span>
+      <span className="zaragozle-racha__dato"><strong>{mejor}</strong> mejor racha</span>
+    </div>
   )
 }
 
@@ -295,7 +294,8 @@ export default function Zaragozle() {
               <button type="button" className="rz-btn rz-btn--primary" onClick={compartir}>
                 {copiado ? '✓ ¡Copiado!' : '📋 Compartir resultado'}
               </button>
-              <p className="zaragozle-resultado__vuelve">Vuelve mañana para una nueva palabra.</p>
+              <RachaZaragozle fecha={fecha} />
+              <p className="zaragozle-resultado__vuelve">Vuelve mañana para una nueva palabra y no pierdas la racha.</p>
             </div>
           )}
 

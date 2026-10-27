@@ -177,7 +177,7 @@ export async function drawPizarraCanvas(fichas, balon, oposicion = [], flechas =
 
   ctx.fillStyle = '#060D1A'
   ctx.fillRect(0, 0, W, H)
-  const bg = await loadImage('/CAMPO_PARA_WEB.png')
+  const bg = await loadImage('/CAMPO_PARA_WEB.webp')
   if (bg) ctx.drawImage(bg, 0, 0, W, H)
 
   ctx.fillStyle = '#ffffff'

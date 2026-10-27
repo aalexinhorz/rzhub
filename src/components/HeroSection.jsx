@@ -153,7 +153,9 @@ function LineupSlot({ navigate, partido, nextMatch }) {
   )
 }
 
-export default function HeroSection() {
+// `compacto` (solo Home2): en móvil quita la presentación y deja arriba las
+// tarjetas de Lineup y Porra. Los estilos viven en home2/Home2.css.
+export default function HeroSection({ compacto = false }) {
   const navigate = useNavigate()
   const { user, signInWithGoogle } = useAuth()
   const live = useLiveStream()
@@ -161,7 +163,7 @@ export default function HeroSection() {
   const { nextMatch } = useNextMatch()
 
   return (
-    <section className="hero">
+    <section className={`hero${compacto ? ' hero--compacto' : ''}`}>
       <div className="hero__container">
         <div className="hero__left">
           <p className="hero__eyebrow">La web del zaragocista</p>

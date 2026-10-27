@@ -1,0 +1,166 @@
+/* 404 — "¡Fuera de juego!": jugada en vista cenital revisada por el VAR. */
+
+.nf-pagina {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(29, 68, 130, .45), transparent 70%),
+    #03101f;
+}
+
+.nf-contenido {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 80px 16px 64px;
+}
+
+/* Chip de estado del VAR */
+.nf-var-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .05);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .75);
+  transition: background .3s ease, border-color .3s ease, color .3s ease;
+}
+.nf-var-chip__punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f5c400;
+  animation: nf-latido 1s ease-in-out infinite;
+}
+.nf-var-chip.is-decidido {
+  background: rgba(239, 68, 68, .14);
+  border-color: rgba(239, 68, 68, .45);
+  color: #fca5a5;
+}
+.nf-var-chip.is-decidido .nf-var-chip__punto { background: #ef4444; animation: none; }
+
+/* Campo */
+.nf-escena {
+  width: 100%;
+  max-width: 640px;
+  border-radius: 18px;
+  padding: 10px;
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .7);
+}
+.nf-campo { display: block; width: 100%; height: auto; aspect-ratio: 800 / 494; }
+.nf-campo__tu { font: 800 15px var(--font-body); fill: #0b1f44; }
+.nf-campo__medida { font: 800 17px var(--font-body); fill: #0b1f44; }
+
+/* Pase al hueco: se dibuja de izquierda a derecha */
+.nf-pase { animation: nf-pase .7s .2s ease-out both; }
+
+/* El atacante arranca en línea y se adelanta */
+.nf-atacante { animation: nf-desmarque .9s .3s cubic-bezier(.2, .8, .3, 1) both; }
+.nf-atacante__halo { transform-box: fill-box; transform-origin: center; animation: nf-halo 1.6s 1.2s ease-out infinite; }
+
+/* Líneas del VAR */
+.nf-var__linea { stroke-width: 3; stroke-dasharray: 410; stroke-dashoffset: 410; animation: nf-trazo .6s ease-out forwards; }
+.nf-var__linea--defensa { stroke: #38bdf8; animation-delay: 1.3s; filter: drop-shadow(0 0 6px rgba(56, 189, 248, .8)); }
+.nf-var__linea--ataque { stroke: #ef4444; animation-delay: 1.6s; filter: drop-shadow(0 0 6px rgba(239, 68, 68, .8)); }
+.nf-var__medida { opacity: 0; animation: nf-aparece .35s 2.2s ease-out forwards; }
+
+/* Bandera del asistente: de abajo a arriba */
+.nf-juez__bandera {
+  transform-box: view-box;
+  transform-origin: 572px 22px;
+  transform: rotate(160deg);
+  animation: nf-bandera .45s 2.3s cubic-bezier(.3, 1.6, .5, 1) forwards;
+}
+
+/* Texto */
+.nf-titulo { margin: 6px 0 0; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.nf-titulo__codigo {
+  font-family: var(--font-display);
+  font-size: clamp(64px, 16vw, 128px);
+  line-height: .85;
+  color: #f5c400;
+  letter-spacing: .02em;
+}
+.nf-titulo__texto {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 7vw, 52px);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+.nf-texto { max-width: 520px; margin: 0; color: rgba(255, 255, 255, .68); font-size: 16px; line-height: 1.55; }
+.nf-ruta {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .9em;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, .14);
+  color: #fca5a5;
+  display: inline-block;
+  max-width: 100%;
+  margin: 2px 0;
+  overflow-wrap: anywhere;
+  vertical-align: middle;
+}
+
+/* Botones */
+.nf-acciones { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 6px; }
+.nf-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.nf-boton:hover { transform: translateY(-1px); }
+.nf-boton--amarillo { background: #f5c400; color: #060d1a; }
+.nf-boton--amarillo:hover { background: #ffd633; }
+.nf-boton--borde { border: 1px solid rgba(255, 255, 255, .22); color: #fff; }
+.nf-boton--borde:hover { border-color: #f5c400; color: #f5c400; }
+
+@media (max-width: 560px) {
+  .nf-contenido { padding-top: 84px; gap: 14px; }
+  .nf-escena { padding: 6px; border-radius: 14px; }
+  .nf-campo { aspect-ratio: 530 / 494; }
+  .nf-acciones { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .nf-acciones .nf-boton--amarillo { grid-column: 1 / -1; }
+  .nf-boton { padding: 0 12px; }
+  .nf-texto { font-size: 15px; }
+}
+
+@keyframes nf-pase { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes nf-desmarque { from { transform: translateX(-70px); } to { transform: translateX(0); } }
+@keyframes nf-halo { 0% { transform: scale(.8); opacity: .5; } 100% { transform: scale(1.9); opacity: 0; } }
+@keyframes nf-trazo { to { stroke-dashoffset: 0; } }
+@keyframes nf-aparece { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes nf-bandera { to { transform: rotate(0deg); } }
+@keyframes nf-latido { 50% { opacity: .35; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-pase, .nf-atacante, .nf-atacante__halo, .nf-var__linea, .nf-var__medida, .nf-juez__bandera, .nf-var-chip__punto {
+    animation: none !important;
+  }
+  .nf-var__linea { stroke-dashoffset: 0; }
+  .nf-var__medida { opacity: 1; }
+  .nf-juez__bandera { transform: none; }
+}

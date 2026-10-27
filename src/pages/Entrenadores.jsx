@@ -14,7 +14,7 @@ const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/objec
 // descargadas y alojadas aquí en vez de enlazarlas en caliente.
 const ENTRENADORES = [
   {
-    id: 'ibai-gomez', nombre: 'Ibai Gómez', foto: '/images/entrenadores/ibai-gomez.jpg',
+    id: 'ibai-gomez', nombre: 'Ibai Gómez', foto: '/images/entrenadores/ibai-gomez.webp',
     desde: '2026-06-04', hasta: null, actual: true,
     pj: 6, pg: 5, pe: 0, pp: 1,
   },
@@ -24,22 +24,22 @@ const ENTRENADORES = [
     pj: 14, pg: 3, pe: 3, pp: 8,
   },
   {
-    id: 'ruben-selles', nombre: 'Rubén Sellés', foto: '/images/entrenadores/ruben-selles.jpg',
+    id: 'ruben-selles', nombre: 'Rubén Sellés', foto: '/images/entrenadores/ruben-selles.webp',
     desde: '2025-10-21', hasta: '2026-03-02',
     pj: 20, pg: 5, pe: 6, pp: 9,
   },
   {
-    id: 'emilio-larraz', nombre: 'Emilio Larraz', etapa: 'interino', foto: '/images/entrenadores/emilio-larraz.png',
+    id: 'emilio-larraz', nombre: 'Emilio Larraz', etapa: 'interino', foto: '/images/entrenadores/emilio-larraz.webp',
     desde: '2025-10-13', hasta: '2025-10-20',
     pj: 1, pg: 0, pe: 0, pp: 1,
   },
   {
-    id: 'gabi', nombre: 'Gabi Fernández', foto: '/images/entrenadores/gabi.jpg',
+    id: 'gabi', nombre: 'Gabi Fernández', foto: '/images/entrenadores/gabi.webp',
     desde: '2025-03-18', hasta: '2025-10-12',
     pj: 20, pg: 5, pe: 6, pp: 9,
   },
   {
-    id: 'miguel-angel-ramirez', nombre: 'Miguel Ángel Ramírez', foto: '/images/entrenadores/miguel-angel-ramirez.jpg',
+    id: 'miguel-angel-ramirez', nombre: 'Miguel Ángel Ramírez', foto: '/images/entrenadores/miguel-angel-ramirez.webp',
     desde: '2024-12-27', hasta: '2025-03-17',
     pj: 10, pg: 1, pe: 4, pp: 5,
   },
@@ -49,57 +49,57 @@ const ENTRENADORES = [
     pj: 1, pg: 1, pe: 0, pp: 0,
   },
   {
-    id: 'victor-fernandez-4', nombre: 'Víctor Fernández', etapa: '4.ª etapa', foto: '/images/entrenadores/victor-fernandez.jpg',
+    id: 'victor-fernandez-4', nombre: 'Víctor Fernández', etapa: '4.ª etapa', foto: '/images/entrenadores/victor-fernandez.webp',
     desde: '2024-03-12', hasta: '2024-12-18',
     pj: 34, pg: 11, pe: 10, pp: 13,
   },
   {
-    id: 'julio-velazquez', nombre: 'Julio Velázquez', foto: '/images/entrenadores/julio-velazquez.png',
+    id: 'julio-velazquez', nombre: 'Julio Velázquez', foto: '/images/entrenadores/julio-velazquez.webp',
     desde: '2023-11-21', hasta: '2024-03-11',
     pj: 14, pg: 3, pe: 6, pp: 5,
   },
   {
-    id: 'fran-escriba', nombre: 'Fran Escribá', foto: '/images/entrenadores/fran-escriba.jpg',
+    id: 'fran-escriba', nombre: 'Fran Escribá', foto: '/images/entrenadores/fran-escriba.webp',
     desde: '2022-11-07', hasta: '2023-11-20',
     pj: 45, pg: 14, pe: 17, pp: 14,
   },
   {
-    id: 'juan-carlos-carcedo', nombre: 'Juan Carlos Carcedo', foto: '/images/entrenadores/juan-carlos-carcedo.png',
+    id: 'juan-carlos-carcedo', nombre: 'Juan Carlos Carcedo', foto: '/images/entrenadores/juan-carlos-carcedo.webp',
     desde: '2022-07-01', hasta: '2022-11-06',
     pj: 15, pg: 4, pe: 4, pp: 7,
   },
   {
-    id: 'juan-ignacio-martinez', nombre: 'Juan Ignacio Martínez', foto: '/images/entrenadores/juan-ignacio-martinez.jpg',
+    id: 'juan-ignacio-martinez', nombre: 'Juan Ignacio Martínez', foto: '/images/entrenadores/juan-ignacio-martinez.webp',
     desde: '2020-12-15', hasta: '2022-06-30',
     pj: 71, pg: 25, pe: 27, pp: 19,
   },
   {
-    id: 'ivan-martinez', nombre: 'Iván Martínez', etapa: 'interino', foto: '/images/entrenadores/ivan-martinez.jpg',
+    id: 'ivan-martinez', nombre: 'Iván Martínez', etapa: 'interino', foto: '/images/entrenadores/ivan-martinez.webp',
     desde: '2020-11-09', hasta: '2020-12-13',
     pj: 8, pg: 1, pe: 0, pp: 7,
   },
   {
-    id: 'ruben-baraja', nombre: 'Rubén Baraja', foto: '/images/entrenadores/ruben-baraja.jpg',
+    id: 'ruben-baraja', nombre: 'Rubén Baraja', foto: '/images/entrenadores/ruben-baraja.webp',
     desde: '2020-08-19', hasta: '2020-11-09',
     pj: 10, pg: 2, pe: 4, pp: 4,
   },
   {
-    id: 'victor-fernandez-3', nombre: 'Víctor Fernández', etapa: '3.ª etapa', foto: '/images/entrenadores/victor-fernandez.jpg',
+    id: 'victor-fernandez-3', nombre: 'Víctor Fernández', etapa: '3.ª etapa', foto: '/images/entrenadores/victor-fernandez.webp',
     desde: '2018-12-17', hasta: '2020-08-18',
     pj: 72, pg: 31, pe: 17, pp: 24,
   },
   {
-    id: 'lucas-alcaraz', nombre: 'Lucas Alcaraz', foto: '/images/entrenadores/lucas-alcaraz.jpg',
+    id: 'lucas-alcaraz', nombre: 'Lucas Alcaraz', foto: '/images/entrenadores/lucas-alcaraz.webp',
     desde: '2018-10-22', hasta: '2018-12-17',
     pj: 8, pg: 1, pe: 2, pp: 5,
   },
   {
-    id: 'imanol-idiakez', nombre: 'Imanol Idiakez', foto: '/images/entrenadores/imanol-idiakez.jpg',
+    id: 'imanol-idiakez', nombre: 'Imanol Idiakez', foto: '/images/entrenadores/imanol-idiakez.webp',
     desde: '2018-06-18', hasta: '2018-10-21',
     pj: 12, pg: 3, pe: 5, pp: 4,
   },
   {
-    id: 'natxo-gonzalez', nombre: 'Natxo González', foto: '/images/entrenadores/natxo-gonzalez.jpg',
+    id: 'natxo-gonzalez', nombre: 'Natxo González', foto: '/images/entrenadores/natxo-gonzalez.webp',
     desde: '2017-06-14', hasta: '2018-06-11',
     pj: 48, pg: 22, pe: 12, pp: 14,
   },
@@ -114,17 +114,17 @@ const ENTRENADORES = [
     pj: 19, pg: 6, pe: 4, pp: 9,
   },
   {
-    id: 'luis-milla', nombre: 'Luis Milla', foto: '/images/entrenadores/luis-milla.jpg',
+    id: 'luis-milla', nombre: 'Luis Milla', foto: '/images/entrenadores/luis-milla.webp',
     desde: '2016-06-16', hasta: '2016-10-23',
     pj: 12, pg: 3, pe: 4, pp: 5,
   },
   {
-    id: 'lluis-carreras', nombre: 'Lluís Carreras', foto: '/images/entrenadores/lluis-carreras.jpg',
+    id: 'lluis-carreras', nombre: 'Lluís Carreras', foto: '/images/entrenadores/lluis-carreras.webp',
     desde: '2015-12-27', hasta: '2016-06-06',
     pj: 24, pg: 10, pe: 7, pp: 7,
   },
   {
-    id: 'ranko-popovic', nombre: 'Ranko Popović', foto: '/images/entrenadores/ranko-popovic.jpg',
+    id: 'ranko-popovic', nombre: 'Ranko Popović', foto: '/images/entrenadores/ranko-popovic.webp',
     desde: '2014-11-24', hasta: '2015-12-21',
     pj: 51, pg: 19, pe: 17, pp: 15,
   },
@@ -134,7 +134,7 @@ const ENTRENADORES = [
     pj: 27, pg: 8, pe: 10, pp: 9,
   },
   {
-    id: 'paco-herrera', nombre: 'Paco Herrera', foto: '/images/entrenadores/paco-herrera.jpg',
+    id: 'paco-herrera', nombre: 'Paco Herrera', foto: '/images/entrenadores/paco-herrera.webp',
     desde: '2013-06-20', hasta: '2014-03-17',
     pj: 31, pg: 10, pe: 9, pp: 12,
   },

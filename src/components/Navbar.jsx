@@ -154,7 +154,7 @@ export default function Navbar() {
         <div className="header__mainbar">
           <div className="header__container">
             <Link to="/" className="header__logo" onClick={closeMobileMenu}>
-              <img src="/LOGO_RZHUB.png" alt="RZ Hub" />
+              <img src="/LOGO_RZHUB.webp" alt="RZ Hub" />
             </Link>
 
             <nav className="header__nav">

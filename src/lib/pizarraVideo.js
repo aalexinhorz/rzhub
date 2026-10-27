@@ -73,7 +73,7 @@ function dibujarFrameSync(ctx, fichas, balon, oposicion, flechas, imagenes) {
   ctx.clearRect(0, 0, W, H)
   ctx.fillStyle = '#060D1A'
   ctx.fillRect(0, 0, W, H)
-  const bg = imagenes.get('/CAMPO_PARA_WEB.png')
+  const bg = imagenes.get('/CAMPO_PARA_WEB.webp')
   if (bg) ctx.drawImage(bg, 0, 0, W, H)
 
   ctx.fillStyle = '#ffffff'
@@ -96,7 +96,7 @@ async function precargarImagenes(instantaneas) {
 
   const mapa = new Map()
   await Promise.all([
-    loadImage('/CAMPO_PARA_WEB.png').then(img => mapa.set('/CAMPO_PARA_WEB.png', img)),
+    loadImage('/CAMPO_PARA_WEB.webp').then(img => mapa.set('/CAMPO_PARA_WEB.webp', img)),
     loadImage('/balon.webp').then(img => mapa.set('/balon.webp', img)),
     ...[...urlsFotos].map(url => loadImage(url, { crossOrigin: 'anonymous' }).then(img => mapa.set(url, img))),
   ])

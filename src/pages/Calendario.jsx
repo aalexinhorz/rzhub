@@ -10,7 +10,10 @@ import './Calendario.css'
 
 const ICS_URL = 'https://rzhub.es/calendario.ics'
 const ICS_WEBCAL = ICS_URL.replace('https://', 'webcal://')
-const POST_IMG = '/POST CALENDARIO.png'
+// Vista previa ligera en WebP; la descarga va en JPG a resolución completa
+// porque es lo que se sube sin problemas a Instagram, WhatsApp, etc.
+const POST_IMG = '/POST CALENDARIO.webp'
+const POST_IMG_DESCARGA = '/POST CALENDARIO.jpg'
 const ESTADIO_LOCAL = 'Ibercaja Estadio'
 const EQUIPO = 'Real Zaragoza'
 
@@ -308,7 +311,7 @@ export default function Calendario() {
                 <p className="cal2-imagenbar__titulo">¿Quieres el calendario en imagen?</p>
                 <p className="cal2-imagenbar__desc">Descarga el calendario completo de la temporada 26/27 y compártelo donde quieras.</p>
               </div>
-              <a href={POST_IMG} download="Calendario_RealZaragoza_2627.png" className="cal2-btn-descargar">
+              <a href={POST_IMG_DESCARGA} download="Calendario_RealZaragoza_2627.jpg" className="cal2-btn-descargar">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                 Descargar imagen
               </a>

@@ -15,7 +15,7 @@ export default function Footer() {
         <div className="home-footer-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr)', gap: 'var(--space-8)', marginBottom: 'var(--space-10)' }}>
           {/* Marca */}
           <div>
-            <img src="/LOGO_RZHUB.png" alt="RZ Hub" style={{ height: 28, marginBottom: 'var(--space-3)' }} />
+            <img src="/LOGO_RZHUB.webp" alt="RZ Hub" style={{ height: 28, marginBottom: 'var(--space-3)' }} />
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--rz-text-muted)', lineHeight: 1.7, marginBottom: 'var(--space-4)' }}>
               La plataforma definitiva para todos los zaragocistas. Herramientas, datos y comunidad en un único lugar.
             </p>

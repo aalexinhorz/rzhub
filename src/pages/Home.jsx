@@ -100,7 +100,7 @@ function FinalCTA() {
     }}>
       <div className="rz-container">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-5)' }}>
-          <img src="/LOGO_RZHUB.png" alt="RZ Hub" style={{ height: 40 }} />
+          <img src="/LOGO_RZHUB.webp" alt="RZ Hub" style={{ height: 40 }} />
         </div>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 8vw, 72px)', fontWeight: 700, letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 0.95, marginBottom: 'var(--space-4)' }}>
           ¿Listo para vivir la<br />temporada como nunca?

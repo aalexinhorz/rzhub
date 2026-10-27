@@ -192,7 +192,7 @@ export default function GuiaAlcala() {
         <div className="guia-container">
           <img
             className="guia-cover"
-            src="/images/guia-alcala-cover.png"
+            src="/images/guia-alcala-cover.webp"
             alt="La guía de tu viaje para el Atlético Madrileño - Real Zaragoza"
             width="1080"
             height="1350"

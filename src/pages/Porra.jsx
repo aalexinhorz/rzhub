@@ -31,7 +31,7 @@ const ESCUDOS = {
   'Real Madrid Castilla': '/escudos/Real_Madrid_CF.svg',
   'Hércules de Alicante CF': '/escudos/Hercules_CF_crest.svg',
   'Algeciras CF': '/escudos/spain_algeciras.football-logos.cc.svg',
-  'UE Sant Andreu': '/escudos/ue-sant-andreu-vector-logo.png',
+  'UE Sant Andreu': '/escudos/ue-sant-andreu-vector-logo.webp',
   'CD Tudelano': '/escudos/CD_Tudelano_logo.svg',
 }
 

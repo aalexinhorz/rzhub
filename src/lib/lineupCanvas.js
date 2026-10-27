@@ -198,7 +198,7 @@ export async function drawLineupCanvas({ slotsLayout, slots, subs, teamName, for
   // transparente/a cuadros.
   ctx.fillStyle = '#060D1A'
   ctx.fillRect(0, 0, W, H)
-  const bg = await loadImage('/CAMPO_PARA_WEB.png')
+  const bg = await loadImage('/CAMPO_PARA_WEB.webp')
   if (bg) ctx.drawImage(bg, 0, 0, W, H)
 
   // Nombre y formación van en la misma fila si caben; si el nombre del

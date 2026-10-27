@@ -4,11 +4,13 @@ import Footer from '../components/Footer'
 import PorraCTA from '../components/PorraCTA'
 import { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
+import { calcularClasificacion } from '../lib/clasificacion'
 import './Simulador.css'
 
 const LOCALSTORAGE_KEY = 'rzhub_simulador_edits_2026_27'
 const EQUIPO_DESTACADO = 'Real Zaragoza'
 const TOTAL_JORNADAS = 38
+const REFRESCO_MS = 60_000
 
 function cargarEdits() {
   try {
@@ -137,21 +139,36 @@ export default function Simulador() {
   const [edits, setEdits] = useState(cargarEdits)
   const pillsRef = useRef(null)
 
+  // Carga inicial y refresco periódico: liga_calendario se actualiza sola
+  // desde el cron, así que los resultados reales van entrando sin recargar
+  // (y pisan los marcadores inventados de ese partido). La jornada solo se
+  // fija en la primera carga para no mover al usuario mientras simula.
   useEffect(() => {
-    supabase.from('liga_calendario').select('*').order('jornada').order('id').then(({ data }) => {
-      const fixtures = data || []
-      setCalendario(fixtures)
-      // La jornada por defecto se fija por el partido del Real Zaragoza,
-      // no por "¿está completo el calendario de toda la jornada?" — un
-      // aplazamiento entre otros dos equipos (p. ej. Cartagena-Murcia en
-      // la J5) no debe dejar el simulador anclado ahí si el Zaragoza ya
-      // jugó su partido de esa jornada.
-      const primerPartidoZaragozaSinJugar = fixtures.find(f =>
-        (f.equipo_local === 'Real Zaragoza' || f.equipo_visitante === 'Real Zaragoza') && f.goles_local === null
-      )
-      setJornada(primerPartidoZaragozaSinJugar ? primerPartidoZaragozaSinJugar.jornada : 1)
-      setLoading(false)
-    })
+    let activo = true
+    let primeraCarga = true
+    function cargar() {
+      supabase.from('liga_calendario').select('*').order('jornada').order('id').then(({ data }) => {
+        if (!activo || !data) return
+        setCalendario(data)
+        if (!primeraCarga) return
+        primeraCarga = false
+        // La jornada por defecto se fija por el partido del Real Zaragoza,
+        // no por "¿está completo el calendario de toda la jornada?" — un
+        // aplazamiento entre otros dos equipos (p. ej. Cartagena-Murcia en
+        // la J5) no debe dejar el simulador anclado ahí si el Zaragoza ya
+        // jugó su partido de esa jornada.
+        const primerPartidoZaragozaSinJugar = data.find(f =>
+          (f.equipo_local === 'Real Zaragoza' || f.equipo_visitante === 'Real Zaragoza') && f.goles_local === null
+        )
+        setJornada(primerPartidoZaragozaSinJugar ? primerPartidoZaragozaSinJugar.jornada : 1)
+        setLoading(false)
+      })
+    }
+    function alVolver() { if (document.visibilityState === 'visible') cargar() }
+    cargar()
+    const id = setInterval(cargar, REFRESCO_MS)
+    document.addEventListener('visibilitychange', alVolver)
+    return () => { activo = false; clearInterval(id); document.removeEventListener('visibilitychange', alVolver) }
   }, [])
 
   useEffect(() => {
@@ -183,32 +200,7 @@ export default function Simulador() {
     [calendario, jornada]
   )
 
-  const clasificacion = useMemo(() => {
-    const equipos = new Map()
-    function equipoDe(nombre) {
-      if (!equipos.has(nombre)) equipos.set(nombre, { equipo: nombre, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0 })
-      return equipos.get(nombre)
-    }
-    calendario.forEach(f => {
-      equipoDe(f.equipo_local)
-      equipoDe(f.equipo_visitante)
-      const edit = edits[f.id] || {}
-      const golesLocal = f.goles_local ?? edit.local
-      const golesVisitante = f.goles_visitante ?? edit.visitante
-      if (golesLocal === undefined || golesVisitante === undefined || golesLocal === null || golesVisitante === null) return
-      const local = equipoDe(f.equipo_local)
-      const visitante = equipoDe(f.equipo_visitante)
-      local.pj++; visitante.pj++
-      local.gf += golesLocal; local.gc += golesVisitante
-      visitante.gf += golesVisitante; visitante.gc += golesLocal
-      if (golesLocal > golesVisitante) { local.g++; visitante.p++ }
-      else if (golesLocal < golesVisitante) { visitante.g++; local.p++ }
-      else { local.e++; visitante.e++ }
-    })
-    return [...equipos.values()]
-      .map(t => ({ ...t, dg: t.gf - t.gc, pts: t.g * 3 + t.e }))
-      .sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf || a.equipo.localeCompare(b.equipo))
-  }, [calendario, edits])
+  const clasificacion = useMemo(() => calcularClasificacion(calendario, edits), [calendario, edits])
 
   const hayEdits = Object.keys(edits).length > 0
 
