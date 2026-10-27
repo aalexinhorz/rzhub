@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
+import AvisoPorraAuto from './components/AvisoPorraAuto'
 import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
 
@@ -59,6 +60,7 @@ export default function App() {
     <div style={{ minHeight: '100vh' }}>
       <ScrollToTop />
       <Navbar />
+      <AvisoPorraAuto />
       <Suspense fallback={<CargandoPagina />}>
         <Routes>
           <Route path="/" element={<Home />} />
