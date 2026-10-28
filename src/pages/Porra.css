@@ -49,6 +49,12 @@
   font-size: 0.34em;
   line-height: 1;
   letter-spacing: 1px;
+  /* .porra-hero__title fija un word-spacing en em pensado para su
+     propio tamaño de letra (hasta 140px) — ese valor se hereda ya
+     calculado en píxiles absolutos, así que sobre esta letra mucho
+     más pequeña (0.34em del padre) el mismo hueco se nota
+     desproporcionado entre palabras. */
+  word-spacing: normal;
   color: #ffc800;
 }
 

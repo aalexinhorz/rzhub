@@ -17,7 +17,9 @@
   min-height: 92px;
   border: 1.5px solid #ffc800;
   border-radius: 16px;
-  background: #0a1730;
+  background:
+    radial-gradient(circle at top left, rgba(20, 45, 110, 0.35) 0%, transparent 45%),
+    linear-gradient(180deg, #0d1b4b 0% 0%, #081731 35%, #07162e 70%, #051429 100%);
   overflow: hidden;
   text-decoration: none;
   font-family: 'Archivo', sans-serif;

@@ -26,7 +26,20 @@
 .cal2-syncbar__btn--ghost { color: var(--rz-text-secondary); }
 
 /* -------- Próximo partido -------- */
-.cal2-proximo { position: relative; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--rz-border-yellow); isolation: isolate; }
+/* La SyncBar de arriba vive en su propio .cal2-container (gap solo
+   afecta a hijos DENTRO de un mismo contenedor flex), así que entre
+   ambos bloques no había ningún espacio propio. */
+.cal2-proximo {
+  position: relative;
+  margin-top: var(--space-6);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--rz-border-yellow);
+  isolation: isolate;
+  /* Mismo hover que .porra-cta-bloque__card (PorraCTA.css). */
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.cal2-proximo:hover { border-color: var(--rz-yellow); transform: translateY(-1px); }
 .cal2-proximo__fondo {
   position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background: url('/images/estadio-comunidad.webp') center 32% / cover no-repeat;

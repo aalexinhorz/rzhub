@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SEO, { SITE_URL } from '../components/SEO'
 import Footer from '../components/Footer'
-import PorraCTA from '../components/PorraCTA'
 import { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
 import { slugPartido } from '../lib/partidoSeo'
@@ -320,7 +319,6 @@ export default function Calendario() {
         )}
       </div>
 
-      <PorraCTA />
       <Footer />
     </div>
   )

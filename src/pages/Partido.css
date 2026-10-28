@@ -119,7 +119,7 @@
 .mc-cta:hover { border-color: #ffc800; }
 .mc-cta strong { color: #ffc800; }
 .mc-cta__camiseta { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; border: 2px solid #ffc800; flex-shrink: 0; }
-.mc-cta__pill { flex-shrink: 0; background: #ffc800; color: #060d1a; font-weight: 300; font-size: 14px; padding: 9px 16px; border-radius: 999px; }
+.mc-cta__pill { flex-shrink: 0; background: #ffc800; color: #060d1a; font-weight: 700; font-size: 14px; padding: 9px 16px; border-radius: 999px; }
 
 /* -------- Rival -------- */
 .mc-rival { display: flex; gap: 20px; align-items: flex-start; }
