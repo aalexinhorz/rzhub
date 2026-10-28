@@ -18,6 +18,7 @@ import { loadEnv } from 'vite'
 import { seoPorra, PORRA_OG_IMAGE } from '../src/lib/seoPorra.js'
 import { slugPartido, seoPartido, seoProximoPartido } from '../src/lib/partidoSeo.js'
 import { proximoDeLista } from '../src/lib/reglasPartido.js'
+import { calcularVentana, seoNotasPartido, nombresNotas, rankingTemporada, formatoNota, SEO_NOTAS_INDEX } from '../src/lib/notasSeo.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const DIST = join(ROOT, 'dist')
@@ -76,6 +77,120 @@ async function consulta(tabla, query) {
   return res.json()
 }
 
+async function rpc(funcion) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${funcion}`, {
+    method: 'POST',
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+    body: '{}',
+  })
+  if (!res.ok) throw new Error(`rpc ${funcion}: HTTP ${res.status}`)
+  return res.json()
+}
+
+// ---------- Las Notas: contenido estático ----------
+// Además de las etiquetas del <head>, las páginas de notas llevan dentro de
+// <div id="root"> el mismo texto que pinta React (H1, introducción, el uno
+// a uno o la convocatoria y enlaces), para que Google lo lea sin ejecutar
+// JavaScript. React lo sustituye al arrancar (createRoot vacía el root).
+// Las medias solo aparecen con la votación cerrada (public.notas_cerradas).
+
+const ESTILO_ESTATICO = 'max-width:860px;margin:0 auto;padding:96px 16px 48px;line-height:1.55'
+
+function htmlNotasPartido(p, seo, filas, slugVestuario) {
+  const lista = filas.map(f => `<li><a href="/jugador/${f.id}">${esc(f.nombre)}</a>${f.media != null ? ` — ${formatoNota(f.media)} (${f.votos} votos)` : ''}</li>`).join('')
+  const conNotas = filas.some(f => f.media != null)
+  return `<main data-seo-static-body style="${ESTILO_ESTATICO}">
+<p>Las Notas · Real Zaragoza · Temporada 26/27</p>
+<h1>${esc(seo.h1)}</h1>
+<p>${esc(seo.intro)}</p>
+<h2>${conNotas ? 'El uno a uno de la afición' : 'Jugadores del Real Zaragoza para puntuar'}</h2>
+<ol>${lista}</ol>
+<p><a href="/partido/${esc(slugVestuario)}">Vestuario Blanquillo: ${esc(nombresNotas(p).partido)}</a> · <a href="/notas">Todas las notas del Real Zaragoza</a> · <a href="/porra">La Porra</a></p>
+</main>`
+}
+
+function htmlNotasIndex(partidos, ranking) {
+  const rank = ranking.map(j => `<li><a href="/jugador/${j.player_id}">${esc(j.nombre)}</a> — ${formatoNota(j.media)} de media en ${j.partidos} partidos</li>`).join('')
+  const lista = partidos.map(p => `<li><a href="/notas/${esc(p.partido_id)}">Notas: ${esc(nombresNotas(p).partido)}</a> (${esc(p.competicion || '')}, ${esc(fechaLarga(p.fecha))})</li>`).join('')
+  return `<main data-seo-static-body style="${ESTILO_ESTATICO}">
+<p>Las Notas · Real Zaragoza · Temporada 26/27</p>
+<h1>${esc(SEO_NOTAS_INDEX.h1)}</h1>
+<p>${esc(SEO_NOTAS_INDEX.intro)}</p>
+${rank ? `<h2>Los mejor valorados de la temporada</h2><ol>${rank}</ol>` : ''}
+<h2>Notas por partido</h2>
+<ul>${lista}</ul>
+</main>`
+}
+
+// Datos de Las Notas para el prerender: rutas por partido y el extra de /notas.
+async function datosNotas(partidos) {
+  const cerradas = await rpc('notas_cerradas')
+  const ids = [...new Set(partidos.flatMap(p => p.convocatoria || []))]
+  const jugadores = ids.length ? await consulta('players', `select=id,name&id=in.(${ids.join(',')})`) : []
+  const nombre = new Map(jugadores.map(j => [Number(j.id), j.name]))
+  const porFecha = [...partidos].sort((a, b) => (a.fecha < b.fecha ? -1 : 1))
+
+  const rutas = []
+  for (const p of partidos) {
+    const siguiente = porFecha[porFecha.findIndex(x => x.partido_id === p.partido_id) + 1] || null
+    const { abierta, cierre, estado } = calcularVentana(p, siguiente)
+    if (estado === 'futuro') continue
+    const medias = cerradas.filter(f => f.partido_id === p.partido_id)
+      .sort((a, b) => b.media - a.media || b.votos - a.votos)
+    const cerrada = !abierta && medias.length > 0
+    const seo = seoNotasPartido(p, {
+      ranking: cerrada ? medias.map(f => ({ nombre: f.nombre, media: Number(f.media) })) : [],
+      votantes: medias[0]?.votantes || 0,
+      abierta, cierre,
+      convocados: (p.convocatoria || []).length,
+    })
+    const filas = cerrada
+      ? medias.map(f => ({ id: f.player_id, nombre: f.nombre, media: Number(f.media), votos: f.votos }))
+      : (p.convocatoria || []).filter(id => nombre.has(Number(id))).map(id => ({ id, nombre: nombre.get(Number(id)) }))
+    const slugVestuario = slugPartido({ rival: p.rival, fecha: p.fecha, sede: p.local ? 'local' : 'visitante', competicion: /copa/i.test(p.competicion || '') ? p.competicion : null })
+    const url = `${SITE_URL}/notas/${p.partido_id}`
+    rutas.push({
+      path: `/notas/${p.partido_id}`,
+      title: seo.title,
+      description: seo.description,
+      keywords: `notas Real Zaragoza ${p.rival}, uno a uno Real Zaragoza ${p.rival}, puntuaciones jugadores Real Zaragoza, notas jugadores Real Zaragoza hoy`,
+      lastmod: abierta ? HOY : p.fecha,
+      changefreq: abierta ? 'daily' : 'monthly',
+      priority: abierta ? '0.8' : '0.6',
+      contenido: htmlNotasPartido(p, seo, filas, slugVestuario),
+      jsonLd: [
+        {
+          '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${SITE_URL}/` },
+            { '@type': 'ListItem', position: 2, name: 'Las Notas', item: `${SITE_URL}/notas` },
+            { '@type': 'ListItem', position: 3, name: seo.h1, item: url },
+          ],
+        },
+        {
+          '@context': 'https://schema.org', '@type': 'ItemList',
+          name: `Jugadores del Real Zaragoza puntuados en el ${nombresNotas(p).partido}`,
+          numberOfItems: filas.length,
+          itemListElement: filas.map((f, i) => ({ '@type': 'ListItem', position: i + 1, name: f.nombre, url: `${SITE_URL}/jugador/${f.id}` })),
+        },
+      ],
+    })
+  }
+
+  const ranking = rankingTemporada(cerradas).slice(0, 10)
+  const visibles = partidos.filter(p => rutas.some(r => r.path === `/notas/${p.partido_id}`))
+  const indice = {
+    contenido: htmlNotasIndex(visibles, ranking),
+    jsonLd: [{
+      '@context': 'https://schema.org', '@type': 'ItemList',
+      name: 'Notas de los jugadores del Real Zaragoza por partido',
+      itemListElement: visibles.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: `Notas: ${nombresNotas(p).partido}`, url: `${SITE_URL}/notas/${p.partido_id}` })),
+    }],
+    lastmod: HOY,
+  }
+  return { rutas, indice }
+}
+
 const fechaLarga = d => new Date(`${d}T00:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
 
 function posicionJugador(pos) {
@@ -93,7 +208,7 @@ async function rutasDinamicas() {
     consulta('noticias', 'select=slug,titulo,meta_titulo,meta_descripcion,excerpt,imagen_url,og_imagen,created_at,updated_at&publicada=eq.true&order=created_at.desc'),
     consulta('players', 'select=id,name,position&is_zaragoza=eq.true'),
     consulta('rivales', 'select=id,nombre'),
-    consulta('partidos', 'select=partido_id,rival,fecha,local,goles_local,goles_visitante&order=fecha.desc'),
+    consulta('partidos', 'select=partido_id,rival,fecha,local,goles_local,goles_visitante,competicion,convocatoria,created_at,votacion_cerrada&order=fecha.desc'),
     consulta('porra_partidos', 'select=rival,sede,kickoff,fecha,jornada,competicion,goles_zaragoza,goles_rival,goleadores,finalizado,tv&kickoff=not.is.null&order=kickoff.asc'),
   ])
 
@@ -153,18 +268,9 @@ async function rutasDinamicas() {
       priority: '0.6',
     })
   }
-  for (const p of partidos) {
-    const local = p.local ? 'Real Zaragoza' : p.rival
-    const visitante = p.local ? p.rival : 'Real Zaragoza'
-    rutas.push({
-      path: `/notas/${p.partido_id}`,
-      title: `Notas: ${local} ${p.goles_local ?? ''}-${p.goles_visitante ?? ''} ${visitante} | RZ Hub`,
-      description: `Puntúa a los jugadores del Real Zaragoza en el partido frente al ${p.rival} (${fechaLarga(p.fecha)}) y consulta la nota media de la afición.`,
-      lastmod: p.fecha,
-      priority: '0.5',
-    })
-  }
-  return rutas
+  const notas = await datosNotas(partidos)
+  rutas.push(...notas.rutas)
+  return { rutas, extrasFijas: { '/notas': notas.indice } }
 }
 
 // ---------- escritura ----------
@@ -187,6 +293,7 @@ function bloqueSeo(r) {
     `<meta data-seo-static property="og:site_name" content="RZ Hub" />`,
     `<meta data-seo-static property="og:locale" content="es_ES" />`,
     r.publishedTime && `<meta data-seo-static property="article:published_time" content="${esc(r.publishedTime)}" />`,
+    ...(r.jsonLd || []).map(d => `<script data-seo-static type="application/ld+json">${JSON.stringify(d).replace(/</g, '\\u003c')}</script>`),
     `<meta data-seo-static name="twitter:card" content="summary_large_image" />`,
     `<meta data-seo-static name="twitter:site" content="@rzhub_" />`,
     `<meta data-seo-static name="twitter:title" content="${esc(r.title)}" />`,
@@ -243,7 +350,9 @@ async function main() {
   let dinamicas = []
   if (SUPABASE_URL && SUPABASE_KEY) {
     try {
-      dinamicas = await rutasDinamicas()
+      const { rutas: rd, extrasFijas } = await rutasDinamicas()
+      dinamicas = rd
+      for (const r of fijas) if (extrasFijas[r.path]) Object.assign(r, extrasFijas[r.path])
     } catch (e) {
       console.warn(`[prerender-seo] Supabase no disponible, solo páginas fijas: ${e.message}`)
     }
@@ -253,7 +362,8 @@ async function main() {
 
   const rutas = [...fijas, ...dinamicas]
   for (const r of rutas) {
-    const html = plantilla.replace(/<!--seo:start-->[\s\S]*<!--seo:end-->/, bloqueSeo(r))
+    let html = plantilla.replace(/<!--seo:start-->[\s\S]*<!--seo:end-->/, bloqueSeo(r))
+    if (r.contenido) html = html.replace('<div id="root"></div>', `<div id="root">${r.contenido}</div>`)
     const destino = r.path === '' ? DIST : join(DIST, r.path)
     mkdirSync(destino, { recursive: true })
     writeFileSync(join(destino, 'index.html'), html)

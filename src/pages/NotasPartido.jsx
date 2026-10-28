@@ -7,6 +7,8 @@ import usePlayers from '../hooks/usePlayers'
 import usePartidos, { usePartido } from '../hooks/usePartidos'
 import useAuth, { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
+import { seoNotasPartido, nombresNotas } from '../lib/notasSeo'
+import { slugPartido } from '../lib/partidoSeo'
 import './Notas.css'
 
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
@@ -146,6 +148,7 @@ export default function NotasPartido() {
   const [error, setError] = useState(null)
   const [focoIdx, setFocoIdx] = useState(0)
   const [ordenPorNota, setOrdenPorNota] = useState(false)
+  const [votantes, setVotantes] = useState(0)
 
   useEffect(() => {
     setMisNotas({}); setGuardado(false); setEditando(false); setMedias(null); setNotaRzhub({}); setFocoIdx(0)
@@ -199,6 +202,7 @@ export default function NotasPartido() {
     })
     setMedias(result)
     setNotaRzhub(rzhub)
+    setVotantes(new Set(data.map(n => n.user_id)).size)
   }
 
   function handleVotar(playerId, puntuacion) {
@@ -246,6 +250,16 @@ export default function NotasPartido() {
   const mvp = ranking[0] || null
   const peor = ranking.length > 2 ? ranking[ranking.length - 1] : null
 
+  // Mismos textos que el HTML estático del prerender. Las medias solo entran
+  // con la votación cerrada (abierta no se publican, para no condicionar).
+  const seo = partido ? seoNotasPartido(partido, {
+    ranking: ventanaAbierta ? [] : ranking.map(r => ({ nombre: r.player.name, media: r.media.avg })),
+    votantes,
+    abierta: ventanaAbierta,
+    cierre: partido.cierre,
+    convocados: convocadosIds.length,
+  }) : null
+
   const listaOrdenada = useMemo(() => {
     if (!ordenPorNota || !mostrarMedias) return zaragozaPlayers
     return [...zaragozaPlayers].sort((a, b) => {
@@ -291,9 +305,9 @@ export default function NotasPartido() {
     <div className="notas-page">
       {partido && (
         <SEO
-          title={`Notas: ${partido.local ? 'Real Zaragoza' : partido.rival} ${partido.goles_local ?? ''}-${partido.goles_visitante ?? ''} ${partido.local ? partido.rival : 'Real Zaragoza'} | RZ Hub`}
-          description={`Puntúa a los jugadores del Real Zaragoza en el partido frente al ${partido.rival} (${formatFecha(partido.fecha)}) y consulta la nota media de la afición.`}
-          keywords={`notas Real Zaragoza ${partido.rival}, puntuar jugadores Real Zaragoza, Real Zaragoza vs ${partido.rival}, valoración afición Real Zaragoza`}
+          title={seo.title}
+          description={seo.description}
+          keywords={`notas Real Zaragoza ${partido.rival}, uno a uno Real Zaragoza ${partido.rival}, puntuaciones jugadores Real Zaragoza, notas jugadores Real Zaragoza hoy, mejor jugador Real Zaragoza vs ${partido.rival}`}
           path={`/notas/${partido.partido_id}`}
           jsonLd={[
             {
@@ -327,6 +341,16 @@ export default function NotasPartido() {
               ...(partido.goles_local != null && partido.goles_visitante != null && {
                 eventStatus: 'https://schema.org/EventCompleted',
               }),
+              url: `${SITE_URL}/partido/${slugPartido({ rival: partido.rival, fecha: partido.fecha, sede: partido.local ? 'local' : 'visitante', competicion: /copa/i.test(partido.competicion || '') ? partido.competicion : null })}`,
+            },
+            {
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              name: `Jugadores del Real Zaragoza puntuados en el ${nombresNotas(partido).partido}`,
+              numberOfItems: zaragozaPlayers.length,
+              itemListElement: (ventanaAbierta || ranking.length === 0 ? zaragozaPlayers : ranking.map(r => r.player)).map((p, i) => ({
+                '@type': 'ListItem', position: i + 1, name: p.name, url: `${SITE_URL}/jugador/${rawPlayerId(p)}`,
+              })),
             },
           ]}
         />
@@ -334,8 +358,9 @@ export default function NotasPartido() {
 
       <div className="notas-page__hero">
         <p className="rz-eyebrow rz-eyebrow--yellow notas-page__eyebrow">Real Zaragoza · Temporada 26/27</p>
-        <h1 className="notas-page__title">Las Notas</h1>
-        <p className="notas-page__subtitle">Puntúa la actuación de cada jugador tras el partido.</p>
+        <p className="notas-page__title">Las Notas</p>
+        <h1 className="notas-page__h1">{seo ? seo.h1 : 'Notas de los jugadores del Real Zaragoza'}</h1>
+        <p className="notas-page__subtitle">{seo ? seo.intro : 'Puntúa la actuación de cada jugador tras el partido.'}</p>
       </div>
 
       <div className="notas-page__body">

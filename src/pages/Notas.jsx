@@ -6,7 +6,45 @@ import PorraCTA from '../components/PorraCTA'
 import usePartidos from '../hooks/usePartidos'
 import { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
+import { rankingTemporada, formatoNota, SEO_NOTAS_INDEX } from '../lib/notasSeo'
 import './Notas.css'
+
+const MAX_RANKING = 10
+
+// Nota media de la temporada según la afición, solo con votaciones ya
+// cerradas (public.notas_cerradas): las abiertas no se publican hasta que
+// terminan para no condicionar el voto.
+function RankingTemporada() {
+  const [filas, setFilas] = useState(null)
+  useEffect(() => {
+    let activo = true
+    supabase.rpc('notas_cerradas').then(({ data }) => { if (activo) setFilas(data || []) })
+    return () => { activo = false }
+  }, [])
+  if (!filas) return null
+  const ranking = rankingTemporada(filas).slice(0, MAX_RANKING)
+  if (ranking.length === 0) return null
+  const partidos = new Set(filas.map(f => f.partido_id)).size
+
+  return (
+    <section className="notas-ranking" aria-labelledby="notas-ranking-titulo">
+      <h2 id="notas-ranking-titulo" className="notas-ranking__titulo">Los mejor valorados de la temporada</h2>
+      <p className="notas-ranking__sub">Nota media de la afición en {partidos} partidos con la votación cerrada (mínimo 3 partidos puntuados).</p>
+      <ol className="notas-ranking__lista">
+        {ranking.map((j, i) => (
+          <li key={j.player_id}>
+            <Link to={`/jugador/${j.player_id}`} className="notas-ranking__fila">
+              <span className="notas-ranking__pos">{i + 1}</span>
+              <span className="notas-ranking__nombre">{j.nombre}</span>
+              <span className="notas-ranking__partidos">{j.partidos} partidos</span>
+              <span className="notas-ranking__nota">{formatoNota(j.media)}</span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
 
 function formatFecha(dateStr) {
   return new Date(`${dateStr}T00:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -92,9 +130,9 @@ export default function Notas() {
   return (
     <div className="notas-page">
       <SEO
-        title="Las Notas | Puntúa a los jugadores del Real Zaragoza | RZ Hub"
-        description="Puntúa a los jugadores del Real Zaragoza después de cada partido y consulta la nota media que le pone la afición a cada uno."
-        keywords="notas Real Zaragoza, puntuar jugadores Real Zaragoza, valoración jugadores Real Zaragoza, nota media Real Zaragoza, mejor jugador del partido Real Zaragoza"
+        title="Notas de los jugadores del Real Zaragoza 26/27: el uno a uno | RZ Hub"
+        description="Las notas de la afición a los jugadores del Real Zaragoza en cada partido de la temporada 2026/27: el uno a uno, la nota media y el ranking de los mejor valorados. Puntúa tú también."
+        keywords="notas Real Zaragoza, notas jugadores Real Zaragoza, uno a uno Real Zaragoza, puntuaciones Real Zaragoza, valoración jugadores Real Zaragoza, mejor jugador Real Zaragoza temporada, nota media Real Zaragoza"
         path="/notas"
         jsonLd={{
           '@context': 'https://schema.org',
@@ -108,8 +146,9 @@ export default function Notas() {
 
       <div className="notas-page__hero">
         <p className="rz-eyebrow rz-eyebrow--yellow notas-page__eyebrow">Real Zaragoza · Temporada 26/27</p>
-        <h1 className="notas-page__title">Las Notas</h1>
-        <p className="notas-page__subtitle">Puntúa la actuación de cada jugador tras el partido.</p>
+        <p className="notas-page__title">Las Notas</p>
+        <h1 className="notas-page__h1">{SEO_NOTAS_INDEX.h1}</h1>
+        <p className="notas-page__subtitle">{SEO_NOTAS_INDEX.intro}</p>
       </div>
 
       <div className="notas-page__body">
@@ -125,6 +164,8 @@ export default function Notas() {
               {partidos.map(p => <PartidoCard key={p.partido_id} partido={p} />)}
             </div>
           )}
+
+          <RankingTemporada />
         </div>
 
         <PorraCTA />
