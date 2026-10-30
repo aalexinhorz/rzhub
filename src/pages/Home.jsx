@@ -126,7 +126,8 @@ export default function Home() {
         title="RZ Hub | La plataforma fan del Real Zaragoza 26/27"
         description="Todo sobre el Real Zaragoza en un solo sitio: alineación, mercado de fichajes, calendario, porra y noticias. La comunidad zaragocista online."
         keywords="Real Zaragoza, RZ Hub, noticias Real Zaragoza, mercado de fichajes Real Zaragoza, alineación Real Zaragoza, calendario Real Zaragoza, La Romareda, 1ª RFEF"
-        path="/"
+        path="/home2"
+        noindex
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'WebSite',

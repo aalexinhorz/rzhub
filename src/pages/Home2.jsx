@@ -147,7 +147,7 @@ function JuegaCarrusel() {
   )
 }
 
-// Home nueva, más interactiva: Vestuario Blanquillo como protagonista,
+// Home principal ("/"), más interactiva: Vestuario Blanquillo como protagonista,
 // portada con Lineup y Porra (sin cambios), juegos y clasificación, vídeos
 // de los canales y, debajo, todo lo que ya tenía la home anterior.
 export default function Home2() {
@@ -158,13 +158,16 @@ export default function Home2() {
       <SEO
         title="RZ Hub | La plataforma fan del Real Zaragoza 26/27"
         description="Todo sobre el Real Zaragoza en un solo sitio: Vestuario Blanquillo, alineación, porra, clasificación de Primera Federación, Zaragozle, vídeos y noticias."
-        path="/home2"
-        noindex
+        keywords="Real Zaragoza, RZ Hub, Vestuario Blanquillo, porra Real Zaragoza, alineación Real Zaragoza, clasificación Primera Federación, notas Real Zaragoza, Zaragozle, La Romareda, 1ª RFEF"
+        path="/"
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'WebSite',
           name: 'RZ Hub',
+          alternateName: 'RZ Hub | Real Zaragoza',
           url: SITE_URL,
+          description: 'La plataforma fan del Real Zaragoza: Vestuario Blanquillo, alineaciones, porra, clasificación, notas de la afición, noticias y comunidad zaragocista.',
+          inLanguage: 'es-ES',
           publisher: { '@type': 'Organization', name: 'RZ Hub', logo: { '@type': 'ImageObject', url: DEFAULT_OG_IMAGE } },
         }}
       />

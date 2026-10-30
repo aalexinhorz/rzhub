@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import AvisoPorraAuto from './components/AvisoPorraAuto'
 import ScrollToTop from './components/ScrollToTop'
-import Home from './pages/Home'
+import Home2 from './pages/Home2'
 
 // Solo la Home se carga en el bundle inicial (es la puerta de entrada
 // más común); el resto de páginas se cargan por rutas bajo demanda
@@ -49,7 +49,8 @@ const Ayuda = lazy(() => import('./pages/Ayuda'))
 const NoEncontrada = lazy(() => import('./pages/NoEncontrada'))
 const Partido = lazy(() => import('./pages/Partido'))
 const ProximoPartido = lazy(() => import('./pages/ProximoPartido'))
-const Home2 = lazy(() => import('./pages/Home2'))
+// Home anterior, aparcada en /home2 (noindex) por si hay que volver a ella.
+const Home = lazy(() => import('./pages/Home'))
 
 function CargandoPagina() {
   return <div style={{ minHeight: '60vh' }} />
@@ -63,7 +64,7 @@ export default function App() {
       <AvisoPorraAuto />
       <Suspense fallback={<CargandoPagina />}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home2 />} />
           <Route path="/lineup" element={<Lineup />} />
           <Route path="/tierlist" element={<Tierlist />} />
           <Route path="/comunidad" element={<Comunidad />} />
@@ -98,7 +99,7 @@ export default function App() {
           <Route path="/rival/:slug" element={<Rival />} />
           <Route path="/partido/:slug" element={<Partido />} />
           <Route path="/proximo-partido" element={<ProximoPartido />} />
-          <Route path="/home2" element={<Home2 />} />
+          <Route path="/home2" element={<Home />} />
           <Route path="/simulador" element={<Simulador />} />
           <Route path="/zaragozle" element={<Zaragozle />} />
           <Route path="/pizarra" element={<Pizarra />} />
