@@ -16,7 +16,7 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { loadEnv } from 'vite'
 import { seoPorra, PORRA_OG_IMAGE } from '../src/lib/seoPorra.js'
-import { slugPartido, seoPartido, seoProximoPartido } from '../src/lib/partidoSeo.js'
+import { slugPartido, seoPartido, seoProximoPartido, eventoPartido } from '../src/lib/partidoSeo.js'
 import { proximoDeLista } from '../src/lib/reglasPartido.js'
 import { calcularVentana, seoNotasPartido, nombresNotas, rankingTemporada, formatoNota, SEO_NOTAS_INDEX } from '../src/lib/notasSeo.js'
 
@@ -207,7 +207,7 @@ async function rutasDinamicas() {
     consulta('porra_partidos', 'select=rival,sede,kickoff,jornada,competicion&abierto=eq.true&finalizado=eq.false&order=kickoff.asc&limit=1'),
     consulta('noticias', 'select=slug,titulo,meta_titulo,meta_descripcion,excerpt,imagen_url,og_imagen,created_at,updated_at&publicada=eq.true&order=created_at.desc'),
     consulta('players', 'select=id,name,position&is_zaragoza=eq.true'),
-    consulta('rivales', 'select=id,nombre'),
+    consulta('rivales', 'select=id,nombre,estadio'),
     consulta('partidos', 'select=partido_id,rival,fecha,local,goles_local,goles_visitante,competicion,convocatoria,created_at,votacion_cerrada&order=fecha.desc'),
     consulta('porra_partidos', 'select=rival,sede,kickoff,fecha,jornada,competicion,goles_zaragoza,goles_rival,goleadores,finalizado,tv&kickoff=not.is.null&order=kickoff.asc'),
   ])
@@ -219,11 +219,15 @@ async function rutasDinamicas() {
   if (proximo) {
     rutas.push({ path: '/proximo-partido', ...seoProximoPartido(proximo), image: PORRA_OG_IMAGE, lastmod: HOY, changefreq: 'daily', priority: '1.0' })
   }
+  const estadioRival = new Map(rivales.map(r => [r.nombre, r.estadio]))
   for (const p of calendario) {
+    const seo = seoPartido(p)
+    const image = p.finalizado ? DEFAULT_OG_IMAGE : PORRA_OG_IMAGE
     rutas.push({
       path: `/partido/${slugPartido(p)}`,
-      ...seoPartido(p),
-      image: p.finalizado ? DEFAULT_OG_IMAGE : PORRA_OG_IMAGE,
+      ...seo,
+      image,
+      jsonLd: [eventoPartido(p, { estadio: estadioRival.get(p.rival), description: seo.description, image })],
       lastmod: p.finalizado ? p.fecha : p === proximo ? HOY : undefined,
       changefreq: p.finalizado ? 'monthly' : 'daily',
       priority: p === proximo ? '0.9' : p.finalizado ? '0.6' : '0.5',

@@ -8,7 +8,7 @@ import usePartidos, { usePartido } from '../hooks/usePartidos'
 import useAuth, { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
 import { seoNotasPartido, nombresNotas } from '../lib/notasSeo'
-import { slugPartido } from '../lib/partidoSeo'
+import { idEventoPartido } from '../lib/partidoSeo'
 import './Notas.css'
 
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
@@ -259,6 +259,8 @@ export default function NotasPartido() {
     cierre: partido.cierre,
     convocados: convocadosIds.length,
   }) : null
+  // Fila de "partidos" en la forma de porra_partidos que espera partidoSeo.
+  const refPartido = partido && { rival: partido.rival, fecha: partido.fecha, sede: partido.local ? 'local' : 'visitante', competicion: /copa/i.test(partido.competicion || '') ? partido.competicion : null }
 
   const listaOrdenada = useMemo(() => {
     if (!ordenPorNota || !mostrarMedias) return zaragozaPlayers
@@ -325,23 +327,8 @@ export default function NotasPartido() {
               name: `Las Notas: Real Zaragoza vs ${partido.rival}`,
               url: `${SITE_URL}/notas/${partido.partido_id}`,
               isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
-            },
-            {
-              '@context': 'https://schema.org',
-              '@type': 'SportsEvent',
-              name: `${partido.local ? 'Real Zaragoza' : partido.rival} vs ${partido.local ? partido.rival : 'Real Zaragoza'}`,
-              startDate: partido.fecha,
-              sport: 'https://en.wikipedia.org/wiki/Association_football',
-              competitor: [
-                { '@type': 'SportsTeam', name: 'Real Zaragoza' },
-                { '@type': 'SportsTeam', name: partido.rival },
-              ],
-              homeTeam: { '@type': 'SportsTeam', name: partido.local ? 'Real Zaragoza' : partido.rival },
-              awayTeam: { '@type': 'SportsTeam', name: partido.local ? partido.rival : 'Real Zaragoza' },
-              ...(partido.goles_local != null && partido.goles_visitante != null && {
-                eventStatus: 'https://schema.org/EventCompleted',
-              }),
-              url: `${SITE_URL}/partido/${slugPartido({ rival: partido.rival, fecha: partido.fecha, sede: partido.local ? 'local' : 'visitante', competicion: /copa/i.test(partido.competicion || '') ? partido.competicion : null })}`,
+              // El partido (SportsEvent completo) vive en su Vestuario Blanquillo.
+              about: { '@id': idEventoPartido(refPartido) },
             },
             {
               '@context': 'https://schema.org',

@@ -9,8 +9,9 @@ import { calcularVentana } from '../hooks/usePartidos'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
 import { formations } from '../lib/formations'
 import { cargarOpinionAficion } from '../lib/porraStats'
+import { calcularClasificacion, zonaDe } from '../lib/clasificacion'
 import {
-  ESTADIO_ZARAGOZA, slugPartido, nombresPartido, competicionCorta, marcadorPartido, seoPartido, seoProximoPartido, resumenPartido, temporadaDe,
+  ESTADIO_ZARAGOZA, eventoPartido, slugPartido, nombresPartido, competicionCorta, marcadorPartido, seoPartido, seoProximoPartido, resumenPartido, temporadaDe,
 } from '../lib/partidoSeo'
 import './Partido.css'
 
@@ -37,7 +38,8 @@ async function cargarPartido(slug) {
   const siguiente = lista[idx + 1] || null
   const jugado = new Date(p.kickoff) < new Date()
 
-  const [{ data: rival }, { data: notasPartido }, { data: videos }, opinion] = await Promise.all([
+  const esLiga = !p.competicion && p.jornada
+  const [{ data: rival }, { data: notasPartido }, { data: videos }, opinion, { data: liga }] = await Promise.all([
     supabase.from('rivales').select('id, nombre, estadio, historia, fundacion').eq('nombre', p.rival).maybeSingle(),
     jugado ? supabase.from('partidos').select('*').eq('fecha', p.fecha).maybeSingle() : Promise.resolve({ data: null }),
     supabase.from('videos_canal')
@@ -47,7 +49,14 @@ async function cargarPartido(slug) {
       .lte('published_at', siguiente?.kickoff || '2100-01-01')
       .order('published_at', { ascending: true }),
     cargarOpinionAficion(p.id),
+    esLiga ? supabase.from('liga_calendario').select('*').lt('jornada', p.jornada) : Promise.resolve({ data: null }),
   ])
+
+  // Clasificación tal y como llegaban los dos equipos a esta jornada (así la
+  // previa de un partido ya jugado no enseña la tabla de hoy).
+  const tablaLiga = liga?.length ? calcularClasificacion(liga) : null
+  const jugadas = (liga || []).filter(f => f.goles_local !== null).map(f => f.jornada)
+  const clasificacion = tablaLiga && jugadas.length ? { tabla: tablaLiga, jornada: Math.max(...jugadas) } : null
 
   // Cara a cara: histórico manual (rivales_enfrentamientos) + partidos de
   // la porra ya cerrados que no estén en el manual.
@@ -113,7 +122,7 @@ async function cargarPartido(slug) {
   const postPartido = (videos || []).find(v => v.canal_handle === 'alexinhorz' && v.published_at >= p.kickoff) || null
   const notas = notasPartido ? { partido: notasPartido, abierta: calcularVentana(notasPartido, null).abierta, medias } : null
 
-  return { p, anterior, siguiente, rival, historial, notas, jugadores, ganadores, previa, postPartido, opinion, onceProbable }
+  return { p, anterior, siguiente, rival, historial, notas, jugadores, ganadores, previa, postPartido, opinion, onceProbable, clasificacion }
 }
 
 /* ------------------------------ piezas ------------------------------ */
@@ -238,7 +247,74 @@ function OnceProbable({ lineup }) {
   )
 }
 
-function TabPrevia({ p, previa, porraAbierta, onceProbable }) {
+function EscudoTabla({ nombre }) {
+  const src = useEscudo(nombre)
+  return src ? <img src={src} alt="" className="mc-tabla__escudo" /> : <span className="mc-tabla__escudo mc-tabla__escudo--vacio">{nombre[0]}</span>
+}
+
+// Los dos equipos del partido con el de arriba y el de abajo de cada uno;
+// "Ver tabla completa" despliega las 20 filas.
+function ClasificacionPrevia({ clasificacion, local, visitante }) {
+  const [completa, setCompleta] = useState(false)
+  const { tabla, jornada } = clasificacion
+  const nombres = [local, visitante].map(sinComillas)
+  const posiciones = nombres.map(n => tabla.findIndex(f => sinComillas(f.equipo) === n)).filter(i => i >= 0)
+  if (posiciones.length === 0) return null
+  const cerca = new Set(posiciones.flatMap(i => [i - 1, i, i + 1]).filter(i => i >= 0 && i < tabla.length))
+  const indices = completa ? tabla.map((_, i) => i) : [...cerca].sort((a, b) => a - b)
+  let resumen = null
+  if (posiciones.length === 2) {
+    const dif = Math.abs(tabla[posiciones[0]].pts - tabla[posiciones[1]].pts)
+    resumen = `${nombres[0]} llega ${posiciones[0] + 1}.º y ${nombres[1]} ${posiciones[1] + 1}.º, ${dif ? `separados por ${dif} ${dif === 1 ? 'punto' : 'puntos'}` : 'empatados a puntos'}.`
+  }
+
+  return (
+    <div className="mc-tabla">
+      <div className="mc-tabla__cabecera">
+        <h3 className="mc-subtitulo">La clasificación</h3>
+        <span className="mc-tabla__jornada">Tras la J{jornada}</span>
+      </div>
+      {resumen && <p className="mc-tabla__resumen">{resumen}</p>}
+      <table className="mc-tabla__tabla">
+        <thead>
+          <tr><th className="mc-tabla__pos">#</th><th className="mc-tabla__equipo">Equipo</th><th>PJ</th><th>V-E-D</th><th>DG</th><th>Pts</th></tr>
+        </thead>
+        <tbody>
+          {indices.map((i, k) => {
+            const f = tabla[i]
+            const pos = i + 1
+            const salto = k > 0 && indices[k - 1] !== i - 1
+            const nombre = sinComillas(f.equipo)
+            const protagonista = nombres.includes(nombre)
+            return (
+              <tr key={f.equipo} className={`mc-tabla__fila mc-tabla__fila--${zonaDe(pos) || 'media'}${protagonista ? ' is-protagonista' : ''}${nombre === 'Real Zaragoza' ? ' is-rz' : ''}${salto ? ' is-salto' : ''}`}>
+                <td className="mc-tabla__pos">{pos}</td>
+                <td className="mc-tabla__equipo"><span className="mc-tabla__equipo-in"><EscudoTabla nombre={nombre} /><span>{nombre}</span></span></td>
+                <td>{f.pj}</td>
+                <td className="mc-tabla__ved">{f.g}-{f.e}-{f.p}</td>
+                <td>{f.dg > 0 ? `+${f.dg}` : f.dg}</td>
+                <td className="mc-tabla__pts">{f.pts}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      <div className="mc-tabla__pie">
+        <div className="mc-tabla__leyenda">
+          <span><i className="mc-tabla__dot mc-tabla__dot--ascenso" />Ascenso</span>
+          <span><i className="mc-tabla__dot mc-tabla__dot--playoff" />Play-off</span>
+          <span><i className="mc-tabla__dot mc-tabla__dot--descenso" />Descenso</span>
+        </div>
+        <button type="button" className="mc-tabla__toggle" onClick={() => setCompleta(v => !v)}>
+          {completa ? 'Ver menos' : 'Ver tabla completa'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function TabPrevia({ p, previa, porraAbierta, onceProbable, clasificacion }) {
+  const { local, visitante } = nombresPartido(p)
   return (
     <div className="mc-tab-stack">
       {porraAbierta && (
@@ -250,6 +326,7 @@ function TabPrevia({ p, previa, porraAbierta, onceProbable }) {
           <span className="mc-cta__pill">Pronosticar →</span>
         </Link>
       )}
+      {clasificacion && <ClasificacionPrevia clasificacion={clasificacion} local={local} visitante={visitante} />}
       {onceProbable && <OnceProbable lineup={onceProbable} />}
       <OpinionAficion partido={p} titulo={p.finalizado ? 'Qué pronosticó la afición' : 'Pronóstico de la afición'} minimo={1} />
       {previa && (
@@ -453,7 +530,7 @@ export default function Partido({ slugForzado, modoProximo = false }) {
     )
   }
 
-  const { p, anterior, siguiente, rival, historial, notas, jugadores, ganadores, previa, postPartido, opinion, onceProbable } = datos
+  const { p, anterior, siguiente, rival, historial, notas, jugadores, ganadores, previa, postPartido, opinion, onceProbable, clasificacion } = datos
   const { local, visitante, zaragozaLocal } = nombresPartido(p)
   const estadio = zaragozaLocal ? ESTADIO_ZARAGOZA : rival?.estadio
   const marcador = p.finalizado ? marcadorPartido(p) : null
@@ -482,21 +559,7 @@ export default function Partido({ slugForzado, modoProximo = false }) {
         path={ruta}
         image={p.finalizado ? undefined : 'https://www.rzhub.es/images/porra-og.jpg'}
         jsonLd={[
-          {
-            '@context': 'https://schema.org',
-            '@type': 'SportsEvent',
-            name: `${local} - ${visitante}`,
-            sport: 'Fútbol',
-            startDate: p.kickoff,
-            eventStatus: 'https://schema.org/EventScheduled',
-            eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-            location: { '@type': 'Place', name: estadio || 'Por confirmar' },
-            homeTeam: { '@type': 'SportsTeam', name: local },
-            awayTeam: { '@type': 'SportsTeam', name: visitante },
-            competitor: [{ '@type': 'SportsTeam', name: local }, { '@type': 'SportsTeam', name: visitante }],
-            url,
-            description: seo.description,
-          },
+          eventoPartido(p, { estadio, description: seo.description, image: p.finalizado ? undefined : 'https://www.rzhub.es/images/porra-og.jpg' }),
           {
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
@@ -554,7 +617,7 @@ export default function Partido({ slugForzado, modoProximo = false }) {
         <div className="mc-grid">
           <div className="mc-principal">
             {pestana === 'once' && <TabOnce p={p} jugadores={jugadores} notas={notas} />}
-            {pestana === 'previa' && <TabPrevia p={p} previa={previa} porraAbierta={porraAbierta} onceProbable={onceProbable} />}
+            {pestana === 'previa' && <TabPrevia p={p} previa={previa} porraAbierta={porraAbierta} onceProbable={onceProbable} clasificacion={clasificacion} />}
             {pestana === 'notas' && <TabNotas notas={notas} jugadores={jugadores} />}
             {pestana === 'rival' && <TabRival p={p} rival={rival} historial={historial} escudoRival={escudoRival} />}
           </div>

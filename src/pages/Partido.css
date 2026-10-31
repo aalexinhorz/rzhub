@@ -80,6 +80,42 @@
 .mc-boton:hover { filter: brightness(1.05); }
 .mc-boton--bloque { width: 100%; box-sizing: border-box; }
 
+/* -------- Clasificación (Previa) -------- */
+.mc-tabla { background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 16px 16px 14px; }
+.mc-tabla__cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.mc-tabla__cabecera .mc-subtitulo { margin-bottom: 4px; }
+.mc-tabla__jornada { color: #7e93bf; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+.mc-tabla__resumen { color: #d6e0f2; font-size: 14px; margin: 0 0 10px; }
+.mc-tabla__tabla { width: 100%; border-collapse: collapse; font-size: 13px; }
+.mc-tabla__tabla th { color: #7e93bf; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; padding: 6px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+.mc-tabla__tabla td { text-align: center; padding: 8px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #c9d6ee; }
+.mc-tabla__tabla .mc-tabla__equipo { text-align: left; }
+td.mc-tabla__equipo { max-width: 0; width: 55%; }
+.mc-tabla__equipo-in { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.mc-tabla__equipo-in > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-tabla__escudo { width: 20px; height: 20px; object-fit: contain; flex-shrink: 0; }
+.mc-tabla__escudo--vacio { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255, 255, 255, 0.1); font-size: 10px; }
+.mc-tabla__pos { width: 28px; font-weight: 800; }
+.mc-tabla__pts { font-weight: 900; color: #ffffff !important; }
+.mc-tabla__fila { box-shadow: inset 3px 0 0 transparent; }
+.mc-tabla__fila--ascenso { box-shadow: inset 3px 0 0 #22c55e; }
+.mc-tabla__fila--playoff { box-shadow: inset 3px 0 0 #3b82f6; }
+.mc-tabla__fila--descenso { box-shadow: inset 3px 0 0 #e11d2e; }
+.mc-tabla__fila.is-protagonista { background: rgba(255, 255, 255, 0.07); }
+.mc-tabla__fila.is-protagonista td { color: #ffffff; font-weight: 800; }
+.mc-tabla__fila.is-rz { background: rgba(255, 200, 0, 0.12); }
+.mc-tabla__fila.is-rz td { color: #ffc800; }
+.mc-tabla__fila.is-salto td { border-top: 1px dashed rgba(255, 255, 255, 0.2); }
+.mc-tabla__pie { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.mc-tabla__leyenda { display: flex; gap: 14px; flex-wrap: wrap; color: #a9bcdc; font-size: 11.5px; }
+.mc-tabla__leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.mc-tabla__dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.mc-tabla__dot--ascenso { background: #22c55e; }
+.mc-tabla__dot--playoff { background: #3b82f6; }
+.mc-tabla__dot--descenso { background: #e11d2e; }
+.mc-tabla__toggle { background: none; border: 1px solid rgba(255, 255, 255, 0.2); color: #ffffff; border-radius: 999px; padding: 7px 14px; font-family: 'Archivo', sans-serif; font-size: 13px; cursor: pointer; }
+.mc-tabla__toggle:hover { border-color: #ffc800; color: #ffc800; }
+
 /* -------- Once -------- */
 .mc-once__arriba { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
 .mc-cambio {
@@ -207,6 +243,9 @@
 }
 
 @media (max-width: 680px) {
+  .mc-tabla { padding: 14px 12px 12px; }
+  .mc-tabla__ved { display: none; }
+  .mc-tabla__tabla th:nth-child(4) { display: none; }
   .mc-contenedor { padding: 14px 14px 40px; }
   .mc-equipo { font-size: 13px; }
   .mc-equipo img { width: 48px; height: 48px; }

@@ -3,6 +3,36 @@
 // `p` es una fila de porra_partidos.
 
 export const ESTADIO_ZARAGOZA = 'Ibercaja Estadio'
+const SITE_URL = 'https://www.rzhub.es'
+
+// Ciudad del campo de cada rival: Google exige "location" con dirección en
+// los datos estructurados de evento. Rival nuevo sin ciudad → solo el país.
+const CIUDAD_RIVAL = {
+  'AD Alcorcón': 'Alcorcón',
+  'Águilas FC': 'Águilas',
+  'Algeciras CF': 'Algeciras',
+  'Antequera CF': 'Antequera',
+  'Atlético Madrileño': 'Alcalá de Henares',
+  'CD Teruel': 'Teruel',
+  'CD Tudelano': 'Tudela',
+  'CE Europa': 'Barcelona',
+  'CF Rayo Majadahonda': 'Majadahonda',
+  'FC Cartagena': 'Cartagena',
+  'Gimnàstic de Tarragona': 'Tarragona',
+  'Hércules de Alicante CF': 'Alicante',
+  'Juventud de Torremolinos CF': 'Torremolinos',
+  'Real Jaén CF': 'Jaén',
+  'Real Madrid Castilla': 'Madrid',
+  'Real Murcia CF': 'Murcia',
+  'SD Huesca': 'Huesca',
+  'UD Ibiza': 'Ibiza',
+  'UE Sant Andreu': 'Barcelona',
+  'Villarreal CF B': 'Villarreal',
+}
+const DURACION_EVENTO_MS = 2 * 3600_000
+
+// "Estadio Municipal Can Misses (inaugurado en 1991)" → "Estadio Municipal Can Misses"
+const limpiarEstadio = s => (s || '').replace(/\s*\([^)]*\)/g, '').split(',')[0].replace(/["“”]/g, '').trim()
 
 const slugify = s => (s || '')
   .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -106,5 +136,42 @@ export function seoProximoPartido(p) {
     title: `Próximo partido del Real Zaragoza: vs ${p.rival} (${fechaCorta(p.kickoff)})`,
     description: `Cuándo juega el Real Zaragoza: ${local} - ${visitante}, ${fechaCorta(p.kickoff)} a las ${horaMadrid(p.kickoff)} (${competicionCorta(p)}).${donde} Previa, pronóstico y porra con camiseta de premio.`,
     h1: `Próximo partido del Real Zaragoza: ${local} vs ${visitante}`,
+  }
+}
+
+// SportsEvent completo para Google (location con dirección, fechas, equipos,
+// imagen y descripción). Un único evento por partido, con @id en su página
+// /partido/:slug; las demás páginas del partido lo enlazan por ese @id.
+export const idEventoPartido = p => `${SITE_URL}/partido/${slugPartido(p)}#evento`
+
+export function eventoPartido(p, { estadio, description, image } = {}) {
+  const { local, visitante, zaragozaLocal } = nombresPartido(p)
+  const ciudad = zaragozaLocal ? 'Zaragoza' : CIUDAD_RIVAL[p.rival]
+  const lugar = limpiarEstadio(zaragozaLocal ? ESTADIO_ZARAGOZA : estadio) || `Campo del ${p.rival}`
+  const inicio = p.kickoff ? new Date(p.kickoff) : null
+  const equipo = name => ({ '@type': 'SportsTeam', name })
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SportsEvent',
+    '@id': idEventoPartido(p),
+    name: `${local} - ${visitante}`,
+    description,
+    sport: 'Fútbol',
+    startDate: inicio ? inicio.toISOString() : p.fecha,
+    endDate: inicio ? new Date(inicio.getTime() + DURACION_EVENTO_MS).toISOString() : p.fecha,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: {
+      '@type': 'Place',
+      name: lugar,
+      address: { '@type': 'PostalAddress', ...(ciudad && { addressLocality: ciudad }), addressCountry: 'ES' },
+    },
+    image: [image || `${SITE_URL}/og-image.png`],
+    homeTeam: equipo(local),
+    awayTeam: equipo(visitante),
+    competitor: [equipo(local), equipo(visitante)],
+    performer: [equipo(local), equipo(visitante)],
+    organizer: { '@type': 'Organization', name: 'Real Federación Española de Fútbol', url: 'https://rfef.es' },
+    url: `${SITE_URL}/partido/${slugPartido(p)}`,
   }
 }
