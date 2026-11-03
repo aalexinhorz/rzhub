@@ -1,0 +1,20 @@
+.comunicado-banner {
+  display: flex; align-items: center; justify-content: center; gap: 12px 16px; flex-wrap: wrap;
+  padding: 12px 20px; background: #000000; border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff; text-decoration: none; font-family: 'Archivo', sans-serif; text-align: center;
+}
+.comunicado-banner__lazo { width: 20px; height: 20px; fill: #ffffff; flex-shrink: 0; }
+.comunicado-banner__texto { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; justify-content: center; font-size: 13px; }
+.comunicado-banner__texto strong { font-weight: 800; letter-spacing: 0.02em; }
+.comunicado-banner__sub { color: rgba(255, 255, 255, 0.7); }
+.comunicado-banner__enlace {
+  flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 20px;
+  padding: 4px 12px; font-size: 12px; font-weight: 700; transition: background 0.15s ease, color 0.15s ease;
+}
+.comunicado-banner:hover .comunicado-banner__enlace { background: #ffffff; color: #000000; }
+
+@media (max-width: 480px) {
+  .comunicado-banner { padding: 10px 14px; gap: 8px; }
+  .comunicado-banner__texto { font-size: 12px; }
+  .comunicado-banner__sub { display: none; }
+}
