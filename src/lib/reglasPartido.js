@@ -3,8 +3,8 @@
 
 export const DURACION_PARTIDO_MS = 2.5 * 3600_000
 // El Vestuario Blanquillo sigue mostrando el último resultado hasta que
-// faltan exactamente 72 horas para el siguiente saque inicial (pedido expreso).
-export const HORAS_ANTES_SIGUIENTE = 72
+// faltan 4 días (96 h) para el siguiente saque inicial (pedido expreso).
+export const HORAS_ANTES_SIGUIENTE = 96
 
 export const fechaMadrid = d => new Date(d).toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' })
 
@@ -26,7 +26,7 @@ export function enVisperaOPartido(proximo, ahora = Date.now()) {
 }
 
 // Vestuario Blanquillo: el partido en juego; si no, el último jugado (con su
-// resultado) hasta que falten 72 h para el siguiente; luego, el siguiente.
+// resultado) hasta que falten 96 h para el siguiente; luego, el siguiente.
 export function elegirPartidoActual({ proximo, ultimo }, ahora = Date.now()) {
   if (!proximo) return ultimo || null
   const saqueProximo = new Date(proximo.kickoff).getTime()

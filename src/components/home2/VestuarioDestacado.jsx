@@ -45,7 +45,7 @@ function CuentaAtras({ ms }) {
 }
 
 // Bloque protagonista del Vestuario Blanquillo: el partido que toca (misma
-// regla de 72 h que la franja), con cuenta atrás en vivo, lo que pronostica
+// regla de 96 h que la franja), con cuenta atrás en vivo, lo que pronostica
 // la afición y accesos directos al Vestuario y a la Porra.
 export default function VestuarioDestacado() {
   const [partido, setPartido] = useState(null)
