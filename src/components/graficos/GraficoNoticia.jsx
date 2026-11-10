@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../../hooks/useAuth'
-import { cargarImagen, slug } from '../../lib/graficosComun'
+import { cargarImagen, contextoGrafico, ESCALA, slug } from '../../lib/graficosComun'
 import { ANCHO, ALTO, ALTO_FOTO, dibujarGraficoNoticia, encajeFoto } from '../../lib/graficoNoticia'
 import AccionesGrafico from './AccionesGrafico'
 
@@ -37,7 +37,7 @@ export default function GraficoNoticia({ logo, fuentesListas }) {
   const recursos = useMemo(() => ({ foto, logo }), [foto, logo])
   useEffect(() => {
     const canvas = canvasRef.current
-    if (canvas) dibujarGraficoNoticia(canvas.getContext('2d'), datos, recursos)
+    if (canvas) dibujarGraficoNoticia(contextoGrafico(canvas), datos, recursos)
   }, [datos, recursos, fuentesListas])
 
   const cambiar = cambios => setDatos(d => ({ ...d, ...cambios }))
@@ -85,7 +85,7 @@ export default function GraficoNoticia({ logo, fuentesListas }) {
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas
-          ref={canvasRef} width={ANCHO} height={ALTO} className="graficos-canvas"
+          ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas"
           onPointerDown={empezarArrastre} onPointerMove={arrastrar} onPointerUp={soltar} onPointerCancel={soltar}
         />
         <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-noticia-${slug(datos.titular).slice(0, 40)}.png`} />

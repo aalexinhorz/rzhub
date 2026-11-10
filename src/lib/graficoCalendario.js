@@ -89,6 +89,8 @@ function imagen(g, img, cx, cy, caja) {
  * recursos: { logo, escudos: { [rival]: Image } }
  */
 export function dibujarGraficoCalendario(g, datos, recursos) {
+  g.imageSmoothingEnabled = true
+  g.imageSmoothingQuality = 'high' // logos y fotos reducidos sin dientes de sierra
   g.save()
   g.textBaseline = 'alphabetic'
 

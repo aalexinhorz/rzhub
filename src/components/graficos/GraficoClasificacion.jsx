@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../../hooks/useAuth'
 import { calcularClasificacion } from '../../lib/clasificacion'
-import { cargarImagen, escudoDe } from '../../lib/graficosComun'
+import { cargarImagen, contextoGrafico, ESCALA, escudoDe } from '../../lib/graficosComun'
 import { ANCHO, ALTO, dibujarGraficoClasificacion, nombreCorto } from '../../lib/graficoClasificacion'
 import AccionesGrafico from './AccionesGrafico'
 
@@ -60,7 +60,7 @@ export default function GraficoClasificacion({ logo, fuentesListas }) {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    dibujarGraficoClasificacion(canvas.getContext('2d'), { tabla, jornada: jornadaElegida, ...ajustes }, { logo, escudos })
+    dibujarGraficoClasificacion(contextoGrafico(canvas), { tabla, jornada: jornadaElegida, ...ajustes }, { logo, escudos })
   }, [tabla, jornadaElegida, ajustes, logo, escudos, fuentesListas])
 
   const cambiar = cambios => setAjustes(a => ({ ...a, ...cambios }))
@@ -68,7 +68,7 @@ export default function GraficoClasificacion({ logo, fuentesListas }) {
   return (
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
-        <canvas ref={canvasRef} width={ANCHO} height={ALTO} className="graficos-canvas graficos-canvas--fijo" />
+        <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas graficos-canvas--fijo" />
         <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-clasificacion-j${jornadaElegida || ''}.png`} />
       </div>
 

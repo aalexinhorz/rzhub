@@ -68,6 +68,8 @@ function rayo(g, x, y, h, color) {
  * recursos: { foto, logo }
  */
 export function dibujarGraficoNoticia(g, datos, recursos) {
+  g.imageSmoothingEnabled = true
+  g.imageSmoothingQuality = 'high' // logos y fotos reducidos sin dientes de sierra
   g.save()
   g.textBaseline = 'alphabetic'
   g.textAlign = 'left'

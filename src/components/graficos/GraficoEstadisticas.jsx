@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { ESCUDOS_CLUBS } from '../../lib/escudos'
 import { colorDeEscudo } from '../../lib/colorEscudo'
 import { cargarProximoYUltimo } from '../../lib/partidoActual'
-import { cargarImagen, escudoDe, slug } from '../../lib/graficosComun'
+import { cargarImagen, contextoGrafico, ESCALA, escudoDe, slug } from '../../lib/graficosComun'
 import { ANCHO, ALTO, PANEL_X, dibujarGraficoStats, encajeFoto } from '../../lib/graficoStats'
 import AccionesGrafico from './AccionesGrafico'
 
@@ -78,7 +78,7 @@ export default function GraficoEstadisticas({ logo, fuentesListas }) {
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    dibujarGraficoStats(canvas.getContext('2d'), datos, recursos)
+    dibujarGraficoStats(contextoGrafico(canvas), datos, recursos)
   }, [datos, recursos, fuentesListas])
 
   const cambiar = cambios => setDatos(d => ({ ...d, ...cambios }))
@@ -131,7 +131,7 @@ export default function GraficoEstadisticas({ logo, fuentesListas }) {
       <div className="graficos-cuerpo">
         <div className="graficos-vista">
           <canvas
-            ref={canvasRef} width={ANCHO} height={ALTO} className="graficos-canvas"
+            ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas"
             onPointerDown={empezarArrastre} onPointerMove={arrastrar} onPointerUp={soltar} onPointerCancel={soltar}
           />
           <AccionesGrafico canvasRef={canvasRef} nombreArchivo={nombreArchivo} />

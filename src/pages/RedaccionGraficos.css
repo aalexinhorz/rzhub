@@ -202,3 +202,20 @@
 
 .graficos-canvas--fijo { cursor: default; }
 .graficos-nota--aviso { color: var(--rz-yellow); }
+
+.graficos-fila--jugador { flex-wrap: wrap; align-items: end; }
+.graficos-foto-jugador { display: flex; gap: 6px; flex: 0 0 auto; }
+.graficos-mini-boton {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--rz-border-yellow);
+  background: transparent;
+  color: var(--rz-yellow);
+  font-size: 13px;
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.graficos-mini-boton input { display: none; }

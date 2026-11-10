@@ -130,6 +130,8 @@ function medalla(g, cx, cy, r) {
  * recursos: { foto, escudoLocal, escudoVisitante, logo } (Image ya cargadas o null)
  */
 export function dibujarGraficoStats(g, datos, recursos) {
+  g.imageSmoothingEnabled = true
+  g.imageSmoothingQuality = 'high' // logos y fotos reducidos sin dientes de sierra
   g.save()
   g.clearRect(0, 0, ANCHO, ALTO)
 

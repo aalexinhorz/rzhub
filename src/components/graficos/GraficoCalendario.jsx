@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { extractRival, isAway } from '../../lib/ics'
-import { cargarImagen, escudoDe } from '../../lib/graficosComun'
+import { cargarImagen, contextoGrafico, ESCALA, escudoDe } from '../../lib/graficosComun'
 import { ANCHO, ALTO, dibujarGraficoCalendario, finDe } from '../../lib/graficoCalendario'
 import AccionesGrafico from './AccionesGrafico'
 
@@ -78,7 +78,7 @@ export default function GraficoCalendario({ logo, fuentesListas }) {
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (canvas) dibujarGraficoCalendario(canvas.getContext('2d'), { ...ajustes, desde, partidos: enRango }, { logo, escudos })
+    if (canvas) dibujarGraficoCalendario(contextoGrafico(canvas), { ...ajustes, desde, partidos: enRango }, { logo, escudos })
   }, [ajustes, desde, enRango, logo, escudos, fuentesListas])
 
   const cambiar = cambios => setAjustes(a => ({ ...a, ...cambios }))
@@ -86,7 +86,7 @@ export default function GraficoCalendario({ logo, fuentesListas }) {
   return (
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
-        <canvas ref={canvasRef} width={ANCHO} height={ALTO} className="graficos-canvas graficos-canvas--fijo" />
+        <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas graficos-canvas--fijo" />
         <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-calendario-${desde}.png`} />
       </div>
 

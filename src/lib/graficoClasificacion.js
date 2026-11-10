@@ -54,6 +54,8 @@ function flecha(g, x, y, sube) {
  * recursos: { logo, escudos: { [equipo]: Image } }
  */
 export function dibujarGraficoClasificacion(g, datos, recursos) {
+  g.imageSmoothingEnabled = true
+  g.imageSmoothingQuality = 'high' // logos y fotos reducidos sin dientes de sierra
   g.save()
   g.textBaseline = 'alphabetic'
 
