@@ -26,3 +26,5 @@ dist-ssr
 
 # caché local del CLI de Supabase (npx supabase), no es parte del proyecto
 supabase/.temp/
+
+.claude/settings.local.json
