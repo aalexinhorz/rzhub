@@ -161,3 +161,42 @@
   .graficos-cuerpo { grid-template-columns: 1fr; }
   .graficos-vista { position: static; }
 }
+
+/* Pestañas de plantilla. */
+.graficos-pestanas {
+  display: flex;
+  gap: 6px;
+  margin: 4px 0 12px;
+  padding: 4px;
+  width: fit-content;
+  border-radius: 999px;
+  background: var(--rz-bg-2);
+  border: 1px solid var(--rz-border);
+}
+
+.graficos-pestanas button {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--rz-text-secondary);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-sm);
+}
+
+.graficos-pestanas button.es-activa { background: var(--rz-yellow); color: #060d1a; }
+
+.graficos-campo select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--rz-border-md);
+  background: #0a1a33;
+  color: var(--rz-text-primary);
+  font: inherit;
+  font-size: 15px;
+  font-weight: var(--weight-semibold);
+}
+
+.graficos-canvas--fijo { cursor: default; }
+.graficos-nota--aviso { color: var(--rz-yellow); }
