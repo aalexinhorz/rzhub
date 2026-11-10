@@ -125,7 +125,7 @@ function medalla(g, cx, cy, r) {
 }
 
 /**
- * datos: { nombre, apellido, credito, colorLocal, colorVisitante,
+ * datos: { nombre, apellido, credito, mostrarPartido, colorLocal, colorVisitante,
  *          ajusteFoto: { zoom, dx, dy }, stats: [{ valor, etiqueta, destacado, textoDestacado }] }
  * recursos: { foto, escudoLocal, escudoVisitante, logo } (Image ya cargadas o null)
  */
@@ -155,15 +155,17 @@ export function dibujarGraficoStats(g, datos, recursos) {
   g.fillStyle = sombra
   g.fillRect(0, 0, PANEL_X, ALTO)
 
-  // ── Escudos del partido ──
-  const T = 122
-  g.fillStyle = datos.colorLocal || '#0045bf'
-  g.fillRect(MARGEN, 0, T, T)
-  g.fillStyle = datos.colorVisitante || '#ffe667'
-  rectRedondeado(g, MARGEN + T, 0, T, T, [0, 0, 18, 0])
-  g.fill()
-  dibujarContenido(g, recursos.escudoLocal, MARGEN + T / 2, T / 2, 88)
-  dibujarContenido(g, recursos.escudoVisitante, MARGEN + T * 1.5, T / 2, 88)
+  // ── Escudos del partido (se pueden quitar) ──
+  if (datos.mostrarPartido !== false) {
+    const T = 122
+    g.fillStyle = datos.colorLocal || '#0045bf'
+    g.fillRect(MARGEN, 0, T, T)
+    g.fillStyle = datos.colorVisitante || '#ffe667'
+    rectRedondeado(g, MARGEN + T, 0, T, T, [0, 0, 18, 0])
+    g.fill()
+    dibujarContenido(g, recursos.escudoLocal, MARGEN + T / 2, T / 2, 88)
+    dibujarContenido(g, recursos.escudoVisitante, MARGEN + T * 1.5, T / 2, 88)
+  }
 
   // ── Nombre ──
   const anchoNombre = PANEL_X - MARGEN * 2

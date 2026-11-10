@@ -5,6 +5,7 @@ import SEO from '../components/SEO'
 import GraficoEstadisticas from '../components/graficos/GraficoEstadisticas'
 import GraficoClasificacion from '../components/graficos/GraficoClasificacion'
 import GraficoNoticia from '../components/graficos/GraficoNoticia'
+import GraficoCalendario from '../components/graficos/GraficoCalendario'
 import { cargarFuentes } from '../lib/graficoStats'
 import { cargarImagen } from '../lib/graficosComun'
 import './RedaccionGraficos.css'
@@ -15,6 +16,7 @@ import './RedaccionGraficos.css'
 const PLANTILLAS = [
   { id: 'estadisticas', label: 'Estadísticas', ayuda: 'Sube la foto, rellena los datos y descárgalo. Arrastra la foto en la vista previa para encuadrarla.' },
   { id: 'clasificacion', label: 'Clasificación', ayuda: 'La tabla sale sola con los resultados de la web. Elige la jornada y descárgalo.' },
+  { id: 'calendario', label: 'Calendario', ayuda: 'Los partidos salen solos del calendario de la web. Elige desde qué día y cuántas semanas.' },
   { id: 'noticia', label: 'Noticia', ayuda: 'Sube la foto (o rellénalo con una noticia de la web), escribe el titular y descárgalo. Arrastra la foto para encuadrarla.' },
 ]
 const CLAVE_PLANTILLA = 'redaccion_grafico_plantilla'
@@ -64,6 +66,7 @@ export default function RedaccionGraficos() {
 
       {actual.id === 'clasificacion' && <GraficoClasificacion logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'noticia' && <GraficoNoticia logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'calendario' && <GraficoCalendario logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'estadisticas' && <GraficoEstadisticas logo={logo} fuentesListas={fuentesListas} />}
     </div>
   )

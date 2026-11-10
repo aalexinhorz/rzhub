@@ -18,6 +18,7 @@ const INICIAL = {
   nombre: '',
   apellido: '',
   credito: 'FOTO: ',
+  mostrarPartido: true,
   local: 'Real Zaragoza',
   visitante: '',
   colorLocal: COLOR_ZARAGOZA,
@@ -174,10 +175,14 @@ export default function GraficoEstadisticas({ logo, fuentesListas }) {
 
           <fieldset>
             <legend>Partido</legend>
+            <label className="graficos-check">
+              <input type="checkbox" checked={datos.mostrarPartido !== false} onChange={e => cambiar({ mostrarPartido: e.target.checked })} />
+              Poner los escudos del partido
+            </label>
             <datalist id="graficos-equipos">
               {EQUIPOS.map(e => <option key={e} value={e} />)}
             </datalist>
-            {[['local', 'colorLocal', 'Local'], ['visitante', 'colorVisitante', 'Visitante']].map(([campo, campoColor, texto]) => (
+            {datos.mostrarPartido !== false && [['local', 'colorLocal', 'Local'], ['visitante', 'colorVisitante', 'Visitante']].map(([campo, campoColor, texto]) => (
               <div className="graficos-fila graficos-fila--equipo" key={campo}>
                 <label className="graficos-campo">
                   {texto}
