@@ -216,6 +216,11 @@ export default function Navbar() {
                           Redacción
                         </button>
                       )}
+                      {profile?.es_redactor && (
+                        <button onClick={() => { navigate('/redaccion-graficos'); setUserMenuOpen(false) }} style={{ display: 'block', width: '100%', padding: '12px 16px', background: 'none', border: 'none', textAlign: 'left', fontSize: 'var(--text-md)', fontFamily: 'var(--font-body)', cursor: 'pointer', color: '#333' }}>
+                          Gráficos
+                        </button>
+                      )}
                       {(profile?.es_fotografo || profile?.es_redactor) && (
                         <button onClick={() => { navigate('/redaccion-fotos'); setUserMenuOpen(false) }} style={{ display: 'block', width: '100%', padding: '12px 16px', background: 'none', border: 'none', textAlign: 'left', fontSize: 'var(--text-md)', fontFamily: 'var(--font-body)', cursor: 'pointer', color: '#333' }}>
                           Subir fotos
@@ -396,6 +401,11 @@ export default function Navbar() {
                 {profile?.es_redactor && (
                   <button onClick={() => { navigate('/redaccion'); closeMobileMenu() }} style={{ display: 'block', width: '100%', background: 'none', border: 'none', textAlign: 'left', color: 'rgba(255,255,255,0.75)', padding: '10px 0', fontSize: 'var(--text-lg)', fontFamily: 'var(--font-body)', cursor: 'pointer' }}>
                     Redacción
+                  </button>
+                )}
+                {profile?.es_redactor && (
+                  <button onClick={() => { navigate('/redaccion-graficos'); closeMobileMenu() }} style={{ display: 'block', width: '100%', background: 'none', border: 'none', textAlign: 'left', color: 'rgba(255,255,255,0.75)', padding: '10px 0', fontSize: 'var(--text-lg)', fontFamily: 'var(--font-body)', cursor: 'pointer' }}>
+                    Gráficos
                   </button>
                 )}
                 {(profile?.es_fotografo || profile?.es_redactor) && (

@@ -19,6 +19,7 @@ const Noticias = lazy(() => import('./pages/Noticias'))
 const NoticiaDetalle = lazy(() => import('./pages/NoticiaDetalle'))
 const Redaccion = lazy(() => import('./pages/Redaccion'))
 const RedaccionFotos = lazy(() => import('./pages/RedaccionFotos'))
+const RedaccionGraficos = lazy(() => import('./pages/RedaccionGraficos'))
 const Calendario = lazy(() => import('./pages/Calendario'))
 const Contacto = lazy(() => import('./pages/Contacto'))
 const Porra = lazy(() => import('./pages/Porra'))
@@ -73,6 +74,7 @@ export default function App() {
           <Route path="/noticias/:slug" element={<NoticiaDetalle />} />
           <Route path="/redaccion" element={<Redaccion />} />
           <Route path="/redaccion-fotos" element={<RedaccionFotos />} />
+          <Route path="/redaccion-graficos" element={<RedaccionGraficos />} />
           <Route path="/contenidos" element={<Navigate to="/" replace />} />
           <Route path="/on-tour" element={<OnTour />} />
           <Route path="/calendario" element={<Calendario />} />
