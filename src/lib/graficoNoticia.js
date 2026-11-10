@@ -169,17 +169,14 @@ export function dibujarGraficoNoticia(g, datos, recursos) {
     }
   }
 
-  // Pie: línea, enlace a la web y logo.
+  // Pie: línea, la web y el logo.
   g.fillStyle = 'rgba(255,213,0,0.6)'
   g.fillRect(M, 1262, ANCHO - M * 2, 2)
-  g.font = `600 22px ${TEXTO}`
-  g.fillStyle = 'rgba(255,255,255,0.85)'
-  const previo = 'Noticia completa en '
-  g.fillText(previo, M, 1312)
-  const xWeb = M + g.measureText(previo).width
   g.font = `800 22px ${TEXTO}`
   g.fillStyle = AMARILLO
-  g.fillText('rzhub.es', xWeb, 1312)
+  if ('letterSpacing' in g) g.letterSpacing = '1px'
+  g.fillText('rzhub.es', M, 1312)
+  if ('letterSpacing' in g) g.letterSpacing = '0px'
   if (logo?.complete && logo.naturalWidth) {
     const w = 96
     g.drawImage(logo, ANCHO - M - w, 1312 - 32, w, w * logo.naturalHeight / logo.naturalWidth)
