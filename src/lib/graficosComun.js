@@ -8,10 +8,13 @@ export const escudoDe = nombre => {
   return limpio === 'Real Zaragoza' ? ESCUDO_ZARAGOZA : getEscudo(nombre) || getEscudo(limpio)
 }
 
-export function cargarImagen(src) {
+// cors: para imágenes de otro dominio (Supabase Storage…); sin eso el
+// canvas no se podría exportar. Si el servidor no lo permite, devuelve null.
+export function cargarImagen(src, { cors = false } = {}) {
   return new Promise(resolve => {
     if (!src) { resolve(null); return }
     const img = new Image()
+    if (cors) img.crossOrigin = 'anonymous'
     img.onload = () => resolve(img)
     img.onerror = () => resolve(null)
     img.src = src
