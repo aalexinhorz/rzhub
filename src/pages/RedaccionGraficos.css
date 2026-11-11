@@ -188,6 +188,11 @@
 
 .graficos-pestanas button.es-activa { background: var(--rz-yellow); color: #060d1a; }
 
+/* Subpestañas de un grupo (p. ej. Previa): más pequeñas, debajo. */
+.graficos-pestanas--sub { margin-top: -4px; background: transparent; }
+.graficos-pestanas--sub button { padding: 6px 14px; font-size: var(--text-xs, 12px); border: 1px solid var(--rz-border); }
+.graficos-pestanas--sub button.es-activa { border-color: var(--rz-yellow); }
+
 .graficos-campo select {
   width: 100%;
   padding: 10px 12px;

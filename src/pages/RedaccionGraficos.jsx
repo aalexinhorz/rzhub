@@ -14,6 +14,9 @@ import GraficoMercado from '../components/graficos/GraficoMercado'
 import GraficoResultado from '../components/graficos/GraficoResultado'
 import GraficoPrevia from '../components/graficos/GraficoPrevia'
 import GraficoRival from '../components/graficos/GraficoRival'
+import GraficoPorra from '../components/graficos/GraficoPorra'
+import GraficoPartido from '../components/graficos/GraficoPartido'
+import GraficoOnTour from '../components/graficos/GraficoOnTour'
 import GraficoConvocatoria from '../components/graficos/GraficoConvocatoria'
 import GraficoJugador from '../components/graficos/GraficoJugador'
 import { cargarFuentes } from '../lib/graficoStats'
@@ -32,14 +35,19 @@ const PLANTILLAS = [
   { id: 'ranking-equipos', label: 'Ránking equipos', ayuda: 'Hasta 6 equipos con escudo y su número. Sube una foto para la derecha y arrástrala.' },
   { id: 'cara-a-cara', label: 'Cara a cara', ayuda: 'Elige el rival: los últimos resultados salen solos del historial de la web. La foto va abajo.' },
   { id: 'resultado', label: 'Final de partido', ayuda: 'Elige un partido jugado y se rellena solo (equipos, marcador, goleadores del Real Zaragoza, competición). Sube la foto y arrástrala.' },
+  { id: 'partido', grupo: 'previa', label: 'Partido', ayuda: 'El lema entre los dos escudos con los datos del próximo partido. Sube una foto ancha (p. ej. un jugador de cada equipo) y arrástrala.' },
+  { id: 'rival', grupo: 'previa', label: 'El rival', ayuda: 'Sale el rival del próximo partido con el texto de su ficha y los últimos 5 enfrentamientos. Sube una foto y arrástrala para encuadrarla.' },
+  { id: 'porra', grupo: 'previa', label: 'La Porra', ayuda: 'Anuncia la porra del próximo partido. Sube una foto y arrástrala para encuadrarla.' },
+  { id: 'on-tour', grupo: 'previa', label: 'On Tour', ayuda: 'Para los desplazamientos: ciudad, estadio, km y mapa salen solos del partido fuera de casa. Sube una foto del estadio.' },
   { id: 'previa', label: 'Previa del rival', ayuda: 'Sale el rival del próximo partido con su posición, puntos, goles y racha. Elige sus goleadores, bajas y el jugador a seguir.' },
-  { id: 'rival', label: 'El rival', ayuda: 'Sale el rival del próximo partido con el texto de su ficha y los últimos 5 enfrentamientos. Sube una foto y arrástrala para encuadrarla.' },
   { id: 'convocatoria', label: 'Convocatoria', ayuda: 'Marca los convocados: salen sus tarjetas del Lineup ordenadas por posición. Puedes subir una foto (p. ej. el entrenador).' },
   { id: 'jugador', label: 'Foto de jugador', ayuda: 'Foto a toda página con la tarjeta del jugador, su nombre en grande y una pastilla (la temporada u otro texto).' },
   { id: 'mercado', label: 'Fichaje / salida', ayuda: 'Para anunciar fichajes y salidas. Elige si llega o se va, los dos clubes y la operación, escribe el nombre y sube la foto (arrástrala para encuadrarla).' },
   { id: 'noticia', label: 'Noticia', ayuda: 'Sube la foto (o rellénalo con una noticia de la web), escribe el titular y descárgalo. Arrastra la foto para encuadrarla.' },
 ]
 const CLAVE_PLANTILLA = 'redaccion_grafico_plantilla'
+// Plantillas agrupadas en una sola pestaña, con sus subpestañas debajo.
+const GRUPOS = { previa: 'Previa' }
 
 export default function RedaccionGraficos() {
   const { user, profile, loading } = useAuth()
@@ -75,12 +83,24 @@ export default function RedaccionGraficos() {
       <div className="graficos-cabecera">
         <h1>Gráficos</h1>
         <div className="graficos-pestanas" role="tablist">
-          {PLANTILLAS.map(p => (
-            <button key={p.id} type="button" role="tab" aria-selected={p.id === actual.id} className={p.id === actual.id ? 'es-activa' : ''} onClick={() => elegir(p.id)}>
-              {p.label}
-            </button>
-          ))}
+          {PLANTILLAS.filter((p, i) => !p.grupo || PLANTILLAS.findIndex(q => q.grupo === p.grupo) === i).map(p => {
+            const activa = p.grupo ? actual.grupo === p.grupo : p.id === actual.id
+            return (
+              <button key={p.grupo || p.id} type="button" role="tab" aria-selected={activa} className={activa ? 'es-activa' : ''} onClick={() => elegir(p.grupo && activa ? actual.id : p.id)}>
+                {p.grupo ? GRUPOS[p.grupo] : p.label}
+              </button>
+            )
+          })}
         </div>
+        {actual.grupo && (
+          <div className="graficos-pestanas graficos-pestanas--sub" role="tablist">
+            {PLANTILLAS.filter(p => p.grupo === actual.grupo).map(p => (
+              <button key={p.id} type="button" role="tab" aria-selected={p.id === actual.id} className={p.id === actual.id ? 'es-activa' : ''} onClick={() => elegir(p.id)}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+        )}
         <p>{actual.ayuda}</p>
       </div>
 
@@ -95,6 +115,9 @@ export default function RedaccionGraficos() {
       {actual.id === 'resultado' && <GraficoResultado logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'previa' && <GraficoPrevia logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'rival' && <GraficoRival logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'partido' && <GraficoPartido logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'porra' && <GraficoPorra logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'on-tour' && <GraficoOnTour logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'convocatoria' && <GraficoConvocatoria logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'jugador' && <GraficoJugador logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'estadisticas' && <GraficoEstadisticas logo={logo} fuentesListas={fuentesListas} />}

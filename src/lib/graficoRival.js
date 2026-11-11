@@ -20,7 +20,9 @@ export function temporadaDe(fecha) {
   return `${String(año % 100).padStart(2, '0')}-${String((año + 1) % 100).padStart(2, '0')}`
 }
 
-function casilla(g, escudo, x, y, lado, esZaragoza) {
+// Casilla cuadrada con el escudo: azul la del Real Zaragoza, translúcida la
+// del rival. La usan también La Porra y el cartel del partido.
+export function casilla(g, escudo, x, y, lado, esZaragoza) {
   g.fillStyle = esZaragoza ? AZUL : 'rgba(255,255,255,0.16)'
   g.beginPath()
   g.roundRect(x, y, lado, lado, [3, 3, 14, 3])
