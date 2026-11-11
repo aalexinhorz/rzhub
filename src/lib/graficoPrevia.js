@@ -4,6 +4,7 @@
 // cifras (posición, puntos, goles y racha), sus goleadores y sus bajas.
 
 import { encajeEn, siluetaBlanca } from './graficosComun'
+import { tarjeta } from './graficoListas'
 import { AMARILLO, AZUL_OSCURO, TEXTO, TITULOS, ajustar, creditoVertical, hayImagen, imagen, logoRz, texto } from './graficosTexto'
 
 export const ANCHO = 1080
@@ -45,7 +46,7 @@ function recortar(g, t, ancho) {
 /**
  * datos: { rival, antetitulo, info, fotoDerecha, equipo: { pos, pts, gf, gc, forma: ['V','E','D'] } | null,
  *          goleadores: [{ nombre, goles }], bajas: [{ nombre }], aSeguir, credito, ajusteFoto }
- * recursos: { logo, escudoRival, fotosGoleadores: [img], bajas: [{ foto }], fotoSeguir }
+ * recursos: { logo, escudoRival, fotosGoleadores: [img], bajas: [{ foto, escudo }], fotoSeguir (subida), fotoSeguirBd (la de la base de datos) }
  */
 export function dibujarGraficoPrevia(g, datos, recursos) {
   g.imageSmoothingEnabled = true
@@ -67,7 +68,28 @@ export function dibujarGraficoPrevia(g, datos, recursos) {
   g.fillStyle = '#0b2a6b'
   g.fill()
   g.clip()
-  if (hayImagen(recursos.fotoSeguir)) {
+  if (!hayImagen(recursos.fotoSeguir) && hayImagen(recursos.fotoSeguirBd)) {
+    // Sin foto subida: la de la base de datos es solo la cara, así que va a
+    // lo ancho de la columna, encima del nombre, en vez de ampliarla entera.
+    const f = recursos.fotoSeguirBd
+    const w = zona.w
+    const h = w * f.naturalHeight / f.naturalWidth
+    // Se funde por abajo para que no se vea el corte del cuello.
+    const k = g.getTransform().a
+    const c = document.createElement('canvas')
+    c.width = Math.round(w * k)
+    c.height = Math.round(h * k)
+    const x = c.getContext('2d')
+    x.imageSmoothingQuality = 'high'
+    x.drawImage(f, 0, 0, c.width, c.height)
+    const fundido = x.createLinearGradient(0, c.height * 0.62, 0, c.height)
+    fundido.addColorStop(0, 'rgba(0,0,0,1)')
+    fundido.addColorStop(1, 'rgba(0,0,0,0)')
+    x.globalCompositeOperation = 'destination-in'
+    x.fillStyle = fundido
+    x.fillRect(0, 0, c.width, c.height)
+    g.drawImage(c, zona.x, ALTO - 230 - h, w, h)
+  } else if (hayImagen(recursos.fotoSeguir)) {
     const { zoom = 1, dx = 0, dy = 0 } = datos.ajusteFoto || {}
     const e = encajeEn(recursos.fotoSeguir, zona, zoom, dx, dy)
     g.drawImage(recursos.fotoSeguir, e.x, e.y, e.w, e.h)
@@ -195,26 +217,11 @@ export function dibujarGraficoPrevia(g, datos, recursos) {
   seccion(g, 'BAJAS', y)
   const bajas = (datos.bajas || []).filter(x => x.nombre).slice(0, 4)
   if (bajas.length) {
+    // Tarjetas del Lineup en fila; con las cuatro, ocupan todo el ancho.
     const hueco = 14
-    const w = (ANCHO_UTIL - hueco) / 2
+    const w = (ANCHO_UTIL - hueco * 3) / 4
     bajas.forEach((b, i) => {
-      const x = M + (i % 2) * (w + hueco)
-      const yb = y + 26 + Math.floor(i / 2) * 70
-      g.fillStyle = 'rgba(255,255,255,0.08)'
-      g.beginPath()
-      g.roundRect(x, yb, w, 54, 27)
-      g.fill()
-      fotoRedonda(g, recursos.bajas?.[i]?.foto, x + 27, yb + 27, 22)
-      g.font = `700 20px ${TEXTO}`
-      texto(g, recortar(g, b.nombre, w - 74), x + 60, yb + 34, `700 20px ${TEXTO}`, '#ffffff')
-      // Cruz roja de baja.
-      g.strokeStyle = '#e5383b'
-      g.lineWidth = 3
-      g.lineCap = 'round'
-      g.beginPath()
-      g.moveTo(x + w - 30, yb + 21); g.lineTo(x + w - 18, yb + 33)
-      g.moveTo(x + w - 18, yb + 21); g.lineTo(x + w - 30, yb + 33)
-      g.stroke()
+      tarjeta(g, M + i * (w + hueco), y + 26, w, { ...recursos.bajas?.[i], nombre: b.nombre, esZaragoza: false })
     })
   } else {
     texto(g, 'Sin bajas confirmadas', M, y + 48, `500 21px ${TEXTO}`, 'rgba(255,255,255,0.7)')

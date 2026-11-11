@@ -94,14 +94,14 @@ export default function GraficoPrevia({ logo }) { // al cargar las fuentes cambi
       setImgs({
         escudoRival,
         fotosGoleadores,
-        bajas: fotosBajas.map(f => ({ foto: f })),
+        bajas: fotosBajas.map(f => ({ foto: f, escudo: escudoRival })),
         fotoSeguirBd: fotoSeguir,
       })
     })()
     return () => { activo = false }
   }, [claveImgs]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const recursos = useMemo(() => ({ logo, ...imgs, fotoSeguir: foto || imgs.fotoSeguirBd }), [logo, imgs, foto])
+  const recursos = useMemo(() => ({ logo, ...imgs, fotoSeguir: foto }), [logo, imgs, foto])
   const bajasConNombre = datos.bajas.filter(b => b.nombre)
   useEffect(() => {
     const c = canvasRef.current
