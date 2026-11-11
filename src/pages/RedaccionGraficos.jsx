@@ -10,6 +10,7 @@ import GraficoRankingJugadores from '../components/graficos/GraficoRankingJugado
 import GraficoVersus from '../components/graficos/GraficoVersus'
 import GraficoRankingEquipos from '../components/graficos/GraficoRankingEquipos'
 import GraficoCaraACara from '../components/graficos/GraficoCaraACara'
+import GraficoMercado from '../components/graficos/GraficoMercado'
 import { cargarFuentes } from '../lib/graficoStats'
 import { cargarImagen } from '../lib/graficosComun'
 import './RedaccionGraficos.css'
@@ -25,6 +26,7 @@ const PLANTILLAS = [
   { id: 'versus', label: 'Versus', ayuda: 'Dos jugadores frente a frente con sus estadísticas. Sube una foto para la derecha y arrástrala.' },
   { id: 'ranking-equipos', label: 'Ránking equipos', ayuda: 'Hasta 6 equipos con escudo y su número. Sube una foto para la derecha y arrástrala.' },
   { id: 'cara-a-cara', label: 'Cara a cara', ayuda: 'Elige el rival: los últimos resultados salen solos del historial de la web. La foto va abajo.' },
+  { id: 'mercado', label: 'Fichaje / salida', ayuda: 'Para anunciar fichajes y salidas. Elige si llega o se va, los dos clubes y la operación, escribe el nombre y sube la foto (arrástrala para encuadrarla).' },
   { id: 'noticia', label: 'Noticia', ayuda: 'Sube la foto (o rellénalo con una noticia de la web), escribe el titular y descárgalo. Arrastra la foto para encuadrarla.' },
 ]
 const CLAVE_PLANTILLA = 'redaccion_grafico_plantilla'
@@ -79,6 +81,7 @@ export default function RedaccionGraficos() {
       {actual.id === 'versus' && <GraficoVersus logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'ranking-equipos' && <GraficoRankingEquipos logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'cara-a-cara' && <GraficoCaraACara logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'mercado' && <GraficoMercado logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'estadisticas' && <GraficoEstadisticas logo={logo} fuentesListas={fuentesListas} />}
     </div>
   )
