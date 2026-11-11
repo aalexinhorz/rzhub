@@ -5,6 +5,7 @@ import Footer from '../components/Footer'
 import { supabase } from '../hooks/useAuth'
 import { ESCUDO_ZARAGOZA, useEscudo } from '../lib/escudos'
 import { slugPartido } from '../lib/partidoSeo'
+import { seoCalendario } from '../lib/seoPaginas'
 import './Calendario.css'
 
 const ICS_URL = 'https://rzhub.es/calendario.ics'
@@ -207,6 +208,7 @@ export default function Calendario() {
   const [gruposAbiertos, setGruposAbiertos] = useState(null)
 
   const proximo = useMemo(() => partidos.find(p => !p.finalizado), [partidos])
+  const seo = seoCalendario(proximo)
 
   const partidosFiltrados = useMemo(() => {
     if (filtro === 'local') return partidos.filter(p => p.sede === 'local')
@@ -257,19 +259,19 @@ export default function Calendario() {
   return (
     <div className="cal2-page">
       <SEO
-        title="Calendario del Real Zaragoza 26/27 | RZ Hub"
-        description="Todos los partidos del Real Zaragoza, fechas, horarios y resultados en un solo lugar."
+        title={seo.title}
+        description={seo.description}
         path="/calendario"
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'CollectionPage',
-          name: 'Calendario del Real Zaragoza 26/27',
+          name: 'Calendario del Real Zaragoza 2026/27',
           url: `${SITE_URL}/calendario`,
           isPartOf: { '@type': 'WebSite', name: 'RZ Hub', url: SITE_URL },
         }}
       />
 
-      <h1 className="sr-only">Calendario del Real Zaragoza</h1>
+      <h1 className="sr-only">Calendario del Real Zaragoza 2026/27</h1>
 
       <div className="cal2-container cal2-container--top">
         <SyncBar onApple={handleApple} onGoogle={handleGoogle} onCopiar={handleCopiar} copiado={copiado} />

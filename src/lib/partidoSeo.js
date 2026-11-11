@@ -7,7 +7,7 @@ const SITE_URL = 'https://www.rzhub.es'
 
 // Ciudad del campo de cada rival: Google exige "location" con dirección en
 // los datos estructurados de evento. Rival nuevo sin ciudad → solo el país.
-const CIUDAD_RIVAL = {
+export const CIUDAD_RIVAL = {
   'AD Alcorcón': 'Alcorcón',
   'Águilas FC': 'Águilas',
   'Algeciras CF': 'Algeciras',
@@ -32,7 +32,7 @@ const CIUDAD_RIVAL = {
 const DURACION_EVENTO_MS = 2 * 3600_000
 
 // "Estadio Municipal Can Misses (inaugurado en 1991)" → "Estadio Municipal Can Misses"
-const limpiarEstadio = s => (s || '').replace(/\s*\([^)]*\)/g, '').split(',')[0].replace(/["“”]/g, '').trim()
+export const limpiarEstadio = s => (s || '').replace(/\s*\([^)]*\)/g, '').split(',')[0].replace(/["“”]/g, '').trim()
 
 const slugify = s => (s || '')
   .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -70,9 +70,9 @@ export function marcadorPartido(p) {
   return zaragozaLocal ? `${p.goles_zaragoza}-${p.goles_rival}` : `${p.goles_rival}-${p.goles_zaragoza}`
 }
 
-const fechaLarga = iso => new Date(iso).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Madrid' })
-const fechaCorta = iso => new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', timeZone: 'Europe/Madrid' })
-const horaMadrid = iso => new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' })
+export const fechaLarga = iso => new Date(iso).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Madrid' })
+export const fechaCorta = iso => new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', timeZone: 'Europe/Madrid' })
+export const horaMadrid = iso => new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' })
 
 export function seoPartido(p) {
   const { local, visitante } = nombresPartido(p)

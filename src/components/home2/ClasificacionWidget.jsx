@@ -101,6 +101,7 @@ export default function ClasificacionWidget() {
         <button type="button" className="h2-boton h2-boton--borde" onClick={() => setCompleta(v => !v)}>
           {completa ? 'Ver resumen' : 'Ver tabla completa'}
         </button>
+        <Link to="/clasificacion" className="h2-boton h2-boton--texto">Clasificación completa →</Link>
         <Link to="/simulador" className="h2-boton h2-boton--texto">Simula el final de liga →</Link>
       </div>
     </div>

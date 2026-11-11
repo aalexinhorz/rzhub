@@ -39,6 +39,7 @@ const Fantasy = lazy(() => import('./pages/Fantasy'))
 const Rival = lazy(() => import('./pages/Rival'))
 const Rivales = lazy(() => import('./pages/Rivales'))
 const Simulador = lazy(() => import('./pages/Simulador'))
+const Clasificacion = lazy(() => import('./pages/Clasificacion'))
 const Zaragozle = lazy(() => import('./pages/Zaragozle'))
 const Pizarra = lazy(() => import('./pages/Pizarra'))
 const GuiaAlcala = lazy(() => import('./pages/GuiaAlcala'))
@@ -103,6 +104,7 @@ export default function App() {
           <Route path="/proximo-partido" element={<ProximoPartido />} />
           <Route path="/home2" element={<Home />} />
           <Route path="/simulador" element={<Simulador />} />
+          <Route path="/clasificacion" element={<Clasificacion />} />
           <Route path="/zaragozle" element={<Zaragozle />} />
           <Route path="/pizarra" element={<Pizarra />} />
           <Route path="/guia-alcala" element={<GuiaAlcala />} />

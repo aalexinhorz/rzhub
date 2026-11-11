@@ -18,6 +18,8 @@ import { loadEnv } from 'vite'
 import { seoPorra, PORRA_OG_IMAGE } from '../src/lib/seoPorra.js'
 import { slugPartido, seoPartido, seoProximoPartido, eventoPartido } from '../src/lib/partidoSeo.js'
 import { proximoDeLista } from '../src/lib/reglasPartido.js'
+import { calcularClasificacion } from '../src/lib/clasificacion.js'
+import { seoCalendario, htmlCalendario, htmlProximoPartido, seoClasificacion, htmlClasificacion, jornadaJugada } from '../src/lib/seoPaginas.js'
 import { calcularVentana, seoNotasPartido, nombresNotas, rankingTemporada, formatoNota, SEO_NOTAS_INDEX } from '../src/lib/notasSeo.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -203,23 +205,33 @@ function posicionJugador(pos) {
 }
 
 async function rutasDinamicas() {
-  const [porraAbierta, noticias, jugadores, rivales, partidos, calendario] = await Promise.all([
+  const [porraAbierta, noticias, jugadores, rivales, partidos, calendario, liga] = await Promise.all([
     consulta('porra_partidos', 'select=rival,sede,kickoff,jornada,competicion&abierto=eq.true&finalizado=eq.false&order=kickoff.asc&limit=1'),
     consulta('noticias', 'select=slug,titulo,meta_titulo,meta_descripcion,excerpt,imagen_url,og_imagen,created_at,updated_at&publicada=eq.true&order=created_at.desc'),
     consulta('players', 'select=id,name,position&is_zaragoza=eq.true'),
     consulta('rivales', 'select=id,nombre,estadio'),
     consulta('partidos', 'select=partido_id,rival,fecha,local,goles_local,goles_visitante,competicion,convocatoria,created_at,votacion_cerrada&order=fecha.desc'),
     consulta('porra_partidos', 'select=rival,sede,kickoff,fecha,jornada,competicion,goles_zaragoza,goles_rival,goleadores,finalizado,tv&kickoff=not.is.null&order=kickoff.asc'),
+    consulta('liga_calendario', 'select=id,jornada,fecha,equipo_local,equipo_visitante,goles_local,goles_visitante&order=jornada.asc'),
   ])
 
   const porra = seoPorra(porraAbierta[0])
   const rutas = [{ path: '/porra', ...porra, image: PORRA_OG_IMAGE, lastmod: HOY, changefreq: 'daily', priority: '1.0' }]
 
   const proximo = proximoDeLista(calendario)
-  if (proximo) {
-    rutas.push({ path: '/proximo-partido', ...seoProximoPartido(proximo), image: PORRA_OG_IMAGE, lastmod: HOY, changefreq: 'daily', priority: '1.0' })
-  }
   const estadioRival = new Map(rivales.map(r => [r.nombre, r.estadio]))
+  if (proximo) {
+    const seo = seoProximoPartido(proximo)
+    rutas.push({ path: '/proximo-partido', ...seo, contenido: htmlProximoPartido(proximo, estadioRival.get(proximo.rival), seo.h1), image: PORRA_OG_IMAGE, lastmod: HOY, changefreq: 'daily', priority: '1.0' })
+  }
+  // Calendario y clasificación: título con el próximo partido / el líder y
+  // el contenido en HTML para quien no ejecuta JavaScript.
+  rutas.push({ path: '/calendario', ...seoCalendario(proximo), contenido: htmlCalendario(calendario), lastmod: HOY, changefreq: 'daily', priority: '0.9' })
+  if (liga.length) {
+    const tabla = calcularClasificacion(liga)
+    const jornada = jornadaJugada(liga)
+    rutas.push({ path: '/clasificacion', ...seoClasificacion(tabla, jornada), contenido: htmlClasificacion(tabla, jornada), lastmod: HOY, changefreq: 'daily', priority: '0.9' })
+  }
   for (const p of calendario) {
     const seo = seoPartido(p)
     const image = p.finalizado ? DEFAULT_OG_IMAGE : PORRA_OG_IMAGE

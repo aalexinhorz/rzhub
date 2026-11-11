@@ -13,6 +13,7 @@ import { calcularClasificacion, zonaDe } from '../lib/clasificacion'
 import {
   ESTADIO_ZARAGOZA, eventoPartido, slugPartido, nombresPartido, competicionCorta, marcadorPartido, seoPartido, seoProximoPartido, resumenPartido, temporadaDe,
 } from '../lib/partidoSeo'
+import { preguntasProximoPartido } from '../lib/seoPaginas'
 import './Partido.css'
 
 const FOTO_DEFECTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
@@ -643,6 +644,17 @@ export default function Partido({ slugForzado, modoProximo = false }) {
         <section className="mc-pie">
           <h1 className="mc-pie__titulo">{modoProximo ? seo.h1 : marcador ? `${local} ${marcador} ${visitante}` : `${local} vs ${visitante}`}</h1>
           <p className="mc-pie__resumen">{resumenPartido(p, { estadio, opinion })}</p>
+          {modoProximo && (
+            // Lo que la gente busca del próximo partido, respondido en texto.
+            <div className="mc-preguntas">
+              {preguntasProximoPartido(p, rival?.estadio).map(x => (
+                <div key={x.pregunta} className="mc-pregunta">
+                  <h2>{x.pregunta}</h2>
+                  <p>{x.respuesta}</p>
+                </div>
+              ))}
+            </div>
+          )}
           <nav className="mc-nav" aria-label="Otros partidos">
             <EnlacePartido p={anterior} sentido="anterior" />
             <EnlacePartido p={siguiente} sentido="siguiente" />

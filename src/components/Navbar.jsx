@@ -14,6 +14,7 @@ const NAV_GROUPS = [
       { to: '/proximo-partido', label: 'Vestuario Blanquillo' },
       { to: '/rivales', label: 'Rivales' },
       { to: '/calendario', label: 'Calendario' },
+      { to: '/clasificacion', label: 'Clasificación' },
       { to: '/on-tour', label: 'On Tour' },
     ],
   },
