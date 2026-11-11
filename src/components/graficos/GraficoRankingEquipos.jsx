@@ -11,7 +11,7 @@ const EQUIPOS = [...new Set(['Real Zaragoza', ...Object.keys(ESCUDOS_CLUBS)])].s
 const FILA = { equipo: '', nombre: '', valor: '' }
 const INICIAL = {
   titulo: 'Racha de victorias', subtitulo: 'Primera Federación · Grupo 2', explicacion: '', credito: '',
-  ajusteFoto: { zoom: 1, dx: 0, dy: 0 }, fotoIzquierda: false, filas: [FILA, FILA, FILA, FILA, FILA, FILA],
+  ajusteFoto: { zoom: 1, dx: 0, dy: 0 }, fotoDerecha: false, filas: [FILA, FILA, FILA, FILA, FILA, FILA],
 }
 
 export default function GraficoRankingEquipos({ logo, fuentesListas }) {
@@ -20,7 +20,7 @@ export default function GraficoRankingEquipos({ logo, fuentesListas }) {
   useGuardarLocal('redaccion_grafico_ranking_equipos', datos)
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
-  const zona = useMemo(() => zonaFotoRecta(datos.fotoIzquierda), [datos.fotoIzquierda])
+  const zona = useMemo(() => zonaFotoRecta(datos.fotoDerecha), [datos.fotoDerecha])
   const { foto, elegirFoto, handlers } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
   const [escudos, setEscudos] = useState([])
 

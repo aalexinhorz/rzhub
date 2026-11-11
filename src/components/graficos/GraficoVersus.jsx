@@ -20,7 +20,7 @@ export default function GraficoVersus({ logo, fuentesListas }) {
   useGuardarLocal('redaccion_grafico_versus', datos)
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
-  const zona = useMemo(() => zonaFotoRecta(datos.fotoIzquierda), [datos.fotoIzquierda])
+  const zona = useMemo(() => zonaFotoRecta(datos.fotoDerecha), [datos.fotoDerecha])
   const { foto, elegirFoto, handlers } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
   const equipos = useEquiposGraficos()
   const seleccion = useMemo(() => [datos.a, datos.b], [datos.a, datos.b])

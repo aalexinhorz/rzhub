@@ -18,7 +18,8 @@ const LIMITE_IZQ = 548 // ancho útil del contenido de la izquierda
 const FIN_LISTA = 1032 // la lista acaba aquí; debajo van el logo y el pie
 // Panel de datos de 600 px; la foto ocupa el resto.
 const PANEL = 600
-export const zonaFotoRecta = fotoIzquierda => ({ x: fotoIzquierda ? 0 : PANEL, y: 0, w: ANCHO - PANEL, h: ALTO })
+// Por defecto la foto va a la izquierda y los datos a la derecha.
+export const zonaFotoRecta = fotoDerecha => ({ x: fotoDerecha ? PANEL : 0, y: 0, w: ANCHO - PANEL, h: ALTO })
 
 function texto(g, t, x, y, fuente, color, alinear = 'left', espaciado = '0px') {
   g.font = fuente
@@ -62,7 +63,7 @@ function partir(g, t, ancho) {
 // coordenadas del panel (con la foto a la izquierda, el panel empieza en
 // ANCHO - PANEL); quien llama hace g.save() antes y g.restore() al acabar.
 function base(g, datos, recursos, opciones = {}) {
-  const desp = datos.fotoIzquierda ? ANCHO - PANEL : 0
+  const desp = datos.fotoDerecha ? 0 : ANCHO - PANEL
   g.save()
   g.textBaseline = 'alphabetic'
   const fondo = g.createLinearGradient(0, 0, 0, ALTO)
@@ -73,7 +74,7 @@ function base(g, datos, recursos, opciones = {}) {
   g.fillRect(0, 0, ANCHO, ALTO)
 
   // Foto con corte recto.
-  const zona = zonaFotoRecta(datos.fotoIzquierda)
+  const zona = zonaFotoRecta(datos.fotoDerecha)
   g.save()
   g.beginPath()
   g.rect(zona.x, zona.y, zona.w, zona.h)
@@ -202,7 +203,7 @@ function tarjeta(g, x, y, w, { foto, escudo, nombre, esZaragoza }, { nombreGrand
 
 /**
  * Ránking de jugadores.
- * datos: { titulo, subtitulo, explicacion, credito, ajusteFoto, fotoIzquierda, filas: [{ nombre, valor }] }
+ * datos: { titulo, subtitulo, explicacion, credito, ajusteFoto, fotoDerecha, filas: [{ nombre, valor }] }
  * recursos: { foto, logo, filas: [{ foto, escudo }] }
  */
 export function dibujarRankingJugadores(g, datos, recursos) {
@@ -229,7 +230,7 @@ export function dibujarRankingJugadores(g, datos, recursos) {
 
 /**
  * Versus entre dos jugadores.
- * datos: { titulo, subtitulo, explicacion, credito, ajusteFoto, fotoIzquierda, a: { nombre, extra }, b: { nombre, extra }, filas: [{ etiqueta, a, b }] }
+ * datos: { titulo, subtitulo, explicacion, credito, ajusteFoto, fotoDerecha, a: { nombre, extra }, b: { nombre, extra }, filas: [{ etiqueta, a, b }] }
  * recursos: { foto, logo, a: { foto, escudo }, b: { foto, escudo } }
  */
 export function dibujarVersus(g, datos, recursos) {
@@ -282,7 +283,7 @@ export function dibujarVersus(g, datos, recursos) {
 
 /**
  * Ránking de equipos.
- * datos: { titulo, subtitulo, explicacion, credito, ajusteFoto, fotoIzquierda, filas: [{ nombre, valor }] }
+ * datos: { titulo, subtitulo, explicacion, credito, ajusteFoto, fotoDerecha, filas: [{ nombre, valor }] }
  * recursos: { foto, logo, filas: [{ escudo }] }
  */
 export function dibujarRankingEquipos(g, datos, recursos) {

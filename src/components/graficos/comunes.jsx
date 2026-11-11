@@ -24,17 +24,17 @@ export function CampoFoto({ foto, elegirFoto, ajuste, setAjuste, credito, onCred
   )
 }
 
-// Foto a la derecha o a la izquierda (plantillas de lista). Al cambiar de
-// lado se recoloca la foto en el centro.
+// Foto a la izquierda (por defecto) o a la derecha (plantillas de lista).
+// Al cambiar de lado se recoloca la foto en el centro.
 export function CampoDisposicion({ datos, cambiar }) {
   return (
     <fieldset>
       <legend>Disposición</legend>
       <label className="graficos-campo">
         Foto
-        <select value={datos.fotoIzquierda ? 'izquierda' : 'derecha'} onChange={e => cambiar({ fotoIzquierda: e.target.value === 'izquierda', ajusteFoto: { zoom: datos.ajusteFoto.zoom, dx: 0, dy: 0 } })}>
-          <option value="derecha">A la derecha (datos a la izquierda)</option>
+        <select value={datos.fotoDerecha ? 'derecha' : 'izquierda'} onChange={e => cambiar({ fotoDerecha: e.target.value === 'derecha', ajusteFoto: { zoom: datos.ajusteFoto.zoom, dx: 0, dy: 0 } })}>
           <option value="izquierda">A la izquierda (datos a la derecha)</option>
+          <option value="derecha">A la derecha (datos a la izquierda)</option>
         </select>
       </label>
     </fieldset>
