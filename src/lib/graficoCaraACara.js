@@ -3,7 +3,7 @@
 // ganó el Real Zaragoza, amarillo si empató y rojo si perdió), el título con
 // los dos escudos, el balance y una foto abajo (sin degradado).
 
-import { encajeEn } from './graficosComun'
+import { encajeEn, siluetaBlanca } from './graficosComun'
 
 export const ANCHO = 1080
 export const ALTO = 1350
@@ -52,28 +52,6 @@ export const LOGOS_COMPETICION = {
   'LaLiga 2': '/escudos/competiciones/laliga-2.svg',
 }
 
-// Silueta en blanco de un logo (son a color y sobre el azul no se ven),
-// rasterizada directamente al tamaño final en píxeles para que no haya que
-// reducirla después (eso es lo que dejaba los bordes en diente de sierra).
-const siluetas = new WeakMap()
-function enBlanco(img, w, h) {
-  const clave = `${w}x${h}`
-  const porTamaño = siluetas.get(img) || new Map()
-  siluetas.set(img, porTamaño)
-  if (!porTamaño.has(clave)) {
-    const c = document.createElement('canvas')
-    c.width = w
-    c.height = h
-    const x = c.getContext('2d')
-    x.imageSmoothingQuality = 'high'
-    x.drawImage(img, 0, 0, w, h)
-    x.globalCompositeOperation = 'source-in'
-    x.fillStyle = '#ffffff'
-    x.fillRect(0, 0, w, h)
-    porTamaño.set(clave, c)
-  }
-  return porTamaño.get(clave)
-}
 
 export const resultadoDe = p => (p.goles_zaragoza > p.goles_rival ? 'g' : p.goles_zaragoza < p.goles_rival ? 'p' : 'e')
 
@@ -164,7 +142,7 @@ export function dibujarCaraACara(g, datos, recursos) {
       g.globalAlpha = 0.92
       // La silueta se hace a los píxeles reales del canvas (que va escalado).
       const k = g.getTransform().a
-      g.drawImage(enBlanco(logoComp, Math.round(lw * k), Math.round(lh * k)), Math.round(x + w / 2 - lw / 2), Math.round(y + 66 - lh / 2), lw, lh)
+      g.drawImage(siluetaBlanca(logoComp, Math.round(lw * k), Math.round(lh * k)), Math.round(x + w / 2 - lw / 2), Math.round(y + 66 - lh / 2), lw, lh)
       g.globalAlpha = 1
     }
     texto(g, marcador, x + w / 2, y + h - 54 - 34, `700 ${Math.min(126, w * 0.86)}px ${TITULOS}`, color, 'center')

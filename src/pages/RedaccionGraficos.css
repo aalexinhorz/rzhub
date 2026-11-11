@@ -219,3 +219,8 @@
   white-space: nowrap;
 }
 .graficos-mini-boton input { display: none; }
+
+/* Convocatoria: casillas de los jugadores agrupadas por posición. */
+.graficos-convocados { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; }
+.graficos-convocados__titulo { flex-basis: 100%; color: var(--rz-yellow); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.graficos-convocados .graficos-check { white-space: normal; }

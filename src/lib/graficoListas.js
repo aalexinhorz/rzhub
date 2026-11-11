@@ -165,7 +165,7 @@ function recortar(g, t, ancho) {
   return t.slice(0, corte) + '…'
 }
 
-function tarjeta(g, x, y, w, { foto, escudo, nombre, esZaragoza }, { nombreGrande = 1 } = {}) {
+export function tarjeta(g, x, y, w, { foto, escudo, nombre, esZaragoza }, { nombreGrande = 1 } = {}) {
   const k = w / TARJETA_W
   const h = (TARJETA_FOTO + TARJETA_NOMBRE) * k
   // nombreGrande > 1: solo la letra del nombre más grande; la barra mide lo mismo que en el Lineup.

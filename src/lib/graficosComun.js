@@ -84,3 +84,26 @@ export function urlParaCanvas(url) {
   } catch { return null }
   return PROXY + encodeURIComponent(url)
 }
+
+// Silueta en blanco de un logo (son a color y sobre el azul no se ven),
+// rasterizada directamente al tamaño final en píxeles para que no haya que
+// reducirla después (eso es lo que dejaba los bordes en diente de sierra).
+const siluetas = new WeakMap()
+export function siluetaBlanca(img, w, h) {
+  const clave = `${w}x${h}`
+  const porTamaño = siluetas.get(img) || new Map()
+  siluetas.set(img, porTamaño)
+  if (!porTamaño.has(clave)) {
+    const c = document.createElement('canvas')
+    c.width = w
+    c.height = h
+    const x = c.getContext('2d')
+    x.imageSmoothingQuality = 'high'
+    x.drawImage(img, 0, 0, w, h)
+    x.globalCompositeOperation = 'source-in'
+    x.fillStyle = '#ffffff'
+    x.fillRect(0, 0, w, h)
+    porTamaño.set(clave, c)
+  }
+  return porTamaño.get(clave)
+}

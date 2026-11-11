@@ -21,9 +21,9 @@ const corto = nombre => {
 
 export async function cargarJugadoresGraficos(equipoId) {
   if (equipoId === ID_ZARAGOZA) {
-    const { data } = await supabase.from('players').select('id, name, short_name, photo').eq('is_zaragoza', true).order('name')
+    const { data } = await supabase.from('players').select('id, name, short_name, photo, position, number').eq('is_zaragoza', true).order('name')
     return (data || []).filter(p => p.photo && !p.photo.includes('fallback'))
-      .map(p => ({ id: `z${p.id}`, nombre: p.name, corto: p.short_name || corto(p.name), foto: p.photo }))
+      .map(p => ({ id: `z${p.id}`, nombre: p.name, corto: p.short_name || corto(p.name), foto: p.photo, posicion: p.position, dorsal: p.number }))
   }
   const { data } = await supabase.from('rivales_plantilla').select('id, nombre, foto_url').eq('rival_id', equipoId).order('nombre')
   return (data || []).map(j => ({ id: `r${j.id}`, nombre: j.nombre, corto: corto(j.nombre), foto: j.foto_url }))

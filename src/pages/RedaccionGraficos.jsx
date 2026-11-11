@@ -11,6 +11,10 @@ import GraficoVersus from '../components/graficos/GraficoVersus'
 import GraficoRankingEquipos from '../components/graficos/GraficoRankingEquipos'
 import GraficoCaraACara from '../components/graficos/GraficoCaraACara'
 import GraficoMercado from '../components/graficos/GraficoMercado'
+import GraficoResultado from '../components/graficos/GraficoResultado'
+import GraficoPrevia from '../components/graficos/GraficoPrevia'
+import GraficoConvocatoria from '../components/graficos/GraficoConvocatoria'
+import GraficoJugador from '../components/graficos/GraficoJugador'
 import { cargarFuentes } from '../lib/graficoStats'
 import { cargarImagen } from '../lib/graficosComun'
 import './RedaccionGraficos.css'
@@ -26,6 +30,10 @@ const PLANTILLAS = [
   { id: 'versus', label: 'Versus', ayuda: 'Dos jugadores frente a frente con sus estadísticas. Sube una foto para la derecha y arrástrala.' },
   { id: 'ranking-equipos', label: 'Ránking equipos', ayuda: 'Hasta 6 equipos con escudo y su número. Sube una foto para la derecha y arrástrala.' },
   { id: 'cara-a-cara', label: 'Cara a cara', ayuda: 'Elige el rival: los últimos resultados salen solos del historial de la web. La foto va abajo.' },
+  { id: 'resultado', label: 'Final de partido', ayuda: 'Elige un partido jugado y se rellena solo (equipos, marcador, goleadores del Real Zaragoza, competición). Sube la foto y arrástrala.' },
+  { id: 'previa', label: 'Previa del rival', ayuda: 'Sale el rival del próximo partido con su zona de la clasificación. Elige sus goleadores, bajas y el jugador a seguir.' },
+  { id: 'convocatoria', label: 'Convocatoria', ayuda: 'Marca los convocados: salen sus tarjetas del Lineup ordenadas por posición. Puedes subir una foto (p. ej. el entrenador).' },
+  { id: 'jugador', label: 'Foto de jugador', ayuda: 'Foto a toda página con la tarjeta del jugador, su nombre en grande y una pastilla (la temporada u otro texto).' },
   { id: 'mercado', label: 'Fichaje / salida', ayuda: 'Para anunciar fichajes y salidas. Elige si llega o se va, los dos clubes y la operación, escribe el nombre y sube la foto (arrástrala para encuadrarla).' },
   { id: 'noticia', label: 'Noticia', ayuda: 'Sube la foto (o rellénalo con una noticia de la web), escribe el titular y descárgalo. Arrastra la foto para encuadrarla.' },
 ]
@@ -82,6 +90,10 @@ export default function RedaccionGraficos() {
       {actual.id === 'ranking-equipos' && <GraficoRankingEquipos logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'cara-a-cara' && <GraficoCaraACara logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'mercado' && <GraficoMercado logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'resultado' && <GraficoResultado logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'previa' && <GraficoPrevia logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'convocatoria' && <GraficoConvocatoria logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'jugador' && <GraficoJugador logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'estadisticas' && <GraficoEstadisticas logo={logo} fuentesListas={fuentesListas} />}
     </div>
   )
