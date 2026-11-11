@@ -17,6 +17,7 @@ import GraficoRival from '../components/graficos/GraficoRival'
 import GraficoPorra from '../components/graficos/GraficoPorra'
 import GraficoPartido from '../components/graficos/GraficoPartido'
 import GraficoOnTour from '../components/graficos/GraficoOnTour'
+import GraficoHorario from '../components/graficos/GraficoHorario'
 import GraficoConvocatoria from '../components/graficos/GraficoConvocatoria'
 import GraficoJugador from '../components/graficos/GraficoJugador'
 import { cargarFuentes } from '../lib/graficoStats'
@@ -36,6 +37,7 @@ const PLANTILLAS = [
   { id: 'cara-a-cara', label: 'Cara a cara', ayuda: 'Elige el rival: los últimos resultados salen solos del historial de la web. La foto va abajo.' },
   { id: 'resultado', label: 'Final de partido', ayuda: 'Elige un partido jugado y se rellena solo (equipos, marcador, goleadores del Real Zaragoza, competición). Sube la foto y arrástrala.' },
   { id: 'partido', grupo: 'previa', label: 'Partido', ayuda: 'El lema entre los dos escudos con los datos del próximo partido. Sube una foto ancha (p. ej. un jugador de cada equipo) y arrástrala.' },
+  { id: 'horario', grupo: 'previa', label: 'Horario', ayuda: 'Horario confirmado del partido: día y hora en grande. Sale solo la versión en casa (estadio y lema) o fuera (km y ruta desde Zaragoza). Sube una foto y arrástrala.' },
   { id: 'rival', grupo: 'previa', label: 'El rival', ayuda: 'Sale el rival del próximo partido con el texto de su ficha y los últimos 5 enfrentamientos. Sube una foto y arrástrala para encuadrarla.' },
   { id: 'porra', grupo: 'previa', label: 'La Porra', ayuda: 'Anuncia la porra del próximo partido. Sube una foto y arrástrala para encuadrarla.' },
   { id: 'on-tour', grupo: 'previa', label: 'On Tour', ayuda: 'Para los desplazamientos: ciudad, estadio, km y mapa salen solos del partido fuera de casa. Sube una foto del estadio.' },
@@ -118,6 +120,7 @@ export default function RedaccionGraficos() {
       {actual.id === 'partido' && <GraficoPartido logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'porra' && <GraficoPorra logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'on-tour' && <GraficoOnTour logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'horario' && <GraficoHorario logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'convocatoria' && <GraficoConvocatoria logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'jugador' && <GraficoJugador logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'estadisticas' && <GraficoEstadisticas logo={logo} fuentesListas={fuentesListas} />}
