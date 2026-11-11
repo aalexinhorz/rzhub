@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ESCUDOS_CLUBS } from '../../lib/escudos'
 import { cargarImagen, contextoGrafico, ESCALA, escudoDe, slug } from '../../lib/graficosComun'
-import { ANCHO, ALTO, ETIQUETA, ZONA_FOTO, dibujarGraficoMercado } from '../../lib/graficoMercado'
+import { ANCHO, ALTO, ZONA_FOTO, dibujarGraficoMercado } from '../../lib/graficoMercado'
 import { leerLocal, useFotoArrastrable, useGuardarLocal } from '../../lib/graficosHooks'
 import AccionesGrafico from './AccionesGrafico'
 import { CampoFoto } from './comunes'
@@ -12,7 +12,7 @@ const ZARAGOZA = 'Real Zaragoza'
 const CLUBES = [...new Set([ZARAGOZA, ...Object.keys(ESCUDOS_CLUBS)])].sort((a, b) => a.localeCompare(b, 'es'))
 const OPERACIONES = ['Fichaje', 'Cesión', 'Traspaso', 'Libre', 'Renovación', 'Fin de contrato', 'Rescisión', 'Vuelve']
 const INICIAL = {
-  tipo: 'alta', de: '', a: ZARAGOZA, operacion: 'Fichaje', detalle: '', etiqueta: '', nombre: '', apellido: '',
+  tipo: 'alta', de: '', a: ZARAGOZA, operacion: 'Fichaje', detalle: '', nombre: '', apellido: '',
   credito: '', ajusteFoto: { zoom: 1, dx: 0, dy: 0 },
 }
 
@@ -133,10 +133,6 @@ export default function GraficoMercado({ logo, fuentesListas }) {
           <label className="graficos-campo">
             Detalle (opcional)
             <input value={datos.detalle} onChange={e => cambiar({ detalle: e.target.value })} placeholder="P. ej. Hasta junio de 2028" />
-          </label>
-          <label className="graficos-campo">
-            Etiqueta
-            <input value={datos.etiqueta} onChange={e => cambiar({ etiqueta: e.target.value })} placeholder={ETIQUETA[datos.tipo]} />
           </label>
         </fieldset>
         <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />

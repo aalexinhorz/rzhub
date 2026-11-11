@@ -3,6 +3,8 @@
 // grande (las *palabras entre asteriscos* van en amarillo), entradilla,
 // fuente y pie con la web. Lo usa /redaccion-graficos.
 
+import { dibujarIcono, iconoDeEtiqueta } from './graficosIconos'
+
 export const ANCHO = 1080
 export const ALTO = 1350
 export const ALTO_FOTO = 760
@@ -50,18 +52,6 @@ function partirTexto(g, texto, anchoMax) {
   return partir(g, String(texto || '').split(/\s+/).filter(Boolean).map(p => ({ p })), anchoMax, g.measureText(' ').width).map(l => l.map(i => i.p).join(' '))
 }
 
-function rayo(g, x, y, h, color) {
-  g.fillStyle = color
-  g.beginPath()
-  g.moveTo(x + h * 0.55, y)
-  g.lineTo(x + h * 0.08, y + h * 0.58)
-  g.lineTo(x + h * 0.4, y + h * 0.58)
-  g.lineTo(x + h * 0.22, y + h)
-  g.lineTo(x + h * 0.72, y + h * 0.38)
-  g.lineTo(x + h * 0.42, y + h * 0.38)
-  g.closePath()
-  g.fill()
-}
 
 /**
  * datos: { etiqueta, titular, entradilla, fuente, ajusteFoto: { zoom, dx, dy } }
@@ -116,7 +106,8 @@ export function dibujarGraficoNoticia(g, datos, recursos) {
   g.beginPath()
   g.roundRect(M, yEtiqueta, anchoEtiqueta, 58, 10)
   g.fill()
-  rayo(g, M + 24, yEtiqueta + 14, 30, AZUL_OSCURO)
+  // Cada etiqueta con su icono (Mercado, Oficial, Rumor…).
+  dibujarIcono(g, iconoDeEtiqueta(datos.etiqueta), M + 20, yEtiqueta + 13, 32, AZUL_OSCURO, 2.4)
   g.fillStyle = AZUL_OSCURO
   g.fillText(etiqueta, M + 66, yEtiqueta + 39)
   if ('letterSpacing' in g) g.letterSpacing = '0px'

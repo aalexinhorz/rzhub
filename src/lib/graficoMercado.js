@@ -18,7 +18,6 @@ const AMARILLO = '#ffd500'
 const TITULOS = "Humane, 'Arial Narrow', sans-serif"
 const TEXTO = 'Archivo, sans-serif'
 
-export const ETIQUETA = { alta: 'Llega', baja: 'Se va' }
 
 function texto(g, t, x, y, fuente, color, alinear = 'left', espaciado = '0px') {
   g.font = fuente
@@ -66,7 +65,7 @@ function club(g, escudo, nombre, rotulo, yCentro) {
 }
 
 /**
- * datos: { tipo: 'alta' | 'baja', de, a, operacion, detalle, etiqueta, nombre, apellido, credito, ajusteFoto }
+ * datos: { de, a, operacion, detalle, nombre, apellido, credito, ajusteFoto }
  * recursos: { foto, logo, escudoDe, escudoA }
  */
 export function dibujarGraficoMercado(g, datos, recursos) {
@@ -75,7 +74,6 @@ export function dibujarGraficoMercado(g, datos, recursos) {
   g.save()
   g.clearRect(0, 0, ANCHO, ALTO)
   g.textBaseline = 'alphabetic'
-  const alta = datos.tipo !== 'baja'
 
   // ── Foto ──
   g.fillStyle = '#002261'
@@ -131,19 +129,15 @@ export function dibujarGraficoMercado(g, datos, recursos) {
     g.drawImage(logo, (PANEL_X + ANCHO) / 2 - w / 2, 62, w, w * logo.naturalHeight / logo.naturalWidth)
   }
 
-  // Etiqueta ("LLEGA" / "SE VA") y operación en grande.
-  const etiqueta = (datos.etiqueta || ETIQUETA[alta ? 'alta' : 'baja']).toUpperCase()
-  g.fillStyle = AMARILLO
-  g.fillRect(X, 228, 26, 6)
-  texto(g, etiqueta, X + 38, 236, `700 19px ${TEXTO}`, '#ffffff', 'left', '1.5px')
+  // Operación en grande.
   const operacion = (datos.operacion || '').toUpperCase()
-  let yDespues = 270
+  let yDespues = 230
   if (operacion) {
     const t = ajustar(g, operacion, fuenteTitulo, 212, ANCHO_PANEL, 70)
     g.font = fuenteTitulo(t)
     const cap = g.measureText(operacion).actualBoundingBoxAscent
-    texto(g, operacion, X - 4, 268 + cap, fuenteTitulo(t), AMARILLO)
-    yDespues = 268 + cap
+    texto(g, operacion, X - 4, 228 + cap, fuenteTitulo(t), AMARILLO)
+    yDespues = 228 + cap
   }
   if (datos.detalle) {
     g.font = `600 25px ${TEXTO}`

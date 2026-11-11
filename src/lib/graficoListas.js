@@ -2,7 +2,7 @@
 // jugadores, versus entre dos jugadores y ránking de equipos. Comparten la
 // base, como la plantilla de estadísticas: panel liso con los datos y la
 // foto entera al otro lado con corte recto (a la derecha o a la izquierda),
-// y pie con etiqueta de sección y explicación.
+// y la explicación abajo.
 
 import { encajeEn } from './graficosComun'
 
@@ -61,7 +61,7 @@ function partir(g, t, ancho) {
 // Deja el contexto desplazado para que el contenido se dibuje siempre en
 // coordenadas del panel (con la foto a la izquierda, el panel empieza en
 // ANCHO - PANEL); quien llama hace g.save() antes y g.restore() al acabar.
-function base(g, datos, recursos, etiquetaSeccion, opciones = {}) {
+function base(g, datos, recursos, opciones = {}) {
   const desp = datos.fotoIzquierda ? ANCHO - PANEL : 0
   g.save()
   g.textBaseline = 'alphabetic'
@@ -127,16 +127,12 @@ function base(g, datos, recursos, etiquetaSeccion, opciones = {}) {
     g.drawImage(logo, centro - w / 2, 1094 - h / 2, w, h)
   }
 
-  // Pie: etiqueta de sección (sin línea) y la explicación centrada.
-  const yPie = 1166
-  g.fillStyle = AMARILLO
-  g.fillRect(M, yPie - 9, 26, 6)
-  texto(g, etiquetaSeccion, M + 40, yPie, `800 19px ${TEXTO}`, '#ffffff', 'left', '1.5px')
+  // Pie: la explicación centrada.
   if (datos.explicacion) {
     g.font = `500 25px ${TEXTO}`
     g.fillStyle = 'rgba(255,255,255,0.9)'
     g.textAlign = 'center'
-    partir(g, datos.explicacion, LIMITE_IZQ - M).slice(0, 2).forEach((l, i) => g.fillText(l, centro, yPie + 66 + i * 34))
+    partir(g, datos.explicacion, LIMITE_IZQ - M).slice(0, 2).forEach((l, i) => g.fillText(l, centro, 1196 + i * 34))
   }
   texto(g, 'rzhub.es', M, ALTO - 34, `800 19px ${TEXTO}`, AMARILLO, 'left', '1px')
   g.restore()
@@ -213,7 +209,7 @@ export function dibujarRankingJugadores(g, datos, recursos) {
   g.imageSmoothingEnabled = true
   g.imageSmoothingQuality = 'high' // logos y fotos reducidos sin dientes de sierra
   g.save()
-  base(g, datos, recursos, 'RÁNKING')
+  base(g, datos, recursos)
   const filas = (datos.filas || []).filter(f => f.nombre || f.valor).slice(0, 5)
   const y0 = 326
   const alto = Math.min(176, (FIN_LISTA - y0) / filas.length)
@@ -240,7 +236,7 @@ export function dibujarVersus(g, datos, recursos) {
   g.imageSmoothingEnabled = true
   g.imageSmoothingQuality = 'high' // logos y fotos reducidos sin dientes de sierra
   g.save()
-  base(g, { ...datos, titulo: datos.titulo || '' }, recursos, 'VERSUS', { logoAbajo: false })
+  base(g, { ...datos, titulo: datos.titulo || '' }, recursos, { logoAbajo: false })
   // Tarjetas + filas forman un bloque centrado en vertical entre la
   // cabecera y el pie (con pocas filas no queda un hueco abajo).
   const filas = (datos.filas || []).filter(f => f.etiqueta || f.a || f.b).slice(0, 5)
@@ -293,7 +289,7 @@ export function dibujarRankingEquipos(g, datos, recursos) {
   g.imageSmoothingEnabled = true
   g.imageSmoothingQuality = 'high' // logos y fotos reducidos sin dientes de sierra
   g.save()
-  base(g, datos, recursos, 'RÁNKING')
+  base(g, datos, recursos)
   const filas = (datos.filas || []).filter(f => f.nombre || f.valor).slice(0, 6)
   const y0 = 330
   const alto = Math.min(130, (FIN_LISTA - y0) / filas.length)
