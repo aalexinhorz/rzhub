@@ -16,7 +16,7 @@ const VACIO = { jugadorId: '', nombre: '' }
 const INICIAL = {
   rivalId: '', antetitulo: '', info: '',
   goleadores: [{ ...VACIO, goles: '' }, { ...VACIO, goles: '' }, { ...VACIO, goles: '' }],
-  bajas: [VACIO, VACIO, VACIO, VACIO], aSeguir: VACIO, credito: '', ajusteFoto: { zoom: 1, dx: 0, dy: 0 }, fotoDerecha: false,
+  bajas: [VACIO, VACIO, VACIO, VACIO], aSeguir: VACIO, pastillaSeguir: 'A seguir', credito: '', ajusteFoto: { zoom: 1, dx: 0, dy: 0 }, fotoDerecha: false,
 }
 const sinComillas = n => (n || '').replace(/["“”]/g, '').trim()
 const fotoDe = j => (j?.foto ? cargarImagen(urlParaCanvas(j.foto), { cors: true }) : Promise.resolve(null))
@@ -152,6 +152,7 @@ export default function GraficoPrevia({ logo }) { // al cargar las fuentes cambi
         <fieldset>
           <legend>Jugador a seguir</legend>
           <SelectJugador etiqueta="Jugador" valor={datos.aSeguir} jugadores={jugadores} onChange={c => setDatos(d => ({ ...d, aSeguir: { ...d.aSeguir, ...c } }))} />
+          <label className="graficos-campo">Pastilla (encima del nombre)<input value={datos.pastillaSeguir ?? 'A seguir'} onChange={e => cambiar({ pastillaSeguir: e.target.value })} placeholder="Vacía, no sale" /></label>
           <p className="graficos-nota">Va a toda altura: sube una foto buena (la de la base de datos es pequeña) y arrástrala para encuadrarla.</p>
         </fieldset>
         <CampoDisposicion datos={datos} cambiar={cambiar} />

@@ -45,7 +45,7 @@ function recortar(g, t, ancho) {
 
 /**
  * datos: { rival, antetitulo, info, fotoDerecha, equipo: { pos, pts, gf, gc, forma: ['V','E','D'] } | null,
- *          goleadores: [{ nombre, goles }], bajas: [{ nombre }], aSeguir, credito, ajusteFoto }
+ *          goleadores: [{ nombre, goles }], bajas: [{ nombre }], aSeguir, pastillaSeguir, credito, ajusteFoto }
  * recursos: { logo, escudoRival, fotosGoleadores: [img], bajas: [{ foto, escudo }], fotoSeguir (subida), fotoSeguirBd (la de la base de datos) }
  */
 export function dibujarGraficoPrevia(g, datos, recursos) {
@@ -109,15 +109,19 @@ export function dibujarGraficoPrevia(g, datos, recursos) {
     g.font = `700 ${t}px ${TITULOS}`
     const alto = g.measureText(aSeguir).actualBoundingBoxAscent
     const yEtiqueta = ALTO - 62 - alto - 22
-    g.font = `700 20px ${TEXTO}`
-    if ('letterSpacing' in g) g.letterSpacing = '2.5px'
-    const w = g.measureText('A SEGUIR').width + 32
-    if ('letterSpacing' in g) g.letterSpacing = '0px'
-    g.fillStyle = AMARILLO
-    g.beginPath()
-    g.roundRect(zona.x + M, yEtiqueta - 30, w, 42, 21)
-    g.fill()
-    texto(g, 'A SEGUIR', zona.x + M + w / 2 + 1, yEtiqueta - 1, `700 20px ${TEXTO}`, AZUL_OSCURO, 'center', '2.5px')
+    // Pastilla editable ("A seguir" por defecto; vacía, no sale).
+    const pastilla = (datos.pastillaSeguir ?? 'A seguir').toUpperCase()
+    if (pastilla) {
+      g.font = `700 20px ${TEXTO}`
+      if ('letterSpacing' in g) g.letterSpacing = '2.5px'
+      const w = Math.min(g.measureText(pastilla).width + 32, zona.w - 2 * M)
+      if ('letterSpacing' in g) g.letterSpacing = '0px'
+      g.fillStyle = AMARILLO
+      g.beginPath()
+      g.roundRect(zona.x + M, yEtiqueta - 30, w, 42, 21)
+      g.fill()
+      texto(g, pastilla, zona.x + M + w / 2 + 1, yEtiqueta - 1, `700 20px ${TEXTO}`, AZUL_OSCURO, 'center', '2.5px')
+    }
   }
 
   // ── Panel ──
