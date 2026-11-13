@@ -18,7 +18,7 @@ export default function GraficoJugador({ logo, fuentesListas }) {
   useGuardarLocal('redaccion_grafico_jugador', datos)
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
   const equipos = useEquiposGraficos()
   const jugadores = useJugadores(datos.carta.equipoId) || []
   const [recCarta] = useRecursosJugadores([datos.carta], equipos)
@@ -64,7 +64,7 @@ export default function GraficoJugador({ logo, fuentesListas }) {
             <label className="graficos-campo">Pastilla (debajo)<input value={datos.pastilla} onChange={e => cambiar({ pastilla: e.target.value })} placeholder="2026/27" /></label>
           </div>
         </fieldset>
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
       </form>
     </div>
   )

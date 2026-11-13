@@ -47,7 +47,7 @@ export default function GraficoPrevia({ logo }) { // al cargar las fuentes cambi
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
   const zona = useMemo(() => zonaFoto(datos.fotoDerecha), [datos.fotoDerecha])
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
   const rivales = useEquiposGraficos().filter(e => e.id !== 'real-zaragoza')
   const rival = rivales.find(r => r.id === datos.rivalId) || null
   const jugadores = useJugadores(datos.rivalId || null) || []
@@ -156,7 +156,7 @@ export default function GraficoPrevia({ logo }) { // al cargar las fuentes cambi
           <p className="graficos-nota">Va a toda altura: sube una foto buena (la de la base de datos es pequeña) y arrástrala para encuadrarla.</p>
         </fieldset>
         <CampoDisposicion datos={datos} cambiar={cambiar} />
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
       </form>
     </div>
   )

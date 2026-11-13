@@ -229,3 +229,22 @@
 .graficos-convocados { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; }
 .graficos-convocados__titulo { flex-basis: 100%; color: var(--rz-yellow); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 .graficos-convocados .graficos-check { white-space: normal; }
+
+/* Retoque de la foto (tipo Camera Raw). */
+.graficos-retoque { margin-top: 12px; border-top: 1px solid var(--rz-border); padding-top: 10px; }
+.graficos-retoque summary { cursor: pointer; color: var(--rz-yellow); font-size: 13px; font-weight: var(--weight-bold); }
+.graficos-retoque-grupo { display: grid; gap: 4px; margin-top: 12px; }
+.graficos-retoque-titulo { color: var(--rz-text-secondary); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.graficos-retoque-fila { display: grid; grid-template-columns: 96px 1fr 44px; align-items: center; gap: 10px; font-size: 13px; color: var(--rz-text-primary); }
+.graficos-retoque-fila input[type='range'] { width: 100%; min-width: 0; margin: 0; accent-color: var(--rz-yellow); }
+.graficos-retoque-fila output { text-align: right; font-variant-numeric: tabular-nums; color: var(--rz-text-secondary); }
+.graficos-retoque-fila--temperatura input[type='range'],
+.graficos-retoque-fila--tinte input[type='range'] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; }
+.graficos-retoque-fila--temperatura input[type='range'] { background: linear-gradient(90deg, #3d7bff, #e8e8e8, #ffc23d); }
+.graficos-retoque-fila--tinte input[type='range'] { background: linear-gradient(90deg, #3ec46d, #e8e8e8, #d94fd1); }
+.graficos-retoque-fila--temperatura input[type='range']::-webkit-slider-thumb,
+.graficos-retoque-fila--tinte input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 2px solid #0a1a33; }
+.graficos-retoque-fila--temperatura input[type='range']::-moz-range-thumb,
+.graficos-retoque-fila--tinte input[type='range']::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 2px solid #0a1a33; }
+.graficos-retoque-acciones { display: flex; gap: 8px; margin-top: 12px; }
+.graficos-retoque-acciones .graficos-mini-boton:disabled { opacity: 0.4; cursor: default; }

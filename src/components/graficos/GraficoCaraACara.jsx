@@ -41,7 +41,7 @@ export default function GraficoCaraACara({ logo, fuentesListas }) {
   const todos = useMemo(() => (historial.id === datos.rivalId ? historial.partidos : []), [historial, datos.rivalId])
   const partidos = useMemo(() => todos.filter(p => datos.sede === 'todos' || p.sede === datos.sede).slice(0, datos.cuantos), [todos, datos.sede, datos.cuantos])
   const zona = useMemo(() => zonaFoto(partidos.length), [partidos.length])
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
   const enfrentamiento = datos.zaragozaDerecha ? `${rival?.nombre} – Real Zaragoza` : `Real Zaragoza – ${rival?.nombre}`
   const subtitulo = datos.subtitulo || (rival ? `Últimos ${partidos.length} ${enfrentamiento}${SEDES[datos.sede]}` : '')
   const recursos = useMemo(() => ({ foto, logo, escudoZaragoza: escudos.zaragoza, escudoRival: escudos.otro, logosCompeticion }), [foto, logo, escudos, logosCompeticion])
@@ -108,7 +108,7 @@ export default function GraficoCaraACara({ logo, fuentesListas }) {
             <input value={datos.subtitulo} onChange={e => cambiar({ subtitulo: e.target.value })} placeholder={subtitulo} />
           </label>
         </fieldset>
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
       </form>
     </div>
   )

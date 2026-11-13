@@ -21,7 +21,7 @@ export default function GraficoVersus({ logo, fuentesListas }) {
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
   const zona = useMemo(() => zonaFotoRecta(datos.fotoDerecha), [datos.fotoDerecha])
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
   const equipos = useEquiposGraficos()
   const seleccion = useMemo(() => [datos.a, datos.b], [datos.a, datos.b])
   const [recA, recB] = useRecursosJugadores(seleccion, equipos)
@@ -80,7 +80,7 @@ export default function GraficoVersus({ logo, fuentesListas }) {
           <p className="graficos-nota">Las filas vacías no salen.</p>
         </fieldset>
         <CamposTexto datos={datos} cambiar={cambiar} ayudaExplicacion="Jaume Jardí vs Edu Espiau en Liga 26/27" />
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
         <CampoDisposicion datos={datos} cambiar={cambiar} />
       </form>
     </div>

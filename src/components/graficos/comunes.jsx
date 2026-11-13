@@ -1,8 +1,44 @@
 import { useJugadores } from '../../lib/graficosHooks'
+import { AJUSTES_RETOQUE, esNeutro } from '../../lib/retoqueFoto'
 
 // Campos de formulario compartidos por las plantillas de /redaccion-graficos.
 
-export function CampoFoto({ foto, elegirFoto, ajuste, setAjuste, credito, onCredito }) {
+// Ajustes tipo Camera Raw de la foto subida. Doble clic en un deslizador lo
+// devuelve a 0; "Ver original" (mantener pulsado) enseña la foto sin tocar.
+function Retoque({ retoque }) {
+  const { valores, cambiar, restablecer, setVerOriginal } = retoque
+  const tocado = !esNeutro(valores)
+  const soltar = () => setVerOriginal(false)
+  return (
+    <details className="graficos-retoque" open={tocado || undefined}>
+      <summary>Retocar foto{tocado ? ' · con ajustes' : ''}</summary>
+      {AJUSTES_RETOQUE.map(({ grupo, ajustes }) => (
+        <div key={grupo} className="graficos-retoque-grupo">
+          <span className="graficos-retoque-titulo">{grupo}</span>
+          {ajustes.map(({ clave, nombre, min = -100, max = 100, paso = 1 }) => {
+            const v = valores[clave]
+            return (
+              <label key={clave} className={`graficos-retoque-fila graficos-retoque-fila--${clave}`} onDoubleClick={() => cambiar(clave, 0)} title="Doble clic: volver a 0">
+                <span>{nombre}</span>
+                <input type="range" min={min} max={max} step={paso} value={v} onChange={e => cambiar(clave, Number(e.target.value))} />
+                <output>{v > 0 ? '+' : ''}{paso < 1 ? v.toFixed(2) : v}</output>
+              </label>
+            )
+          })}
+        </div>
+      ))}
+      <div className="graficos-retoque-acciones">
+        <button type="button" className="graficos-mini-boton" disabled={!tocado}
+          onPointerDown={() => setVerOriginal(true)} onPointerUp={soltar} onPointerLeave={soltar} onPointerCancel={soltar}>
+          Ver original
+        </button>
+        <button type="button" className="graficos-mini-boton" disabled={!tocado} onClick={restablecer}>Restablecer</button>
+      </div>
+    </details>
+  )
+}
+
+export function CampoFoto({ foto, retoque, elegirFoto, ajuste, setAjuste, credito, onCredito }) {
   return (
     <fieldset>
       <legend>Foto</legend>
@@ -16,6 +52,7 @@ export function CampoFoto({ foto, elegirFoto, ajuste, setAjuste, credito, onCred
           <input type="range" min="1" max="3" step="0.01" value={ajuste.zoom} onChange={e => setAjuste({ ...ajuste, zoom: Number(e.target.value) })} />
         </label>
       )}
+      {foto && retoque && <Retoque retoque={retoque} />}
       <label className="graficos-campo">
         Crédito de la foto
         <input value={credito} onChange={e => onCredito(e.target.value)} placeholder="Foto: Nombre Apellido" />

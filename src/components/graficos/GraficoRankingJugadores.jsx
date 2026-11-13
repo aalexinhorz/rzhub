@@ -19,7 +19,7 @@ export default function GraficoRankingJugadores({ logo, fuentesListas }) {
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
   const zona = useMemo(() => zonaFotoRecta(datos.fotoDerecha), [datos.fotoDerecha])
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
   const equipos = useEquiposGraficos()
   const filasRec = useRecursosJugadores(datos.filas, equipos)
   const { fotos: manuales, subir, quitar } = useFotosManuales()
@@ -59,7 +59,7 @@ export default function GraficoRankingJugadores({ logo, fuentesListas }) {
           ))}
           <p className="graficos-nota">Los que dejes sin nombre ni número no salen. Si la foto de un jugador no carga (FotMob a veces la bloquea), sale su escudo: sube una a mano con "Subir foto".</p>
         </fieldset>
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
         <CampoDisposicion datos={datos} cambiar={cambiar} />
       </form>
     </div>

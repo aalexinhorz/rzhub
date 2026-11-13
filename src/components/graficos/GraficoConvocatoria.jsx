@@ -19,7 +19,7 @@ export default function GraficoConvocatoria({ logo, fuentesListas }) {
   useGuardarLocal('redaccion_grafico_convocatoria', datos)
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
   const plantilla = useJugadores('real-zaragoza')
   const rivales = useEquiposGraficos().filter(e => e.id !== 'real-zaragoza')
   const rival = rivales.find(r => r.id === datos.rivalId) || null
@@ -110,7 +110,7 @@ export default function GraficoConvocatoria({ logo, fuentesListas }) {
             )
           })}
         </fieldset>
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
         <p className="graficos-nota">La foto (p. ej. el entrenador) va a la derecha; si no subes ninguna, las tarjetas ocupan todo el ancho.</p>
       </form>
     </div>

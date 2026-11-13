@@ -21,7 +21,7 @@ export default function GraficoRankingEquipos({ logo, fuentesListas }) {
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
   const zona = useMemo(() => zonaFotoRecta(datos.fotoDerecha), [datos.fotoDerecha])
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(zona, datos.ajusteFoto, setAjuste)
   const [escudos, setEscudos] = useState([])
 
   const clave = datos.filas.map(f => f.equipo).join('|')
@@ -69,7 +69,7 @@ export default function GraficoRankingEquipos({ logo, fuentesListas }) {
           ))}
           <p className="graficos-nota">Los que dejes vacíos no salen. El nombre se puede acortar (p. ej. "Villarreal B").</p>
         </fieldset>
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
         <CampoDisposicion datos={datos} cambiar={cambiar} />
       </form>
     </div>

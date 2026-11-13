@@ -35,7 +35,7 @@ export default function GraficoResultado({ logo, fuentesListas }) {
   useGuardarLocal('redaccion_grafico_resultado', datos)
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
   const [partidos, setPartidos] = useState([])
   const [estadios, setEstadios] = useState({})
   const [imgs, setImgs] = useState({})
@@ -138,7 +138,7 @@ export default function GraficoResultado({ logo, fuentesListas }) {
           <label className="graficos-campo">Competición<input value={datos.competicion} onChange={e => cambiar({ competicion: e.target.value })} /></label>
           <label className="graficos-campo">Fecha y estadio<input value={datos.detalle} onChange={e => cambiar({ detalle: e.target.value })} /></label>
         </fieldset>
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
       </form>
     </div>
   )

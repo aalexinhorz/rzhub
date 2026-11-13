@@ -17,7 +17,7 @@ export default function GraficoPartido({ logo }) { // al cargar las fuentes camb
   useGuardarLocal('redaccion_grafico_partido', datos)
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
   const partidos = useProximosPartidos()
   const partido = partidos.find(p => p.id === datos.partidoId) || partidos[0] || null
   const imgs = useImagenesPartido(partido?.local, partido?.visitante, partido?.competicion)
@@ -64,7 +64,7 @@ export default function GraficoPartido({ logo }) { // al cargar las fuentes camb
           {campo('linea3', 'Jornada y hora')}
           <p className="graficos-nota">Todo sale solo del partido; escribe en un campo para cambiar su texto.</p>
         </fieldset>
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
         <p className="graficos-nota">La foto va ancha bajo los datos: por ejemplo, un jugador de cada equipo montados juntos.</p>
       </form>
     </div>

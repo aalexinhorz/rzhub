@@ -18,7 +18,7 @@ export default function GraficoOnTour({ logo }) { // al cargar las fuentes cambi
   useGuardarLocal('redaccion_grafico_on_tour', datos)
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
   const partidos = useProximosPartidos().filter(p => !p.zaragozaLocal)
   const partido = partidos.find(p => p.id === datos.partidoId) || partidos[0] || null
   const imgs = useImagenesPartido(partido?.rival, null, partido?.competicion)
@@ -65,7 +65,7 @@ export default function GraficoOnTour({ logo }) { // al cargar las fuentes cambi
               : 'Este partido no está entre los desplazamientos de liga de la página On Tour: no salen km ni mapa.'}
           </p>
         </fieldset>
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
         <p className="graficos-nota">Sube una foto del estadio: va arriba y se funde con el azul.</p>
       </form>
     </div>

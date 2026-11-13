@@ -23,7 +23,7 @@ export default function GraficoHorario({ logo }) { // al cargar las fuentes camb
   useGuardarLocal('redaccion_grafico_horario', datos)
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
-  const { foto, elegirFoto, handlers } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
+  const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
   const partidos = useProximosPartidos()
   const partido = partidos.find(p => p.id === datos.partidoId) || partidos[0] || null
   const imgs = useImagenesPartido(partido?.local, partido?.visitante, partido?.competicion)
@@ -102,7 +102,7 @@ export default function GraficoHorario({ logo }) { // al cargar las fuentes camb
           <label className="graficos-campo">Pastilla de arriba<input value={datos.titulo} onChange={e => cambiar({ titulo: e.target.value })} /></label>
           {enCasa && <label className="graficos-campo">Lema (en casa)<input value={datos.lema} onChange={e => cambiar({ lema: e.target.value })} placeholder="Vacío, no sale" /></label>}
         </fieldset>
-        <CampoFoto foto={foto} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
         <p className="graficos-nota">La foto va arriba y se funde con el azul (el estadio, la afición o un jugador).</p>
       </form>
     </div>
