@@ -11,6 +11,35 @@ const PUNTOS_MIN = 100
 const TIEMPO_MAX_S = 15 // a partir de aquí, si aciertas, siempre da el mínimo
 const NUMEROS = Array.from({ length: 10 }, (_, i) => i)
 
+// Etapas del juego: la de Primera (2009-10 a 2012-13), la de Segunda
+// (desde la 2013-14) o todo junto. Cada una tiene su propio ranking.
+const ETAPAS = [
+  { id: 'todo', nombre: 'Todo', años: '2009 – 2026' },
+  { id: 'primera', nombre: 'Primera', años: '2009 – 2013' },
+  { id: 'segunda', nombre: 'Segunda', años: '2013 – 2026' },
+]
+const CLAVE_ETAPA = 'adivina_etapa'
+function leerEtapa() {
+  try {
+    const e = localStorage.getItem(CLAVE_ETAPA)
+    return ETAPAS.some(x => x.id === e) ? e : 'todo'
+  } catch { return 'todo' }
+}
+
+function SelectorEtapa({ etapa, onChange, etiqueta }) {
+  return (
+    <div className="adivina-etapas" role="radiogroup" aria-label={etiqueta}>
+      {ETAPAS.map(e => (
+        <button key={e.id} type="button" role="radio" aria-checked={etapa === e.id}
+          className={`adivina-etapa${etapa === e.id ? ' is-activa' : ''}`} onClick={() => onChange(e.id)}>
+          <span className="adivina-etapa__nombre">{e.nombre}</span>
+          <span className="adivina-etapa__años">{e.años}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function calcularPuntos(segundos) {
   const t = Math.min(segundos, TIEMPO_MAX_S)
   return Math.round(PUNTOS_MAX - (PUNTOS_MAX - PUNTOS_MIN) * (t / TIEMPO_MAX_S))
@@ -29,12 +58,13 @@ function EscudoEquipo({ nombre }) {
   )
 }
 
-function RankingView({ ranking, user }) {
+function RankingView({ ranking, user, etapa, onEtapa }) {
   return (
     <div style={{ width: '100%' }}>
       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', textAlign: 'center', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '1px' }}>
         Clasificación
       </h3>
+      <SelectorEtapa etapa={etapa} onChange={onEtapa} etiqueta="Ranking de la etapa" />
       <div className="adivina-ranking__header">
         <span>POS</span><span>USUARIO</span><span style={{ textAlign: 'right' }}>PUNTOS</span>
       </div>
@@ -69,6 +99,9 @@ export default function AdivinaResultado() {
   const [mostrarRanking, setMostrarRanking] = useState(false)
   const [ranking, setRanking] = useState([])
   const [cargando, setCargando] = useState(false)
+  const [etapa, setEtapa] = useState(leerEtapa)
+  const [etapaRanking, setEtapaRanking] = useState(etapa)
+  const [etapaPartida, setEtapaPartida] = useState(etapa)
 
   const [rondas, setRondas] = useState([])
   const [rondaActual, setRondaActual] = useState(0)
@@ -82,8 +115,13 @@ export default function AdivinaResultado() {
 
   const inicioRef = useRef(0)
   const guardadoRef = useRef(false)
+  const pedidoRankingRef = useRef(0)
 
-  useEffect(() => { cargarRanking() }, [])
+  function elegirEtapa(e) {
+    setEtapa(e)
+    setEtapaRanking(e)
+    try { localStorage.setItem(CLAVE_ETAPA, e) } catch { /* modo privado */ }
+  }
 
   // Cronómetro visible mientras no se haya respondido la ronda.
   useEffect(() => {
@@ -138,19 +176,25 @@ export default function AdivinaResultado() {
   useEffect(() => {
     if (fase !== 'fin' || !user || guardadoRef.current) return
     guardadoRef.current = true
-    supabase.from('adivina_puntuaciones').insert({ user_id: user.id, puntuacion: puntuacionTotal }).then(() => {
+    supabase.from('adivina_puntuaciones').insert({ user_id: user.id, puntuacion: puntuacionTotal, etapa: etapaPartida }).then(() => {
       setGuardado(true)
-      cargarRanking()
+      if (etapaRanking === etapaPartida) cargarRanking(etapaPartida)
+      else setEtapaRanking(etapaPartida)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fase, user])
 
-  async function cargarRanking() {
+  // Si cambias de pestaña del ranking antes de que llegue la anterior, se
+  // descarta la respuesta vieja.
+  async function cargarRanking(etapaElegida) {
+    const pedido = ++pedidoRankingRef.current
     const { data: puntuaciones } = await supabase
       .from('adivina_puntuaciones')
       .select('*')
+      .eq('etapa', etapaElegida)
       .order('puntuacion', { ascending: false })
       .limit(200)
+    if (pedido !== pedidoRankingRef.current) return
     if (!puntuaciones) { setRanking([]); return }
 
     const mejorPorUsuario = new Map()
@@ -164,15 +208,19 @@ export default function AdivinaResultado() {
     const perfilesMap = {}
     perfiles?.forEach(p => { perfilesMap[p.id] = p })
 
+    if (pedido !== pedidoRankingRef.current) return
     setRanking(top.map(p => ({ ...p, profiles: perfilesMap[p.user_id] || null })))
   }
 
+  useEffect(() => { cargarRanking(etapaRanking) }, [etapaRanking])
+
   async function iniciarJuego() {
     setCargando(true)
-    const { data } = await supabase.rpc('adivina_partidos_aleatorios', { cantidad: NUM_RONDAS })
+    const { data } = await supabase.rpc('adivina_partidos_etapa', { cantidad: NUM_RONDAS, etapa })
     setCargando(false)
     if (!data || data.length === 0) return
 
+    setEtapaPartida(etapa)
     setRondas(data)
     setRondaActual(0)
     setHistorial([])
@@ -223,7 +271,7 @@ export default function AdivinaResultado() {
               {!mostrarRanking ? (
                 <>
                   <p style={{ textAlign: 'center', color: 'var(--rz-text-secondary)', fontSize: 'var(--text-sm)', margin: 0, lineHeight: 1.5 }}>
-                    Van saliendo enfrentamientos reales del Real Zaragoza de distintas temporadas. Elige el marcador con los números del 0 al 9: cuanto más rápido aciertes, más puntos ganas.
+                    Van saliendo enfrentamientos reales del Real Zaragoza de distintas temporadas: los de la etapa en Primera, los de Segunda o todos juntos. Elige el marcador con los números del 0 al 9: cuanto más rápido aciertes, más puntos ganas.
                   </p>
 
                   <div className="adivina-preview">
@@ -240,6 +288,11 @@ export default function AdivinaResultado() {
                       </span>
                       <span className="adivina-vs__nombre" style={{ color: 'var(--rz-text-muted)' }}>Equipo rival</span>
                     </div>
+                  </div>
+
+                  <div className="adivina-etapas-bloque">
+                    <span className="adivina-etapas-bloque__label">¿Con qué etapa juegas?</span>
+                    <SelectorEtapa etapa={etapa} onChange={elegirEtapa} etiqueta="Etapa" />
                   </div>
 
                   <button className="rz-btn rz-btn--primary rz-btn--lg" onClick={iniciarJuego} disabled={cargando}>
@@ -269,7 +322,7 @@ export default function AdivinaResultado() {
                 </>
               ) : (
                 <>
-                  <RankingView ranking={ranking} user={user} />
+                  <RankingView ranking={ranking} user={user} etapa={etapaRanking} onEtapa={setEtapaRanking} />
                   <button className="rz-btn rz-btn--ghost" onClick={() => setMostrarRanking(false)}>← Volver</button>
                 </>
               )}
@@ -336,7 +389,9 @@ export default function AdivinaResultado() {
 
           {fase === 'fin' && (
             <div className="adivina-card">
-              <span className="adivina-fin__puntuacion-label">Puntuación total</span>
+              <span className="adivina-fin__puntuacion-label">
+                Puntuación total · {ETAPAS.find(e => e.id === etapaPartida)?.nombre === 'Todo' ? 'Todas las etapas' : `Etapa de ${ETAPAS.find(e => e.id === etapaPartida)?.nombre}`}
+              </span>
               <span className="adivina-fin__puntuacion">{puntuacionTotal}</span>
 
               <div className="adivina-desglose">
@@ -368,7 +423,7 @@ export default function AdivinaResultado() {
 
               <div className="adivina-fin__acciones">
                 <button className="rz-btn rz-btn--primary" onClick={iniciarJuego}>🔁 Jugar de nuevo</button>
-                <button className="rz-btn rz-btn--ghost" onClick={() => { setFase('intro'); setMostrarRanking(true); cargarRanking() }}>
+                <button className="rz-btn rz-btn--ghost" onClick={() => { setFase('intro'); setMostrarRanking(true); setEtapaRanking(etapaPartida) }}>
                   🏆 Ver ranking
                 </button>
               </div>
