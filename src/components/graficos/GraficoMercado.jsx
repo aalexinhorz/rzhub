@@ -88,7 +88,7 @@ export default function GraficoMercado({ logo, fuentesListas }) {
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas" {...handlers} />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-mercado-${slug(`${datos.nombre} ${datos.apellido}`)}.png`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-mercado-${slug(`${datos.nombre} ${datos.apellido}`)}.jpg`} />
       </div>
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
         <fieldset>

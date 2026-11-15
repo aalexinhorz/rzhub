@@ -44,7 +44,7 @@ export default function GraficoRankingEquipos({ logo, fuentesListas }) {
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas" {...handlers} />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-ranking-${slug(datos.titulo)}.png`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-ranking-${slug(datos.titulo)}.jpg`} />
       </div>
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
         <CamposTexto datos={datos} cambiar={cambiar} ayudaExplicacion="Equipos del grupo con mejor racha de victorias en liga." />

@@ -87,7 +87,7 @@ export default function GraficoCalendario({ logo, fuentesListas }) {
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas graficos-canvas--fijo" />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-calendario-${desde}.png`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-calendario-${desde}.jpg`} />
       </div>
 
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>

@@ -69,7 +69,7 @@ export default function GraficoClasificacion({ logo, fuentesListas }) {
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas graficos-canvas--fijo" />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-clasificacion-j${jornadaElegida || ''}.png`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-clasificacion-j${jornadaElegida || ''}.jpg`} />
       </div>
 
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>

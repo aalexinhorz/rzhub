@@ -118,7 +118,7 @@ export default function GraficoPrevia({ logo }) { // al cargar las fuentes cambi
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas" {...handlers} />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-previa-${slug(rival?.nombre)}.png`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-previa-${slug(rival?.nombre)}.jpg`} />
       </div>
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
         <fieldset>

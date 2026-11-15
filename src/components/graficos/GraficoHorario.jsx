@@ -64,7 +64,7 @@ export default function GraficoHorario({ logo }) { // al cargar las fuentes camb
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas" {...handlers} />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-horario-${slug(partido ? `${partido.local} ${partido.visitante}` : '')}.png`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-horario-${slug(partido ? `${partido.local} ${partido.visitante}` : '')}.jpg`} />
       </div>
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
         <fieldset>

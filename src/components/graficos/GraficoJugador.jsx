@@ -46,7 +46,7 @@ export default function GraficoJugador({ logo, fuentesListas }) {
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas" {...handlers} />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-jugador-${slug(datos.nombre)}.png`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-jugador-${slug(datos.nombre)}.jpg`} />
       </div>
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
         <fieldset>

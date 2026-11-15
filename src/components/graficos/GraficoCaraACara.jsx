@@ -55,7 +55,7 @@ export default function GraficoCaraACara({ logo, fuentesListas }) {
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas" {...handlers} />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-cara-a-cara-${slug(rival?.nombre)}.png`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-cara-a-cara-${slug(rival?.nombre)}.jpg`} />
       </div>
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
         <fieldset>

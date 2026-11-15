@@ -43,7 +43,7 @@ export default function GraficoVersus({ logo, fuentesListas }) {
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas" {...handlers} />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-versus-${slug(`${datos.a.nombre}-${datos.b.nombre}`)}.png`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-versus-${slug(`${datos.a.nombre}-${datos.b.nombre}`)}.jpg`} />
       </div>
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
         {[['a', 'Izquierda (números en blanco)'], ['b', 'Derecha (números en amarillo)']].map(([lado, titulo]) => (

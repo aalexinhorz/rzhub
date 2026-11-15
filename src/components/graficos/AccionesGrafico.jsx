@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { compartirCanvas, descargarCanvas } from '../../lib/graficosComun'
 
-// Botones de Descargar PNG y Compartir bajo la vista previa.
+// Botones de Descargar JPG y Compartir bajo la vista previa.
 export default function AccionesGrafico({ canvasRef, nombreArchivo }) {
   const [aviso, setAviso] = useState('')
   const compartir = async () => {
@@ -11,7 +11,7 @@ export default function AccionesGrafico({ canvasRef, nombreArchivo }) {
   return (
     <>
       <div className="graficos-acciones">
-        <button type="button" className="rz-btn rz-btn--primary" onClick={() => descargarCanvas(canvasRef.current, nombreArchivo)}>Descargar PNG</button>
+        <button type="button" className="rz-btn rz-btn--primary" onClick={() => descargarCanvas(canvasRef.current, nombreArchivo)}>Descargar JPG</button>
         <button type="button" className="rz-btn rz-btn--ghost" onClick={compartir}>Compartir</button>
       </div>
       {aviso && <p className="graficos-aviso">{aviso}</p>}

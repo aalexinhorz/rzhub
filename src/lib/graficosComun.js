@@ -24,7 +24,7 @@ export function cargarImagen(src, { cors = false } = {}) {
 export const slug = t => (t || 'grafico').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
 // Los gráficos se diseñan a 1080×1350 pero el canvas tiene el doble de
-// píxeles (2160×2700): el PNG exportado sale con texto, escudos y logos
+// píxeles (2160×2700): la imagen exportada sale con texto, escudos y logos
 // mucho más nítidos (Instagram y compañía lo reducen bien al subirlo).
 export const ESCALA = 2
 export function contextoGrafico(canvas) {
@@ -33,13 +33,26 @@ export function contextoGrafico(canvas) {
   return g
 }
 
-const aBlob = canvas => new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
+// Se exporta en JPG: en PNG, con fotos, pasaba de 5 MB y las redes no lo
+// dejaban subir. Calidad alta y, si aun así pesa demasiado, se baja un poco.
+const LIMITE_BYTES = 4.5 * 1024 * 1024
+const CALIDADES = [0.92, 0.86, 0.8, 0.72]
+const aJpg = (canvas, calidad) => new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', calidad))
+async function aBlob(canvas) {
+  let blob = null
+  for (const calidad of CALIDADES) {
+    blob = await aJpg(canvas, calidad)
+    if (blob && blob.size <= LIMITE_BYTES) break
+  }
+  return blob
+}
+const comoJpg = nombre => nombre.replace(/\.(png|jpe?g)$/i, '') + '.jpg'
 
 export async function descargarCanvas(canvas, nombreArchivo) {
   const url = URL.createObjectURL(await aBlob(canvas))
   const a = document.createElement('a')
   a.href = url
-  a.download = nombreArchivo
+  a.download = comoJpg(nombreArchivo)
   a.click()
   setTimeout(() => URL.revokeObjectURL(url), 2000)
 }
@@ -47,7 +60,7 @@ export async function descargarCanvas(canvas, nombreArchivo) {
 // Menú de compartir del sistema (en el móvil: guardar en Fotos, Instagram…).
 // Devuelve false si el navegador no deja y se ha descargado en su lugar.
 export async function compartirCanvas(canvas, nombreArchivo) {
-  const archivo = new File([await aBlob(canvas)], nombreArchivo, { type: 'image/png' })
+  const archivo = new File([await aBlob(canvas)], comoJpg(nombreArchivo), { type: 'image/jpeg' })
   if (!navigator.canShare?.({ files: [archivo] })) {
     await descargarCanvas(canvas, nombreArchivo)
     return false

@@ -118,7 +118,7 @@ export default function GraficoEstadisticas({ logo, fuentesListas }) {
   }
   const soltar = () => { arrastre.current = null }
 
-  const nombreArchivo = `rzhub-${slug(datos.apellido)}.png`
+  const nombreArchivo = `rzhub-${slug(datos.apellido)}.jpg`
 
   const empezarDeCero = () => {
     if (!window.confirm('¿Vaciar todos los campos?')) return
