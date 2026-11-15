@@ -18,6 +18,7 @@ import GraficoPorra from '../components/graficos/GraficoPorra'
 import GraficoPartido from '../components/graficos/GraficoPartido'
 import GraficoOnTour from '../components/graficos/GraficoOnTour'
 import GraficoHorario from '../components/graficos/GraficoHorario'
+import GraficoPortada from '../components/graficos/GraficoPortada'
 import GraficoConvocatoria from '../components/graficos/GraficoConvocatoria'
 import GraficoJugador from '../components/graficos/GraficoJugador'
 import { cargarFuentes } from '../lib/graficoStats'
@@ -43,6 +44,7 @@ const PLANTILLAS = [
   { id: 'on-tour', grupo: 'previa', label: 'On Tour', ayuda: 'Para los desplazamientos: ciudad, estadio, km y mapa salen solos del partido fuera de casa. Sube una foto del estadio.' },
   { id: 'previa', label: 'Previa del rival', ayuda: 'Sale el rival del próximo partido con su posición, puntos, goles y racha. Elige sus goleadores, bajas y el jugador a seguir.' },
   { id: 'convocatoria', label: 'Convocatoria', ayuda: 'Marca los convocados: salen sus tarjetas del Lineup ordenadas por posición. Puedes subir una foto (p. ej. el entrenador).' },
+  { id: 'portada', label: 'Portada', ayuda: 'Título enorme a tu gusto (CONVOCADOS, FICHAJES…) con jugadores recortados encima de una foto. Sube los recortes en PNG sin fondo y arrástralos en la vista previa.' },
   { id: 'jugador', label: 'Foto de jugador', ayuda: 'Foto a toda página con la tarjeta del jugador, su nombre en grande y una pastilla (la temporada u otro texto).' },
   { id: 'mercado', label: 'Fichaje / salida', ayuda: 'Para anunciar fichajes y salidas. Elige si llega o se va, los dos clubes y la operación, escribe el nombre y sube la foto (arrástrala para encuadrarla).' },
   { id: 'noticia', label: 'Noticia', ayuda: 'Sube la foto (o rellénalo con una noticia de la web), escribe el titular y descárgalo. Arrastra la foto para encuadrarla.' },
@@ -121,6 +123,7 @@ export default function RedaccionGraficos() {
       {actual.id === 'porra' && <GraficoPorra logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'on-tour' && <GraficoOnTour logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'horario' && <GraficoHorario logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'portada' && <GraficoPortada logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'convocatoria' && <GraficoConvocatoria logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'jugador' && <GraficoJugador logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'estadisticas' && <GraficoEstadisticas logo={logo} fuentesListas={fuentesListas} />}
