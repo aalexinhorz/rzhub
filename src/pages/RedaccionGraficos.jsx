@@ -21,6 +21,9 @@ import GraficoHorario from '../components/graficos/GraficoHorario'
 import GraficoPortada from '../components/graficos/GraficoPortada'
 import GraficoFinde from '../components/graficos/GraficoFinde'
 import GraficoHerramienta from '../components/graficos/GraficoHerramienta'
+import GraficoRivalCopa from '../components/graficos/GraficoRivalCopa'
+import GraficoNotasPartido from '../components/graficos/GraficoNotasPartido'
+import GraficoMiPrediccion from '../components/graficos/GraficoMiPrediccion'
 import GraficoConvocatoria from '../components/graficos/GraficoConvocatoria'
 import GraficoJugador from '../components/graficos/GraficoJugador'
 import { cargarFuentes } from '../lib/graficoStats'
@@ -39,14 +42,17 @@ const PLANTILLAS = [
   { id: 'ranking-equipos', label: 'Ránking equipos', ayuda: 'Hasta 6 equipos con escudo y su número. Sube una foto para la derecha y arrástrala.' },
   { id: 'cara-a-cara', label: 'Cara a cara', ayuda: 'Elige el rival: los últimos resultados salen solos del historial de la web. La foto va abajo.' },
   { id: 'resultado', label: 'Final de partido', ayuda: 'Elige un partido jugado y se rellena solo (equipos, marcador, goleadores del Real Zaragoza, competición). Sube la foto y arrástrala.' },
+  { id: 'notas-partido', label: 'Las notas', ayuda: 'Para abrir las notas de un partido jugado: el marcador y los escudos salen solos (la caja del rival coge el color de su escudo). Sube la foto y arrástrala.' },
   { id: 'horario', label: 'Horario', ayuda: 'Horario confirmado del partido: día y hora en grande. Sale solo la versión en casa (estadio y lema) o fuera (km y ruta desde Zaragoza). Sube una foto y arrástrala.' },
   { id: 'finde', label: 'Fin de semana', ayuda: 'Los partidos de los próximos días del primer equipo, el filial, el juvenil y el femenino en un solo gráfico, sin foto. Salen solos; desmarca los que no quieras.' },
   { id: 'herramienta', label: 'Herramienta', ayuda: 'Para presentar una herramienta de la web (nueva o no): elige cuál y se rellena sola. Sube una captura (de ordenador o de móvil) y arrástrala para encuadrarla.' },
+  { id: 'mi-prediccion', label: 'Mi predicción', ayuda: 'Tu pronóstico de la Porra con tu usuario de la web (foto, @usuario, puesto y puntos). Sale solo de lo que pronosticaste; si no, rellénalo.' },
   { id: 'partido', grupo: 'previa', label: 'Partido', ayuda: 'El lema entre los dos escudos con los datos del próximo partido. Sube una foto ancha (p. ej. un jugador de cada equipo) y arrástrala.' },
   { id: 'rival', grupo: 'previa', label: 'El rival', ayuda: 'Sale el rival del próximo partido con el texto de su ficha y los últimos 5 enfrentamientos. Sube una foto y arrástrala para encuadrarla.' },
   { id: 'porra', grupo: 'previa', label: 'La Porra', ayuda: 'Anuncia la porra del próximo partido. Sube una foto y arrástrala para encuadrarla.' },
   { id: 'on-tour', grupo: 'previa', label: 'On Tour', ayuda: 'Para los desplazamientos: ciudad, estadio, km y mapa salen solos del partido fuera de casa. Sube una foto del estadio.' },
   { id: 'previa', label: 'Previa del rival', ayuda: 'Sale el rival del próximo partido con su posición, puntos, goles y racha. Elige sus goleadores, bajas y el jugador a seguir.' },
+  { id: 'rival-copa', label: 'Rival en Copa', ayuda: 'El rival de la siguiente eliminatoria de Copa. Si el partido ya está en la web se rellena solo; si no, escribe el rival y sube su escudo. La foto va a la derecha.' },
   { id: 'convocatoria', label: 'Convocatoria', ayuda: 'Marca los convocados: salen sus tarjetas del Lineup ordenadas por posición. Puedes subir una foto (p. ej. el entrenador).' },
   { id: 'portada', label: 'Portada', ayuda: 'Título enorme a tu gusto (CONVOCADOS, FICHAJES…) con jugadores recortados encima de una foto. Sube los recortes en PNG sin fondo y arrástralos en la vista previa.' },
   { id: 'jugador', label: 'Foto de jugador', ayuda: 'Foto a toda página con la tarjeta del jugador, su nombre en grande y una pastilla (la temporada u otro texto).' },
@@ -130,6 +136,9 @@ export default function RedaccionGraficos() {
       {actual.id === 'portada' && <GraficoPortada logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'finde' && <GraficoFinde logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'herramienta' && <GraficoHerramienta logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'rival-copa' && <GraficoRivalCopa logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'notas-partido' && <GraficoNotasPartido logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'mi-prediccion' && <GraficoMiPrediccion logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'convocatoria' && <GraficoConvocatoria logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'jugador' && <GraficoJugador logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'estadisticas' && <GraficoEstadisticas logo={logo} fuentesListas={fuentesListas} />}
