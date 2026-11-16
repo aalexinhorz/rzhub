@@ -5,12 +5,12 @@
 // y la explicación abajo.
 
 import { encajeEn } from './graficosComun'
+import { filaEscudo } from './graficoDatoJugador'
 
 export const ANCHO = 1080
 export const ALTO = 1350
 const M = 48
 const AMARILLO = '#ffd500'
-const AZUL = '#0045bf'
 const AZUL_OSCURO = '#011947'
 const TITULOS = "Humane, 'Arial Narrow', sans-serif"
 const TEXTO = 'Archivo, sans-serif'
@@ -292,32 +292,13 @@ export function dibujarRankingEquipos(g, datos, recursos) {
   g.save()
   base(g, datos, recursos)
   const filas = (datos.filas || []).filter(f => f.nombre || f.valor).slice(0, 6)
+  // Filas calcadas de "Por partido" (barra que se desvanece, escudo en su
+  // recuadro oscuro y número grande), un poco más altas; la primera, en amarillo.
   const y0 = 330
-  const alto = Math.min(130, (FIN_LISTA - y0) / filas.length)
-  const hBarra = alto - 16
-  const anchoBarra = LIMITE_IZQ - M - 92
-  filas.forEach((f, i) => {
-    const y = y0 + i * alto
-    const primero = i === 0
-    // Barras sólidas (solo un leve brillo arriba, sin desvanecerse).
-    const barra = g.createLinearGradient(0, y, 0, y + hBarra)
-    if (primero) { barra.addColorStop(0, '#ffe14d'); barra.addColorStop(1, AMARILLO) } else { barra.addColorStop(0, '#1d5fe0'); barra.addColorStop(1, AZUL) }
-    g.fillStyle = barra
-    g.beginPath()
-    g.roundRect(M, y, anchoBarra, hBarra, 10)
-    g.fill()
-    const tinta = primero ? AZUL_OSCURO : '#ffffff'
-    const caja = hBarra - 16
-    imagen(g, recursos.filas?.[i]?.escudo, M + 14 + caja / 2, y + hBarra / 2, caja)
-    const xNombre = M + 14 + caja + 18
-    const nombre = (f.nombre || '').toUpperCase()
-    const t = ajustar(g, nombre, x => `800 ${x}px ${TEXTO}`, 32, anchoBarra - (xNombre - M) - 14, 14)
-    texto(g, nombre, xNombre, y + hBarra / 2 + t * 0.36, `800 ${t}px ${TEXTO}`, tinta)
-    const valor = String(f.valor ?? '')
-    const tam = Math.min(150, hBarra * 1.25)
-    g.font = `700 ${tam}px ${TITULOS}`
-    const cap = g.measureText(valor || '0').actualBoundingBoxAscent
-    texto(g, valor, LIMITE_IZQ, y + hBarra / 2 + cap / 2, `700 ${tam}px ${TITULOS}`, primero ? AMARILLO : '#ffffff', 'right')
-  })
+  const alto = 100, hueco = 19
+  filas.forEach((f, i) => filaEscudo(g, {
+    x: M, y: y0 + i * (alto + hueco), ancho: LIMITE_IZQ - M - 8, alto,
+    escudo: recursos.filas?.[i]?.escudo, texto: f.nombre, valor: f.valor, destacada: i === 0, colorValor: i === 0 ? AMARILLO : '#ffffff',
+  }))
   g.restore()
 }

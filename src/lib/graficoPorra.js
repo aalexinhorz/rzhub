@@ -13,7 +13,7 @@ const PANEL = 570
 export const zonaFoto = fotoIzquierda => ({ x: fotoIzquierda ? 0 : PANEL, y: 0, w: ANCHO - PANEL, h: ALTO })
 
 // "texto **negrita** texto" → palabras con su peso, partidas en líneas.
-function lineasRicas(g, t, ancho, tam) {
+export function lineasRicas(g, t, ancho, tam) {
   const palabras = []
   String(t || '').split('**').forEach((trozo, i) => {
     trozo.split(/\s+/).filter(Boolean).forEach(p => palabras.push({ p, negrita: i % 2 === 1 }))

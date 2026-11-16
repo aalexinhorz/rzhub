@@ -24,6 +24,8 @@ import GraficoHerramienta from '../components/graficos/GraficoHerramienta'
 import GraficoRivalCopa from '../components/graficos/GraficoRivalCopa'
 import GraficoNotasPartido from '../components/graficos/GraficoNotasPartido'
 import GraficoMiPrediccion from '../components/graficos/GraficoMiPrediccion'
+import GraficoPorPartido from '../components/graficos/GraficoPorPartido'
+import GraficoDato from '../components/graficos/GraficoDato'
 import GraficoConvocatoria from '../components/graficos/GraficoConvocatoria'
 import GraficoJugador from '../components/graficos/GraficoJugador'
 import { cargarFuentes } from '../lib/graficoStats'
@@ -56,6 +58,8 @@ const PLANTILLAS = [
   { id: 'convocatoria', label: 'Convocatoria', ayuda: 'Marca los convocados: salen sus tarjetas del Lineup ordenadas por posición. Puedes subir una foto (p. ej. el entrenador).' },
   { id: 'portada', label: 'Portada', ayuda: 'Título enorme a tu gusto (CONVOCADOS, FICHAJES…) con jugadores recortados encima de una foto. Sube los recortes en PNG sin fondo y arrástralos en la vista previa.' },
   { id: 'jugador', label: 'Foto de jugador', ayuda: 'Foto a toda página con la tarjeta del jugador, su nombre en grande y una pastilla (la temporada u otro texto).' },
+  { id: 'por-partido', label: 'Por partido', ayuda: 'Hasta 8 filas con el escudo del rival y un valor grande (minutos, goles, notas…). Los minutos de un jugador se rellenan solos con las alineaciones guardadas. La foto va a la izquierda.' },
+  { id: 'dato', label: 'El dato', ayuda: 'Un número enorme con su etiqueta y una explicación (lo que va entre **asteriscos** sale en negrita). La foto va a la izquierda.' },
   { id: 'mercado', label: 'Fichaje / salida', ayuda: 'Para anunciar fichajes y salidas. Elige si llega o se va, los dos clubes y la operación, escribe el nombre y sube la foto (arrástrala para encuadrarla).' },
   { id: 'noticia', label: 'Noticia', ayuda: 'Sube la foto (o rellénalo con una noticia de la web), escribe el titular y descárgalo. Arrastra la foto para encuadrarla.' },
 ]
@@ -139,6 +143,8 @@ export default function RedaccionGraficos() {
       {actual.id === 'rival-copa' && <GraficoRivalCopa logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'notas-partido' && <GraficoNotasPartido logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'mi-prediccion' && <GraficoMiPrediccion logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'por-partido' && <GraficoPorPartido logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'dato' && <GraficoDato logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'convocatoria' && <GraficoConvocatoria logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'jugador' && <GraficoJugador logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'estadisticas' && <GraficoEstadisticas logo={logo} fuentesListas={fuentesListas} />}
