@@ -7,6 +7,19 @@
 .clas-intro { margin: 6px 0 0; color: #a9bcdc; font-size: 15px; line-height: 1.55; max-width: 680px; }
 .clas-estado { color: #a9bcdc; text-align: center; padding: 60px 0; }
 
+.clas-prediccion {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding: 16px 18px; border-radius: 14px; text-decoration: none; color: #ffffff;
+  background: linear-gradient(110deg, #0045bf 0%, #00307f 60%, #011947 100%); border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.clas-prediccion:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35); }
+.clas-prediccion__texto { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.clas-prediccion__eyebrow { color: #ffc800; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.clas-prediccion__frase { font-size: 16px; line-height: 1.4; color: #d6e0f2; }
+.clas-prediccion__frase b { color: #ffc800; font-weight: 800; }
+.clas-prediccion__boton { flex: 0 0 auto; background: #ffc800; color: #060d1a; border-radius: 999px; padding: 9px 16px; font-size: 14px; font-weight: 700; }
+
 .clas-tarjeta { background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 8px 8px 14px; overflow: hidden; }
 .clas-tabla { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
 .clas-tabla th { color: #7e93bf; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; padding: 10px 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }

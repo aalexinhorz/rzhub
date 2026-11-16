@@ -96,7 +96,7 @@ export default function AccesosRapidos() {
     { to: '/notas', icono: ICONOS.notas, label: 'Notas' },
     { to: '/zaragozle', icono: ICONOS.zaragozle, label: 'Zaragozle', badge: racha.actual > 0 ? <>{LLAMA}{racha.actual}</> : null },
     { to: '/pizarra', icono: ICONOS.pizarra, label: 'Pizarra' },
-    { ancla: 'h2-clasificacion', icono: ICONOS.tabla, label: 'Tabla' },
+    { to: '/clasificacion', icono: ICONOS.tabla, label: 'Clasificación' },
     { ancla: 'h2-videos', icono: iconoTool('videos'), label: 'Vídeos' },
     { to: '/calendario', icono: iconoTool('calendario'), label: 'Calendario' },
   ]

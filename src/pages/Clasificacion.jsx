@@ -5,7 +5,7 @@ import Footer from '../components/Footer'
 import { supabase } from '../hooks/useAuth'
 import { useEscudo } from '../lib/escudos'
 import { calcularClasificacion, zonaDe } from '../lib/clasificacion'
-import { jornadaJugada, seoClasificacion } from '../lib/seoPaginas'
+import { jornadaJugada, porcentaje, probabilidadesEquipo, seoClasificacion } from '../lib/seoPaginas'
 import './Clasificacion.css'
 
 // Clasificación completa del Grupo 2 de Primera Federación (indexable).
@@ -25,6 +25,7 @@ function Escudo({ nombre }) {
 export default function Clasificacion() {
   const [fixtures, setFixtures] = useState(null)
   const [rivales, setRivales] = useState([])
+  const [prediccion, setPrediccion] = useState(null)
 
   useEffect(() => {
     let activo = true
@@ -34,6 +35,12 @@ export default function Clasificacion() {
     function alVolver() { if (document.visibilityState === 'visible') cargar() }
     cargar()
     supabase.from('rivales').select('id, nombre').then(({ data }) => { if (activo) setRivales(data || []) })
+    // Lo que dice la predicción del Real Zaragoza (para el acceso a /prediccion).
+    supabase.from('prediccion_liga').select('jornada, equipos').order('temporada', { ascending: false }).order('jornada', { ascending: false }).limit(1)
+      .then(({ data }) => {
+        const rz = data?.[0]?.equipos?.find(e => sinComillas(e.equipo) === EQUIPO)
+        if (activo && rz) setPrediccion(probabilidadesEquipo(rz))
+      })
     const id = setInterval(cargar, REFRESCO_MS)
     document.addEventListener('visibilitychange', alVolver)
     return () => { activo = false; clearInterval(id); document.removeEventListener('visibilitychange', alVolver) }
@@ -67,6 +74,18 @@ export default function Clasificacion() {
             {jornada ? `Tras la jornada ${jornada}. ` : ''}Se actualiza sola en cuanto acaba cada partido. El primero sube directo a Segunda División, del 2.º al 5.º juegan el play-off y los cinco últimos bajan.
           </p>
         </header>
+
+        <Link to="/prediccion" className="clas-prediccion">
+          <span className="clas-prediccion__texto">
+            <span className="clas-prediccion__eyebrow">Predicción · 50.000 simulaciones</span>
+            <span className="clas-prediccion__frase">
+              {prediccion
+                ? <>¿Sube el Real Zaragoza? <b>{porcentaje(prediccion.directo, 0)}</b> de ascenso directo y <b>{porcentaje(prediccion.playoff, 0)}</b> de play-off.</>
+                : '¿Quién sube y quién baja? Mira las probabilidades de cada equipo.'}
+            </span>
+          </span>
+          <span className="clas-prediccion__boton">Ver la predicción →</span>
+        </Link>
 
         {!tabla ? (
           <p className="clas-estado">Cargando clasificación…</p>
