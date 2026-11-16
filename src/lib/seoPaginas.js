@@ -86,3 +86,99 @@ export function htmlClasificacion(tabla, jornada) {
   const tras = jornada ? ` tras la jornada ${jornada}` : ''
   return `<main><h1>Clasificación de Primera Federación Grupo 2 2026/27</h1><p>Clasificación del Grupo 2 de Primera Federación${tras}. El primero asciende directo a Segunda División, del 2.º al 5.º juegan el play-off y los cinco últimos descienden.</p><table><thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th><th>Zona</th></tr></thead><tbody>${filas.join('')}</tbody></table><p><a href="/calendario">Calendario del Real Zaragoza</a> · <a href="/proximo-partido">Próximo partido</a> · <a href="/simulador">Simulador de la liga</a></p></main>`
 }
+
+// Migas de pan (BreadcrumbList) para los datos estructurados: Inicio y luego
+// cada [nombre, ruta].
+export function migas(pasos) {
+  const base = 'https://www.rzhub.es'
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [['Inicio', '/'], ...pasos].map(([name, ruta], i) => ({ '@type': 'ListItem', position: i + 1, name, item: `${base}${ruta}` })),
+  }
+}
+
+// ---------- Predicción (prediccion_liga) ----------
+
+// Probabilidades de un equipo de la predicción: 1º, 2º-5º y 16º-20º.
+export function probabilidadesEquipo(e) {
+  const p = e.puestos
+  const suma = (a, b) => p.slice(a, b).reduce((s, x) => s + x, 0)
+  return { directo: p[0], playoff: suma(1, 5), descenso: suma(15, 20) }
+}
+
+export function porcentaje(x, decimales = 1) {
+  if (x == null) return '–'
+  if (x <= 0) return '0 %'
+  if (x >= 1) return '100 %'
+  if (x < 0.001) return '<0,1 %'
+  if (x > 0.999) return '>99,9 %'
+  return `${(x * 100).toLocaleString('es-ES', { minimumFractionDigits: decimales, maximumFractionDigits: decimales })} %`
+}
+
+export const ordenPrediccion = fila => [...fila.equipos].sort((a, b) => b.pts_esperados - a.pts_esperados || b.puestos[0] - a.puestos[0])
+
+// Título corto (Google corta hacia los 60 caracteres) con la búsqueda que
+// queremos ganar: "probabilidad de ascenso del Real Zaragoza".
+export function seoPrediccion(fila) {
+  const rz = fila?.equipos.find(e => sinComillas(e.equipo) === 'Real Zaragoza')
+  if (!rz) {
+    return {
+      title: 'Probabilidad de ascenso del Real Zaragoza | Predicción | RZ Hub',
+      description: 'Probabilidades de ascenso directo, play-off y descenso de los 20 equipos del Grupo 2 de Primera Federación, con 50.000 simulaciones del resto de la liga.',
+    }
+  }
+  const { directo, playoff } = probabilidadesEquipo(rz)
+  return {
+    title: `Probabilidad de ascenso del Real Zaragoza: ${porcentaje(directo, 0)} | RZ Hub`,
+    description: `Tras la jornada ${fila.jornada}, el Real Zaragoza tiene un ${porcentaje(directo)} de subir directo y un ${porcentaje(playoff)} de jugar el play-off. Predicción de Primera Federación con ${fila.simulaciones.toLocaleString('es-ES')} simulaciones.`,
+  }
+}
+
+// Preguntas frecuentes de /prediccion (se enseñan en la página y van en el
+// FAQPage de los datos estructurados: tienen que coincidir).
+export function preguntasPrediccion(fila) {
+  const equipos = ordenPrediccion(fila)
+  const rz = equipos.find(e => sinComillas(e.equipo) === 'Real Zaragoza')
+  const favorito = [...equipos].sort((a, b) => b.puestos[0] - a.puestos[0])[0]
+  const preguntas = []
+  if (rz) {
+    const { directo, playoff, descenso } = probabilidadesEquipo(rz)
+    preguntas.push({
+      pregunta: '¿Qué probabilidad tiene el Real Zaragoza de ascender a Segunda División?',
+      respuesta: `Tras la jornada ${fila.jornada}, el Real Zaragoza tiene un ${porcentaje(directo)} de ascender directo como 1.º y un ${porcentaje(playoff)} de acabar entre el 2.º y el 5.º y jugar el play-off de ascenso. Su probabilidad de descender es del ${porcentaje(descenso)}.`,
+    })
+    preguntas.push({
+      pregunta: '¿Cuántos puntos hará el Real Zaragoza esta temporada?',
+      respuesta: `De media, en las ${fila.simulaciones.toLocaleString('es-ES')} simulaciones el Real Zaragoza acaba la liga con ${rz.pts_esperados.toLocaleString('es-ES')} puntos. Ahora mismo tiene ${rz.pts_actuales}.`,
+    })
+  }
+  if (favorito) {
+    preguntas.push({
+      pregunta: '¿Quién es el favorito para ganar el Grupo 2 de Primera Federación?',
+      respuesta: `${sinComillas(favorito.equipo)}, con un ${porcentaje(favorito.puestos[0])} de acabar 1.º según la predicción de RZ Hub tras la jornada ${fila.jornada}.`,
+    })
+  }
+  preguntas.push({
+    pregunta: '¿Cómo se calcula la predicción?',
+    respuesta: `A cada equipo se le calcula una fuerza en ataque y otra en defensa con todos los partidos jugados, más la ventaja de jugar en casa. Con eso se simula el resto de la liga ${fila.simulaciones.toLocaleString('es-ES')} veces, partido a partido, y se cuenta en qué puesto acaba cada equipo. Los empates a puntos se deshacen como en la RFEF, primero por los enfrentamientos directos. Se actualiza sola tras cada jornada.`,
+  })
+  return preguntas
+}
+
+export function faqPrediccion(fila) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: preguntasPrediccion(fila).map(q => ({ '@type': 'Question', name: q.pregunta, acceptedAnswer: { '@type': 'Answer', text: q.respuesta } })),
+  }
+}
+
+export function htmlPrediccion(fila) {
+  const filas = ordenPrediccion(fila).map((e, i) => {
+    const { directo, playoff, descenso } = probabilidadesEquipo(e)
+    return `<tr><td>${i + 1}</td><td>${esc(sinComillas(e.equipo))}</td><td>${e.pts_actuales}</td><td>${e.pts_esperados.toLocaleString('es-ES')}</td><td>${esc(porcentaje(directo))}</td><td>${esc(porcentaje(playoff))}</td><td>${esc(porcentaje(descenso))}</td></tr>`
+  })
+  const faq = preguntasPrediccion(fila).map(q => `<h3>${esc(q.pregunta)}</h3><p>${esc(q.respuesta)}</p>`).join('')
+  return `<main><h1>Probabilidad de ascenso del Real Zaragoza: predicción de Primera Federación ${fila.temporada.replace('-', '/')}</h1><p>Probabilidades tras la jornada ${fila.jornada}, según ${fila.simulaciones.toLocaleString('es-ES')} simulaciones del resto de la liga con un modelo de goles por equipo (ataque, defensa y ventaja de jugar en casa).</p><table><thead><tr><th>#</th><th>Equipo</th><th>Pts</th><th>Pts esperados</th><th>1.º</th><th>Play-off</th><th>Descenso</th></tr></thead><tbody>${filas.join('')}</tbody></table><h2>Preguntas frecuentes</h2>${faq}<p><a href="/clasificacion">Clasificación</a> · <a href="/simulador">Simulador de la liga</a> · <a href="/proximo-partido">Próximo partido</a></p></main>`
+}

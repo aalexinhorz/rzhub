@@ -130,8 +130,8 @@ export default function Notas() {
   return (
     <div className="notas-page">
       <SEO
-        title="Notas de los jugadores del Real Zaragoza 26/27: el uno a uno | RZ Hub"
-        description="Las notas de la afición a los jugadores del Real Zaragoza en cada partido de la temporada 2026/27: el uno a uno, la nota media y el ranking de los mejor valorados. Puntúa tú también."
+        title="Notas de los jugadores del Real Zaragoza 26/27 | RZ Hub"
+        description="El uno a uno de la afición: notas de los jugadores del Real Zaragoza en cada partido de la 2026/27, nota media y ranking de los mejor valorados. Puntúa tú."
         keywords="notas Real Zaragoza, notas jugadores Real Zaragoza, uno a uno Real Zaragoza, puntuaciones Real Zaragoza, valoración jugadores Real Zaragoza, mejor jugador Real Zaragoza temporada, nota media Real Zaragoza"
         path="/notas"
         jsonLd={{

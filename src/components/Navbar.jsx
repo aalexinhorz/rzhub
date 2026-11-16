@@ -15,7 +15,17 @@ const NAV_GROUPS = [
       { to: '/rivales', label: 'Rivales' },
       { to: '/calendario', label: 'Calendario' },
       { to: '/clasificacion', label: 'Clasificación' },
+      { to: '/cantera/deportivo-aragon', label: 'Cantera y femenino' },
       { to: '/on-tour', label: 'On Tour' },
+    ],
+  },
+  {
+    type: 'group', id: 'herramientas', label: 'Herramientas', items: [
+      { to: '/tierlist', label: 'TierMaker' },
+      { to: '/notas', label: 'Notas' },
+      { to: '/simulador', label: 'Simulador' },
+      { to: '/prediccion', label: 'Predicción' },
+      { to: '/pizarra', label: 'La Pizarra' },
     ],
   },
   {
@@ -30,14 +40,6 @@ const NAV_GROUPS = [
     type: 'group', id: 'juegos', label: 'Juegos', items: [
       { to: '/zaragozle', label: 'Zaragozle' },
       { to: '/adivina-resultado', label: 'Adivina el resultado' },
-    ],
-  },
-  {
-    type: 'group', id: 'herramientas', label: 'Herramientas', items: [
-      { to: '/tierlist', label: 'TierMaker' },
-      { to: '/notas', label: 'Notas' },
-      { to: '/simulador', label: 'Simulador' },
-      { to: '/pizarra', label: 'La Pizarra' },
     ],
   },
 ]

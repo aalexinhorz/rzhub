@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import SEO from '../components/SEO'
 import Footer from '../components/Footer'
 import PorraCTA from '../components/PorraCTA'
@@ -207,7 +208,7 @@ export default function Simulador() {
   return (
     <div className="sim-page">
       <SEO
-        title="Simulador de la temporada | Primera Federación Grupo 2 | RZ Hub"
+        title="Simulador de Primera Federación Grupo 2 | RZ Hub"
         description="Simula los resultados de toda la temporada de 1ª RFEF Grupo 2 jornada a jornada y comprueba cómo quedaría la clasificación."
         path="/simulador"
       />
@@ -217,7 +218,7 @@ export default function Simulador() {
           <div className="sim-header">
             <div>
               <h1 className="sim-header__title">Simulador</h1>
-              <p className="sim-header__subtitle">Pon los marcadores de cada jornada y mira cómo queda la clasificación</p>
+              <p className="sim-header__subtitle">Pon los marcadores de cada jornada y mira cómo queda la clasificación. ¿Prefieres las probabilidades? <Link to="/prediccion" className="sim-header__enlace">Mira la predicción con 50.000 simulaciones →</Link></p>
             </div>
             {hayEdits && (
               <button className="sim-reiniciar" onClick={handleReiniciar}>↺ Reiniciar</button>

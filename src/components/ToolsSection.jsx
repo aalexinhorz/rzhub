@@ -1,22 +1,22 @@
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { TOOLS } from '../lib/tools'
 import './ToolsSection.css'
 
-export function ToolCard({ tool, onClick }) {
+// Enlace de verdad (<a href>), no un botón con onClick: así Google sigue el
+// enlace y la página de la herramienta recibe autoridad desde aquí.
+export function ToolCard({ tool }) {
   return (
-    <button type="button" className="tool-card" onClick={onClick}>
+    <Link to={tool.href} className="tool-card">
       {tool.badge && <span className="tool-card__badge">{tool.badge}</span>}
       <span className="tool-card__icon">{tool.icon}</span>
       <h3 className="tool-card__title">{tool.title}</h3>
       <p className="tool-card__desc">{tool.description}</p>
       <span className="tool-card__cta">Explorar →</span>
-    </button>
+    </Link>
   )
 }
 
 export default function ToolsSection() {
-  const navigate = useNavigate()
-
   return (
     <section
       className="tools-section"
@@ -33,14 +33,14 @@ export default function ToolsSection() {
               propósito (pedido explícito) — sigue disponible en
               /herramientas. */}
           {TOOLS.filter(tool => tool.id !== 'zaragozle').slice(0, 5).map(tool => (
-            <ToolCard key={tool.id} tool={tool} onClick={() => navigate(tool.href)} />
+            <ToolCard key={tool.id} tool={tool} />
           ))}
         </div>
 
         <div className="tools-section__footer">
-          <button type="button" className="hero__btn-primary" onClick={() => navigate('/herramientas')}>
+          <Link to="/herramientas" className="hero__btn-primary" style={{ textDecoration: 'none' }}>
             Explorar todas las herramientas →
-          </button>
+          </Link>
         </div>
       </div>
     </section>

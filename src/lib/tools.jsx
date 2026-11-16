@@ -164,6 +164,33 @@ export const TOOLS = [
     ),
   },
   {
+    id: 'prediccion',
+    title: 'Predicción',
+    description: 'Probabilidad de ascenso del Real Zaragoza y de todo el grupo con 50.000 simulaciones de la liga.',
+    href: '/prediccion',
+    badge: 'Nuevo',
+    icon: (
+      <svg {...ICON_PROPS}>
+        <polyline points="3 17 8 12 12 14 21 5" />
+        <circle cx="21" cy="5" r="1.2" fill="currentColor" stroke="none" />
+        <line x1="3" y1="21" x2="21" y2="21" />
+      </svg>
+    ),
+  },
+  {
+    id: 'cantera',
+    title: 'Cantera y femenino',
+    description: 'Resultados y clasificación del Deportivo Aragón, el Juvenil A y el Real Zaragoza Femenino.',
+    href: '/cantera/deportivo-aragon',
+    badge: 'Nuevo',
+    icon: (
+      <svg {...ICON_PROPS}>
+        <path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6l-8-3Z" />
+        <path d="M9 12l2 2 4-4" />
+      </svg>
+    ),
+  },
+  {
     id: 'videos',
     title: 'Vídeos',
     description: 'Previas, crónicas y análisis en vídeo de cada partido, con Alexinho.',

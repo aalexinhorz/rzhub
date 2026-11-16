@@ -19,7 +19,8 @@ import { seoPorra, PORRA_OG_IMAGE } from '../src/lib/seoPorra.js'
 import { slugPartido, seoPartido, seoProximoPartido, eventoPartido } from '../src/lib/partidoSeo.js'
 import { proximoDeLista } from '../src/lib/reglasPartido.js'
 import { calcularClasificacion } from '../src/lib/clasificacion.js'
-import { seoCalendario, htmlCalendario, htmlProximoPartido, seoClasificacion, htmlClasificacion, jornadaJugada } from '../src/lib/seoPaginas.js'
+import { EQUIPOS_OTROS, htmlCantera, rutaCantera, seoCantera } from '../src/lib/otrosEquiposDatos.js'
+import { seoCalendario, htmlCalendario, htmlProximoPartido, seoClasificacion, htmlClasificacion, jornadaJugada, seoPrediccion, htmlPrediccion, faqPrediccion, migas } from '../src/lib/seoPaginas.js'
 import { calcularVentana, seoNotasPartido, nombresNotas, rankingTemporada, formatoNota, SEO_NOTAS_INDEX } from '../src/lib/notasSeo.js'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
@@ -205,7 +206,10 @@ function posicionJugador(pos) {
 }
 
 async function rutasDinamicas() {
-  const [porraAbierta, noticias, jugadores, rivales, partidos, calendario, liga] = await Promise.all([
+  // Temporada como la guarda otros_equipos_* (la 2026/27 es 2027).
+  const ahora = new Date()
+  const temporadaOtros = ahora.getMonth() >= 6 ? ahora.getFullYear() + 1 : ahora.getFullYear()
+  const [porraAbierta, noticias, jugadores, rivales, partidos, calendario, liga, prediccion, otrosPartidos, otrosClas] = await Promise.all([
     consulta('porra_partidos', 'select=rival,sede,kickoff,jornada,competicion&abierto=eq.true&finalizado=eq.false&order=kickoff.asc&limit=1'),
     consulta('noticias', 'select=slug,titulo,meta_titulo,meta_descripcion,excerpt,imagen_url,og_imagen,created_at,updated_at&publicada=eq.true&order=created_at.desc'),
     consulta('players', 'select=id,name,position&is_zaragoza=eq.true'),
@@ -213,15 +217,23 @@ async function rutasDinamicas() {
     consulta('partidos', 'select=partido_id,rival,fecha,local,goles_local,goles_visitante,competicion,convocatoria,created_at,votacion_cerrada&order=fecha.desc'),
     consulta('porra_partidos', 'select=rival,sede,kickoff,fecha,jornada,competicion,goles_zaragoza,goles_rival,goleadores,finalizado,tv&kickoff=not.is.null&order=kickoff.asc'),
     consulta('liga_calendario', 'select=id,jornada,fecha,equipo_local,equipo_visitante,goles_local,goles_visitante&order=jornada.asc'),
+    consulta('prediccion_liga', 'select=temporada,jornada,simulaciones,equipos,partidos_rz&order=temporada.desc,jornada.desc&limit=1'),
+    consulta('otros_equipos_partidos', `select=equipo,jornada,fecha,hora,local,visitante,goles_local,goles_visitante&temporada=eq.${temporadaOtros}&order=jornada.asc,fecha.asc`),
+    consulta('otros_equipos_clasificacion', `select=equipo,pos,nombre,pts,pj,g,e,p,gf,gc&temporada=eq.${temporadaOtros}&order=pos.asc`),
   ])
 
   const porra = seoPorra(porraAbierta[0])
   const rutas = [{ path: '/porra', ...porra, image: PORRA_OG_IMAGE, lastmod: HOY, changefreq: 'daily', priority: '1.0' }]
 
+  // Predicción RZ Hub de cada partido de liga aún por jugar (para la descripción).
+  const prediccionDe = p => (!p.competicion && !p.finalizado
+    ? (prediccion[0]?.partidos_rz || []).find(x => x.jornada === p.jornada) || null
+    : null)
+
   const proximo = proximoDeLista(calendario)
   const estadioRival = new Map(rivales.map(r => [r.nombre, r.estadio]))
   if (proximo) {
-    const seo = seoProximoPartido(proximo)
+    const seo = seoProximoPartido(proximo, { prediccion: prediccionDe(proximo) })
     rutas.push({ path: '/proximo-partido', ...seo, contenido: htmlProximoPartido(proximo, estadioRival.get(proximo.rival), seo.h1), image: PORRA_OG_IMAGE, lastmod: HOY, changefreq: 'daily', priority: '1.0' })
   }
   // Calendario y clasificación: título con el próximo partido / el líder y
@@ -232,8 +244,28 @@ async function rutasDinamicas() {
     const jornada = jornadaJugada(liga)
     rutas.push({ path: '/clasificacion', ...seoClasificacion(tabla, jornada), contenido: htmlClasificacion(tabla, jornada), lastmod: HOY, changefreq: 'daily', priority: '0.9' })
   }
+  // Predicción: título con el % de ascenso directo del Real Zaragoza.
+  if (prediccion[0]) {
+    rutas.push({
+      path: '/prediccion', ...seoPrediccion(prediccion[0]), contenido: htmlPrediccion(prediccion[0]),
+      jsonLd: [faqPrediccion(prediccion[0]), migas([['Clasificación', '/clasificacion'], ['Predicción', '/prediccion']])],
+      lastmod: HOY, changefreq: 'daily', priority: '0.8',
+    })
+  }
+  // Cantera y femenino: una página por equipo, con sus datos.
+  for (const eq of EQUIPOS_OTROS) {
+    const ps = otrosPartidos.filter(p => p.equipo === eq.id)
+    const clas = otrosClas.filter(c => c.equipo === eq.id)
+    if (!ps.length && !clas.length) continue
+    rutas.push({
+      path: rutaCantera(eq), ...seoCantera(eq, clas), contenido: htmlCantera(eq, ps, clas),
+      jsonLd: [migas([['Cantera y femenino', rutaCantera(EQUIPOS_OTROS[0])], [eq.nombre, rutaCantera(eq)]])],
+      lastmod: HOY, changefreq: 'daily', priority: '0.7',
+    })
+  }
+
   for (const p of calendario) {
-    const seo = seoPartido(p)
+    const seo = seoPartido(p, { prediccion: prediccionDe(p) })
     const image = p.finalizado ? DEFAULT_OG_IMAGE : PORRA_OG_IMAGE
     rutas.push({
       path: `/partido/${slugPartido(p)}`,

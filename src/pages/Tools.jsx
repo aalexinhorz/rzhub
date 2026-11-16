@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import SEO from '../components/SEO'
 import { TOOLS } from '../lib/tools'
 import { ToolCard } from '../components/ToolsSection'
@@ -14,13 +13,11 @@ import './Tools.css'
  * vez del teaser de 5 con su hueco especial para tablet.
  */
 export default function Tools() {
-  const navigate = useNavigate()
-
   return (
     <>
       <SEO
-        title="Todas las Herramientas | RZ Hub"
-        description="Todas las herramientas de RZ Hub para seguir al Real Zaragoza: alineación, mercado, calendario, porra, noticias, tier list y comunidad."
+        title="Herramientas para seguir al Real Zaragoza | RZ Hub"
+        description="Todas las herramientas de RZ Hub para seguir al Real Zaragoza: alineación, porra, predicción de la liga, mercado, cantera, calendario, estadísticas y más."
         keywords="herramientas RZ Hub, herramientas Real Zaragoza, apps Real Zaragoza"
         path="/herramientas"
       />
@@ -37,7 +34,7 @@ export default function Tools() {
 
           <div className="tools-page__grid">
             {TOOLS.map(tool => (
-              <ToolCard key={tool.id} tool={tool} onClick={() => navigate(tool.href)} />
+              <ToolCard key={tool.id} tool={tool} />
             ))}
           </div>
         </div>

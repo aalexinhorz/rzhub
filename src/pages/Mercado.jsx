@@ -67,7 +67,7 @@ export default function Mercado() {
   return (
     <div className="mercado-page">
       <SEO
-        title="Mercado de Fichajes del Real Zaragoza 26/27 | Altas y Bajas | RZ Hub"
+        title="Fichajes del Real Zaragoza 26/27: altas y bajas | RZ Hub"
         description="Sigue en directo todos los fichajes y salidas del Real Zaragoza en la temporada 26/27. Altas, bajas y movimientos de mercado actualizados al minuto."
         keywords="mercado fichajes Real Zaragoza, altas Real Zaragoza, bajas Real Zaragoza, fichajes Real Zaragoza 26/27, traspasos Real Zaragoza"
         path="/mercado"

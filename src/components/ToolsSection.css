@@ -55,6 +55,9 @@
 /* -------- Tool Card (único componente reutilizable) -------- */
 
 .tool-card {
+  box-sizing: border-box;
+  text-decoration: none;
+  color: inherit;
   position: relative;
   display: flex;
   flex-direction: column;

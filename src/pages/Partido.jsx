@@ -40,7 +40,11 @@ async function cargarPartido(slug) {
   const jugado = new Date(p.kickoff) < new Date()
 
   const esLiga = !p.competicion && p.jornada
-  const [{ data: rival }, { data: notasPartido }, { data: videos }, opinion, { data: liga }] = await Promise.all([
+  // Temporada del partido como la guarda prediccion_liga ("2026-27").
+  const anyo = Number((p.fecha || p.kickoff || '').slice(0, 4))
+  const mes = Number((p.fecha || p.kickoff || '').slice(5, 7))
+  const temporada = mes >= 7 ? `${anyo}-${String(anyo + 1).slice(2)}` : `${anyo - 1}-${String(anyo).slice(2)}`
+  const [{ data: rival }, { data: notasPartido }, { data: videos }, opinion, { data: liga }, { data: predicciones }] = await Promise.all([
     supabase.from('rivales').select('id, nombre, estadio, historia, fundacion').eq('nombre', p.rival).maybeSingle(),
     jugado ? supabase.from('partidos').select('*').eq('fecha', p.fecha).maybeSingle() : Promise.resolve({ data: null }),
     supabase.from('videos_canal')
@@ -51,7 +55,16 @@ async function cargarPartido(slug) {
       .order('published_at', { ascending: true }),
     cargarOpinionAficion(p.id),
     esLiga ? supabase.from('liga_calendario').select('*').lt('jornada', p.jornada) : Promise.resolve({ data: null }),
+    // La última predicción de antes de esta jornada (para un partido ya
+    // jugado, la que había antes de jugarlo).
+    esLiga
+      ? supabase.from('prediccion_liga').select('jornada, simulaciones, partidos_rz').eq('temporada', temporada)
+        .lt('jornada', p.jornada).order('jornada', { ascending: false }).limit(1)
+      : Promise.resolve({ data: null }),
   ])
+  const filaPrediccion = predicciones?.[0]
+  const delPartido = filaPrediccion?.partidos_rz?.find(x => x.jornada === p.jornada)
+  const prediccion = delPartido ? { ...delPartido, tras: filaPrediccion.jornada, simulaciones: filaPrediccion.simulaciones } : null
 
   // Clasificación tal y como llegaban los dos equipos a esta jornada (así la
   // previa de un partido ya jugado no enseña la tabla de hoy).
@@ -123,7 +136,7 @@ async function cargarPartido(slug) {
   const postPartido = (videos || []).find(v => v.canal_handle === 'alexinhorz' && v.published_at >= p.kickoff) || null
   const notas = notasPartido ? { partido: notasPartido, abierta: calcularVentana(notasPartido, null).abierta, medias } : null
 
-  return { p, anterior, siguiente, rival, historial, notas, jugadores, ganadores, previa, postPartido, opinion, onceProbable, clasificacion }
+  return { p, anterior, siguiente, rival, historial, notas, jugadores, ganadores, previa, postPartido, opinion, onceProbable, clasificacion, prediccion }
 }
 
 /* ------------------------------ piezas ------------------------------ */
@@ -314,7 +327,58 @@ function ClasificacionPrevia({ clasificacion, local, visitante }) {
   )
 }
 
-function TabPrevia({ p, previa, porraAbierta, onceProbable, clasificacion }) {
+// Predicción RZ Hub del partido (modelo de /prediccion): gana el local,
+// empate o gana el visitante, cada uno bajo su escudo. Si ya se jugó, marca
+// lo que pasó.
+function EscudoPrediccion({ nombre }) {
+  const src = useEscudo(nombre)
+  return src ? <img src={src} alt="" className="mc-pred__escudo" /> : <span className="mc-pred__escudo mc-pred__escudo--vacio">{nombre[0]}</span>
+}
+
+function PrediccionPartido({ prediccion, p }) {
+  const local = sinComillas(prediccion.local)
+  const visitante = sinComillas(prediccion.visitante)
+  const jugado = p.finalizado && p.goles_zaragoza != null && p.goles_rival != null
+  let real = null
+  if (jugado) {
+    const rzLocal = local === 'Real Zaragoza'
+    const gl = rzLocal ? p.goles_zaragoza : p.goles_rival
+    const gv = rzLocal ? p.goles_rival : p.goles_zaragoza
+    real = gl > gv ? '1' : gl < gv ? '2' : 'x'
+  }
+  const opciones = [
+    { clave: '1', valor: prediccion.p1, nombre: local, texto: local },
+    { clave: 'x', valor: prediccion.px, texto: 'Empate' },
+    { clave: '2', valor: prediccion.p2, nombre: visitante, texto: visitante },
+  ]
+  const pct = x => `${Math.round(x * 100)} %`
+  return (
+    <section className="mc-pred">
+      <div className="mc-pred__cabecera">
+        <h3 className="mc-pred__titulo">{jugado ? 'Lo que decía la predicción RZ Hub' : 'Predicción RZ Hub'}</h3>
+        {prediccion.tras ? <span className="mc-tabla__jornada">Tras la J{prediccion.tras}</span> : null}
+      </div>
+      <div className="mc-pred__opciones">
+        {opciones.map(o => (
+          <div key={o.clave} className={`mc-pred__opcion mc-pred__opcion--${o.clave}${real === o.clave ? ' is-real' : ''}`}>
+            {o.nombre ? <EscudoPrediccion nombre={o.nombre} /> : <span className="mc-pred__escudo mc-pred__empate" aria-hidden="true">=</span>}
+            <span className="mc-pred__valor">{pct(o.valor)}</span>
+            <span className="mc-pred__texto">{o.clave === 'x' ? 'Empate' : `Gana ${o.texto}`}</span>
+            {real === o.clave && <span className="mc-pred__real">Fue esto</span>}
+          </div>
+        ))}
+      </div>
+      <div className="mc-pred__barra" aria-hidden="true">
+        {opciones.map(o => <span key={o.clave} className={`mc-pred__tramo mc-pred__tramo--${o.clave}`} style={{ flexGrow: o.valor }} />)}
+      </div>
+      <p className="mc-pred__nota">
+        Según nuestro modelo, con {Number(prediccion.simulaciones || 50000).toLocaleString('es-ES')} simulaciones de la liga. <Link to="/prediccion">Ver la predicción de toda la liga →</Link>
+      </p>
+    </section>
+  )
+}
+
+function TabPrevia({ p, previa, porraAbierta, onceProbable, clasificacion, prediccion }) {
   const { local, visitante } = nombresPartido(p)
   return (
     <div className="mc-tab-stack">
@@ -327,6 +391,7 @@ function TabPrevia({ p, previa, porraAbierta, onceProbable, clasificacion }) {
           <span className="mc-cta__pill">Pronosticar →</span>
         </Link>
       )}
+      {prediccion && <PrediccionPartido prediccion={prediccion} p={p} />}
       {clasificacion && <ClasificacionPrevia clasificacion={clasificacion} local={local} visitante={visitante} />}
       {onceProbable && <OnceProbable lineup={onceProbable} />}
       <OpinionAficion partido={p} titulo={p.finalizado ? 'Qué pronosticó la afición' : 'Pronóstico de la afición'} minimo={1} />
@@ -531,13 +596,13 @@ export default function Partido({ slugForzado, modoProximo = false }) {
     )
   }
 
-  const { p, anterior, siguiente, rival, historial, notas, jugadores, ganadores, previa, postPartido, opinion, onceProbable, clasificacion } = datos
+  const { p, anterior, siguiente, rival, historial, notas, jugadores, ganadores, previa, postPartido, opinion, onceProbable, clasificacion, prediccion } = datos
   const { local, visitante, zaragozaLocal } = nombresPartido(p)
   const estadio = zaragozaLocal ? ESTADIO_ZARAGOZA : rival?.estadio
   const marcador = p.finalizado ? marcadorPartido(p) : null
   const empezado = new Date(p.kickoff) < new Date()
   const porraAbierta = p.abierto && !p.finalizado && !empezado
-  const seo = modoProximo ? seoProximoPartido(p) : seoPartido(p)
+  const seo = modoProximo ? seoProximoPartido(p, { prediccion }) : seoPartido(p, { prediccion })
   const ruta = modoProximo ? '/proximo-partido' : `/partido/${slug}`
   const url = `${SITE_URL}${ruta}`
   const escudoLocal = zaragozaLocal ? ESCUDO_ZARAGOZA : escudoRival
@@ -618,7 +683,7 @@ export default function Partido({ slugForzado, modoProximo = false }) {
         <div className="mc-grid">
           <div className="mc-principal">
             {pestana === 'once' && <TabOnce p={p} jugadores={jugadores} notas={notas} />}
-            {pestana === 'previa' && <TabPrevia p={p} previa={previa} porraAbierta={porraAbierta} onceProbable={onceProbable} clasificacion={clasificacion} />}
+            {pestana === 'previa' && <TabPrevia p={p} previa={previa} porraAbierta={porraAbierta} onceProbable={onceProbable} clasificacion={clasificacion} prediccion={prediccion} />}
             {pestana === 'notas' && <TabNotas notas={notas} jugadores={jugadores} />}
             {pestana === 'rival' && <TabRival p={p} rival={rival} historial={historial} escudoRival={escudoRival} />}
           </div>

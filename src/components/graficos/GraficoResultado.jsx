@@ -5,13 +5,17 @@ import { ANCHO, ALTO, ZONA_FOTO, dibujarGraficoResultado } from '../../lib/grafi
 import { LOGOS_COMPETICION } from '../../lib/graficoCaraACara'
 import { ESTADIO_ZARAGOZA, fechaLarga, limpiarEstadio, nombresPartido } from '../../lib/partidoSeo'
 import { leerLocal, useFotoArrastrable, useGuardarLocal } from '../../lib/graficosHooks'
+import { EQUIPOS_OTROS, equipoOtro, escudoOtro, nombreVisible } from '../../lib/otrosEquipos'
 import AccionesGrafico from './AccionesGrafico'
 import { CampoFoto } from './comunes'
 
 // Plantilla "Final de partido": se elige un partido ya jugado de la web y se
 // rellenan solos los equipos, el marcador, los goleadores del Real Zaragoza,
-// la competición y la fecha. Todo se puede retocar a mano.
+// la competición y la fecha. Todo se puede retocar a mano. Vale también
+// para el filial, el juvenil y el femenino (partidos de /cantera), y tiene
+// un diseño sin foto, solo con los escudos.
 const INICIAL = {
+  equipo: 'primer', diseno: 'foto', propio: 'Real Zaragoza', escudoLocalUrl: '', escudoVisitanteUrl: '',
   partido: '', local: 'Real Zaragoza', visitante: '', golesLocal: '', golesVisitante: '',
   goleadoresLocal: '', goleadoresVisitante: '', etiqueta: 'auto', competicion: 'Primera Federación', detalle: '',
   credito: '', ajusteFoto: { zoom: 1, dx: 0, dy: 0 },
@@ -22,8 +26,9 @@ function resultadoAuto(d) {
   const gl = Number(d.golesLocal)
   const gv = Number(d.golesVisitante)
   if (d.golesLocal === '' || d.golesVisitante === '' || Number.isNaN(gl) || Number.isNaN(gv)) return ''
-  const zaragozaLocal = d.local === ZARAGOZA
-  if (!zaragozaLocal && d.visitante !== ZARAGOZA) return ''
+  const propio = d.propio || ZARAGOZA
+  const zaragozaLocal = d.local === propio
+  if (!zaragozaLocal && d.visitante !== propio) return ''
   const a = zaragozaLocal ? gl : gv
   const b = zaragozaLocal ? gv : gl
   return a > b ? 'g' : a < b ? 'p' : 'e'
@@ -37,6 +42,7 @@ export default function GraficoResultado({ logo, fuentesListas }) {
   const setAjuste = ajusteFoto => cambiar({ ajusteFoto })
   const { foto, elegirFoto, handlers, retoque } = useFotoArrastrable(ZONA_FOTO, datos.ajusteFoto, setAjuste)
   const [partidos, setPartidos] = useState([])
+  const [otrosCargados, setOtros] = useState({ equipo: null, lista: [] })
   const [estadios, setEstadios] = useState({})
   const [imgs, setImgs] = useState({})
 
@@ -47,16 +53,31 @@ export default function GraficoResultado({ logo, fuentesListas }) {
     supabase.from('rivales').select('nombre, estadio').then(({ data }) => setEstadios(Object.fromEntries((data || []).map(r => [r.nombre, r.estadio]))))
   }, [])
 
+  // Partidos jugados del filial, el juvenil o el femenino (los del equipo propio).
+  useEffect(() => {
+    if (datos.equipo === 'primer') return
+    let activo = true
+    const eq = equipoOtro(datos.equipo)
+    supabase.from('otros_equipos_partidos').select('*').eq('equipo', eq.id).not('goles_local', 'is', null)
+      .or(`local.eq."${eq.propio}",visitante.eq."${eq.propio}"`).order('fecha', { ascending: false }).limit(40)
+      .then(({ data }) => { if (activo) setOtros({ equipo: eq.id, lista: data || [] }) })
+    return () => { activo = false }
+  }, [datos.equipo])
+
+  const otros = otrosCargados.equipo === datos.equipo ? otrosCargados.lista : []
   const esCopa = /copa/i.test(datos.competicion)
+  const esPrimer = datos.equipo === 'primer'
   useEffect(() => {
     let activo = true
+    // Los escudos de BeSoccer (filial, juvenil, femenino) están en Storage.
+    const escudo = (url, nombre) => (url ? cargarImagen(url, { cors: true }) : cargarImagen(encodeURI(escudoDe(nombre) || '')))
     Promise.all([
-      cargarImagen(encodeURI(escudoDe(datos.local) || '')),
-      cargarImagen(encodeURI(escudoDe(datos.visitante) || '')),
-      cargarImagen(LOGOS_COMPETICION[esCopa ? 'Copa del Rey' : 'Primera Federación']),
+      escudo(datos.escudoLocalUrl, datos.local),
+      escudo(datos.escudoVisitanteUrl, datos.visitante),
+      esPrimer ? cargarImagen(LOGOS_COMPETICION[esCopa ? 'Copa del Rey' : 'Primera Federación']) : null,
     ]).then(([escudoLocal, escudoVisitante, logoCompeticion]) => { if (activo) setImgs({ escudoLocal, escudoVisitante, logoCompeticion }) })
     return () => { activo = false }
-  }, [datos.local, datos.visitante, esCopa])
+  }, [datos.local, datos.visitante, datos.escudoLocalUrl, datos.escudoVisitanteUrl, esCopa, esPrimer])
 
   const recursos = useMemo(() => ({ foto, logo, ...imgs }), [foto, logo, imgs])
   const resultado = datos.etiqueta === 'auto' ? resultadoAuto(datos) : datos.etiqueta === 'ninguna' ? '' : datos.etiqueta
@@ -74,7 +95,7 @@ export default function GraficoResultado({ logo, fuentesListas }) {
     const estadio = zaragozaLocal ? ESTADIO_ZARAGOZA : limpiarEstadio(estadios[p.rival])
     const fecha = fechaLarga(p.kickoff)
     cambiar({
-      partido: id, local, visitante,
+      partido: id, local, visitante, propio: ZARAGOZA, escudoLocalUrl: '', escudoVisitanteUrl: '',
       golesLocal: zaragozaLocal ? p.goles_zaragoza : p.goles_rival,
       golesVisitante: zaragozaLocal ? p.goles_rival : p.goles_zaragoza,
       goleadoresLocal: zaragozaLocal ? goleadores : '',
@@ -84,24 +105,66 @@ export default function GraficoResultado({ logo, fuentesListas }) {
     })
   }
 
+  const elegirOtro = id => {
+    const p = otros.find(x => String(x.id) === id)
+    if (!p) { cambiar({ partido: '' }); return }
+    const eq = equipoOtro(datos.equipo)
+    const fecha = p.fecha ? new Date(`${p.fecha}T12:00:00`).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }) : ''
+    const propio = nombreVisible(eq.propio)
+    cambiar({
+      partido: id, propio,
+      local: nombreVisible(p.local), visitante: nombreVisible(p.visitante),
+      escudoLocalUrl: escudoOtro(p.local_id, p.local) || '', escudoVisitanteUrl: escudoOtro(p.visitante_id, p.visitante) || '',
+      golesLocal: p.goles_local, golesVisitante: p.goles_visitante, goleadoresLocal: '', goleadoresVisitante: '',
+      competicion: `${eq.competicion} · Jornada ${p.jornada}`,
+      detalle: fecha ? `${fecha.charAt(0).toUpperCase()}${fecha.slice(1)}` : '',
+    })
+  }
+  const conFoto = datos.diseno !== 'escudos'
+
   return (
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
-        <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas" {...handlers} />
+        <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className={`graficos-canvas${conFoto ? '' : ' graficos-canvas--fijo'}`} {...(conFoto ? handlers : {})} />
         <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-final-${slug(`${datos.local} ${datos.visitante}`)}.jpg`} />
       </div>
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
         <fieldset>
           <legend>Partido</legend>
+          <div className="graficos-fila">
+            <label className="graficos-campo">
+              Equipo
+              <select value={datos.equipo} onChange={e => cambiar({ equipo: e.target.value, partido: '' })}>
+                <option value="primer">Primer equipo</option>
+                {EQUIPOS_OTROS.map(eq => <option key={eq.id} value={eq.id}>{eq.id === 'filial' ? 'Deportivo Aragón (filial)' : eq.nombre.replace('Real Zaragoza ', '')}</option>)}
+              </select>
+            </label>
+            <label className="graficos-campo">
+              Diseño
+              <select value={datos.diseno} onChange={e => cambiar({ diseno: e.target.value })}>
+                <option value="foto">Con foto</option>
+                <option value="escudos">Solo escudos (sin foto)</option>
+              </select>
+            </label>
+          </div>
           <label className="graficos-campo">
             Partido jugado (lo rellena solo)
-            <select value={datos.partido} onChange={e => elegirPartido(e.target.value)}>
-              <option value="">— Elige un partido —</option>
-              {partidos.map(p => {
-                const { local, visitante } = nombresPartido(p)
-                return <option key={p.id} value={p.id}>{local} {p.sede === 'local' ? p.goles_zaragoza : p.goles_rival}-{p.sede === 'local' ? p.goles_rival : p.goles_zaragoza} {visitante} ({p.competicion ? 'Copa' : `J${p.jornada}`})</option>
-              })}
-            </select>
+            {esPrimer ? (
+              <select value={datos.partido} onChange={e => elegirPartido(e.target.value)}>
+                <option value="">— Elige un partido —</option>
+                {partidos.map(p => {
+                  const { local, visitante } = nombresPartido(p)
+                  return <option key={p.id} value={p.id}>{local} {p.sede === 'local' ? p.goles_zaragoza : p.goles_rival}-{p.sede === 'local' ? p.goles_rival : p.goles_zaragoza} {visitante} ({p.competicion ? 'Copa' : `J${p.jornada}`})</option>
+                })}
+              </select>
+            ) : (
+              <select value={datos.partido} onChange={e => elegirOtro(e.target.value)}>
+                <option value="">— Elige un partido —</option>
+                {otros.map(p => (
+                  <option key={p.id} value={p.id}>{nombreVisible(p.local)} {p.goles_local}-{p.goles_visitante} {nombreVisible(p.visitante)} (J{p.jornada})</option>
+                ))}
+              </select>
+            )}
           </label>
           <div className="graficos-fila">
             <label className="graficos-campo">Local<input value={datos.local} onChange={e => cambiar({ local: e.target.value })} /></label>
@@ -121,7 +184,11 @@ export default function GraficoResultado({ logo, fuentesListas }) {
               <textarea rows={3} value={datos.goleadoresVisitante} onChange={e => cambiar({ goleadoresVisitante: e.target.value })} />
             </label>
           </div>
-          <p className="graficos-nota">La web guarda solo los goleadores del Real Zaragoza, sin minuto: añádelo a mano si quieres (p. ej. «Vadillo 34'»).</p>
+          <p className="graficos-nota">
+            {esPrimer
+              ? 'La web guarda solo los goleadores del Real Zaragoza, sin minuto: añádelo a mano si quieres (p. ej. «Vadillo 34\'»).'
+              : 'Del filial, el juvenil y el femenino no hay goleadores: escríbelos a mano si los tienes.'}
+          </p>
         </fieldset>
         <fieldset>
           <legend>Texto</legend>
@@ -138,7 +205,7 @@ export default function GraficoResultado({ logo, fuentesListas }) {
           <label className="graficos-campo">Competición<input value={datos.competicion} onChange={e => cambiar({ competicion: e.target.value })} /></label>
           <label className="graficos-campo">Fecha y estadio<input value={datos.detalle} onChange={e => cambiar({ detalle: e.target.value })} /></label>
         </fieldset>
-        <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />
+        {conFoto && <CampoFoto foto={foto} retoque={retoque} elegirFoto={elegirFoto} ajuste={datos.ajusteFoto} setAjuste={setAjuste} credito={datos.credito} onCredito={credito => cambiar({ credito })} />}
       </form>
     </div>
   )

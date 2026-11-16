@@ -251,7 +251,7 @@ export default function Tierlist() {
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#060D1A', padding: isMobile ? '16px 12px' : '24px' }}>
       <SEO
-        title="Tier List del Mercado del Real Zaragoza | Valora Altas y Bajas | RZ Hub"
+        title="Tier List de los fichajes del Real Zaragoza | RZ Hub"
         description="Valora las altas y bajas del mercado de fichajes del Real Zaragoza: clasifica cada decisión de muy buena a pésima y compártela con la comunidad zaragocista."
         keywords="tier list mercado Real Zaragoza, valorar fichajes Real Zaragoza, altas y bajas Real Zaragoza, decisiones mercado Real Zaragoza 26/27"
         path="/tierlist"

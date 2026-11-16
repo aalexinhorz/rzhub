@@ -18,6 +18,7 @@ import PizarraMini from '../components/home2/PizarraMini'
 import ClasificacionWidget from '../components/home2/ClasificacionWidget'
 import VideosCanales from '../components/home2/VideosCanales'
 import AccesosRapidos from '../components/home2/AccesosRapidos'
+import FinDeSemana from '../components/home2/FinDeSemana'
 import '../components/home2/Home2.css'
 
 const STAT_ICON_PROPS = { width: 32, height: 32, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }
@@ -182,6 +183,8 @@ export default function Home2() {
       </div>
 
       <HeroSection compacto />
+
+      <FinDeSemana />
 
       <section className="h2-seccion">
         <div className="h2-contenedor">

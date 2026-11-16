@@ -80,6 +80,25 @@
 .mc-boton:hover { filter: brightness(1.05); }
 .mc-boton--bloque { width: 100%; box-sizing: border-box; }
 
+/* -------- Predicción del partido (Previa) -------- */
+.mc-pred { background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 16px 16px 14px; }
+.mc-pred__cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.mc-pred__titulo { margin: 0; font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 15px; line-height: 1.15; text-transform: uppercase; letter-spacing: 0.06em; color: #ffffff; }
+.mc-pred__opciones { display: grid; grid-template-columns: 1fr 0.8fr 1fr; gap: 8px; margin-bottom: 12px; }
+.mc-pred__opcion { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; text-align: center; min-width: 0; }
+.mc-pred__opcion.is-real { border-color: #ffc800; background: rgba(255, 200, 0, 0.08); }
+.mc-pred__escudo { width: 48px; height: 48px; object-fit: contain; }
+.mc-pred__escudo--vacio, .mc-pred__empate { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255, 255, 255, 0.08); color: #a9bcdc; font-weight: 800; font-size: 20px; }
+.mc-pred__valor { font-family: 'Humane', sans-serif; font-weight: 700; font-size: 50px; line-height: 0.9; color: #ffffff; }
+.mc-pred__texto { color: #a9bcdc; font-size: 12px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.mc-pred__real { color: #03101f; background: #ffc800; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 999px; }
+.mc-pred__barra { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; }
+.mc-pred__tramo--1 { background: #3a74d9; }
+.mc-pred__tramo--x { background: #4a5872; }
+.mc-pred__tramo--2 { background: #b88a00; }
+.mc-pred__nota { margin: 10px 0 0; color: #7e93bf; font-size: 12px; line-height: 1.5; }
+.mc-pred__nota a { color: #ffc800; text-decoration: none; font-weight: 700; white-space: nowrap; }
+
 /* -------- Clasificación (Previa) -------- */
 .mc-tabla { background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 16px 16px 14px; }
 .mc-tabla__cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }

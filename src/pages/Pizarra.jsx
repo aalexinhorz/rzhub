@@ -241,7 +241,7 @@ export default function Pizarra() {
     <div className="pizarra-page">
       <SEO
         title="La Pizarra Táctica del Real Zaragoza | RZ Hub"
-        description="Monta tu pizarra táctica del Real Zaragoza gratis: coloca a cualquier jugador de la plantilla donde quieras, añade el balón, crea instantáneas animadas y descarga el resultado como imagen o vídeo para redes sociales."
+        description="Pizarra táctica del Real Zaragoza gratis: coloca a los jugadores de la plantilla, mueve el balón, anima la jugada y descárgala como imagen o vídeo."
         keywords="pizarra táctica Real Zaragoza, pizarra fútbol online, tactic board Real Zaragoza, crear táctica fútbol, pizarra interactiva fútbol, montar jugada Real Zaragoza, pizarra virtual gratis"
         path="/pizarra"
         jsonLd={[

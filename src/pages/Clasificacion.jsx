@@ -131,6 +131,7 @@ export default function Clasificacion() {
         <nav className="clas-enlaces" aria-label="Más sobre el Real Zaragoza">
           <Link to="/proximo-partido">Próximo partido →</Link>
           <Link to="/calendario">Calendario del Real Zaragoza →</Link>
+          <Link to="/prediccion">Predicción: probabilidades de ascenso →</Link>
           <Link to="/simulador">Simula el final de liga →</Link>
         </nav>
       </div>

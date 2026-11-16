@@ -308,3 +308,43 @@ td.h2-tabla__equipo { max-width: 0; width: 60%; }
   .h2-tabla__ocultable { display: none; }
   .h2-videos__canal { margin-left: 0; width: 100%; }
 }
+
+/* ── Este fin de semana: próximos partidos de todos los equipos ── */
+.h2-finde { background: #03101f; }
+.h2-finde__dias { display: flex; flex-direction: column; gap: 22px; }
+.h2-finde__fecha { margin: 0 0 10px; color: #7e93bf; font-family: 'Archivo', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.h2-finde__lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 12px; }
+.h2-finde__tarjeta {
+  display: flex; align-items: center; gap: 18px; padding: 18px 20px; border-radius: 16px; text-decoration: none; color: #ffffff;
+  background: linear-gradient(110deg, #0045bf 0%, #00307f 55%, #011947 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.h2-finde__tarjeta:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35); }
+/* El primer equipo destaca en amarillo. */
+.h2-finde__tarjeta.is-primer { background: linear-gradient(110deg, #ffd500 0%, #ffc800 55%, #f2b200 100%); color: #011947; border-color: rgba(1, 25, 71, 0.15); }
+.h2-finde__tarjeta.is-primer .h2-finde__equipo { color: #0045bf; }
+.h2-finde__tarjeta.is-primer .h2-finde__sede { color: rgba(1, 25, 71, 0.8); }
+.h2-finde__escudo { flex: 0 0 72px; height: 72px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; }
+.h2-finde__escudo img { width: 52px; height: 52px; object-fit: contain; }
+.h2-finde__escudo span { color: #011947; font-weight: 800; font-size: 26px; }
+.h2-finde__texto { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.h2-finde__equipo { font-family: 'Humane', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 40px; line-height: 0.9; color: #ffc800; letter-spacing: 0.01em; }
+.h2-finde__rival { font-family: 'Archivo', sans-serif; font-size: 17px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.h2-finde__sede { display: inline-flex; align-items: center; gap: 7px; font-family: 'Archivo', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255, 255, 255, 0.8); }
+.h2-finde__sede svg { width: 16px; height: 16px; }
+.h2-finde__cuando { flex: 0 0 auto; display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: #ffffff; width: 112px; text-align: center; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25); }
+.h2-finde__dia { background: #011947; color: #ffffff; font-family: 'Archivo', sans-serif; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 10px; }
+.h2-finde__hora { font-family: 'Humane', sans-serif; font-weight: 700; font-size: 44px; line-height: 1; color: #0045bf; padding: 8px 10px 4px; }
+.h2-finde__hora.is-sin-hora { font-family: 'Archivo', sans-serif; font-size: 15px; font-weight: 800; text-transform: uppercase; padding: 16px 10px; color: #7e93bf; }
+
+@media (max-width: 600px) {
+  .h2-finde__tarjeta { gap: 12px; padding: 14px; }
+  .h2-finde__escudo { flex-basis: 54px; height: 54px; }
+  .h2-finde__escudo img { width: 38px; height: 38px; }
+  .h2-finde__equipo { font-size: 32px; }
+  .h2-finde__rival { font-size: 15px; }
+  .h2-finde__cuando { width: 92px; }
+  .h2-finde__hora { font-size: 36px; }
+  .h2-finde__hora.is-sin-hora { font-size: 13px; padding: 13px 8px; }
+}

@@ -139,7 +139,7 @@ export default function Comunidad() {
   return (
     <div style={{ minHeight: 'calc(100vh - 60px)', background: '#060D1A', padding: '24px' }}>
       <SEO
-        title="Comunidad RZ Hub | Alineaciones y Tier Lists de Aficionados | RZ Hub"
+        title="Comunidad zaragocista: alineaciones y tier lists | RZ Hub"
         description="Descubre las alineaciones y tier lists creadas por otros aficionados del Real Zaragoza. Comparte las tuyas con la comunidad zaragocista."
         keywords="comunidad Real Zaragoza, aficionados Real Zaragoza, alineaciones comunidad, tier list comunidad, zaragocistas"
         path="/comunidad"

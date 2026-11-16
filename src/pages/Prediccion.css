@@ -1,0 +1,107 @@
+.pred-page { min-height: 100vh; background: #03101f; color: #ffffff; }
+.pred-contenedor { max-width: 1080px; margin: 0 auto; padding: 40px 32px 56px; display: flex; flex-direction: column; gap: 22px; }
+
+.pred-cabecera { display: flex; flex-direction: column; gap: 6px; }
+.pred-eyebrow { margin: 0; color: #ffc800; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.pred-titulo { margin: 14px 0 0; font-family: 'Humane', sans-serif; font-weight: 700; text-transform: uppercase; font-size: clamp(64px, 12vw, 120px); line-height: 0.85; }
+.pred-intro { margin: 6px 0 0; color: #a9bcdc; font-size: 15px; line-height: 1.55; max-width: 720px; }
+.pred-estado { color: #a9bcdc; text-align: center; padding: 60px 0; margin: 0; }
+.pred-nota { margin: 0 6px 10px; color: #7e93bf; font-size: 12px; }
+
+.pred-escudo { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+.pred-escudo--vacio { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255, 255, 255, 0.1); font-size: 11px; font-weight: 700; }
+
+/* Real Zaragoza: las cifras clave. */
+.pred-rz { display: flex; flex-direction: column; gap: 16px; padding: 20px; border-radius: 16px; background: linear-gradient(120deg, #0b2a6b, #0a1730); border: 1px solid rgba(255, 255, 255, 0.08); }
+.pred-rz__equipo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; }
+.pred-rz__equipo .pred-escudo { width: 36px; height: 36px; }
+.pred-rz__datos { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 12px; }
+.pred-dato { display: flex; flex-direction: column; gap: 4px; padding: 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); }
+.pred-dato b { font-family: 'Humane', sans-serif; font-weight: 700; font-size: 56px; line-height: 0.9; color: #ffffff; }
+.pred-dato span { color: #a9bcdc; font-size: 13px; }
+.pred-dato--grande { background: rgba(255, 200, 0, 0.12); }
+.pred-dato--grande b { color: #ffc800; font-size: 72px; }
+
+.pred-tarjeta { background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 16px 12px; min-width: 0; }
+.pred-tarjeta__titulo { margin: 2px 6px 12px; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #ffc800; }
+.pred-scroll { overflow-x: auto; }
+
+/* Evolución. */
+.pred-leyenda { display: flex; flex-wrap: wrap; gap: 16px; margin: 0 6px 8px; color: #d6e0f2; font-size: 13px; }
+.pred-leyenda span { display: inline-flex; align-items: center; gap: 7px; }
+.pred-leyenda i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.pred-grafica { position: relative; touch-action: pan-y; }
+.pred-grafica svg { display: block; width: 100%; height: auto; }
+.pred-grafica__rejilla { stroke: rgba(255, 255, 255, 0.08); stroke-width: 1; }
+.pred-grafica__eje { fill: #7e93bf; font-size: 12px; font-family: 'Archivo', sans-serif; }
+.pred-grafica__etiqueta { fill: #ffffff; font-size: 13px; font-weight: 700; font-family: 'Archivo', sans-serif; }
+.pred-grafica__cruz { stroke: rgba(255, 255, 255, 0.3); stroke-width: 1; stroke-dasharray: 3 3; }
+.pred-tooltip {
+  position: absolute; top: 8px; transform: translateX(-50%); pointer-events: none; z-index: 2;
+  display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 10px; white-space: nowrap;
+  background: #03101f; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); color: #a9bcdc; font-size: 12px;
+}
+.pred-tooltip b { color: #ffffff; }
+.pred-tooltip span { display: inline-flex; align-items: center; gap: 6px; }
+.pred-tooltip i { width: 10px; height: 3px; border-radius: 2px; display: inline-block; }
+
+/* Tabla de probabilidades. */
+.pred-tabla { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; min-width: 600px; }
+.pred-tabla th { color: #7e93bf; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; padding: 8px 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+.pred-tabla td { text-align: center; padding: 7px 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #d6e0f2; }
+.pred-tabla .pred-tabla__equipo, .pred-mapa .pred-tabla__equipo { text-align: left; }
+.pred-tabla__equipo span { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.pred-tabla__pos { width: 30px; color: #7e93bf; font-weight: 700; }
+.pred-tabla__fuerte { color: #ffffff; font-weight: 800; }
+.pred-tabla tr.is-rz, .pred-mapa tr.is-rz { background: rgba(255, 200, 0, 0.1); }
+.pred-tabla tr.is-rz td { color: #ffc800; font-weight: 800; }
+.pred-barra {
+  display: inline-block; min-width: 76px; padding: 3px 6px; border-radius: 4px; text-align: right;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, transparent) calc(var(--p) * 100%), rgba(255, 255, 255, 0.04) 0);
+}
+
+/* Mapa de puestos. */
+.pred-mapa { border-collapse: separate; border-spacing: 2px; font-size: 11px; font-variant-numeric: tabular-nums; min-width: 760px; width: 100%; }
+.pred-mapa th { color: #7e93bf; font-weight: 700; padding: 4px 0; text-align: center; border-bottom: 2px solid transparent; }
+.pred-mapa th.z-asc { border-bottom-color: #22c55e; }
+.pred-mapa th.z-play { border-bottom-color: #3b82f6; }
+.pred-mapa th.z-desc { border-bottom-color: #e11d2e; }
+.pred-mapa td { text-align: center; height: 26px; min-width: 26px; border-radius: 4px; color: #ffffff; font-weight: 700; background: rgba(255, 200, 0, calc(var(--p, 0) * 0.95)); }
+.pred-mapa td.is-fuerte { color: #03101f; }
+.pred-mapa td.pred-tabla__equipo { background: none; color: #d6e0f2; font-weight: 600; padding-right: 8px; font-size: 12px; }
+.pred-mapa tr.is-rz td.pred-tabla__equipo { color: #ffc800; font-weight: 800; }
+
+/* Próxima jornada. */
+.pred-partidos { list-style: none; margin: 0 0 10px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 10px; }
+.pred-partidos li { padding: 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.03); display: flex; flex-direction: column; gap: 9px; }
+.pred-partidos li.is-rz { background: rgba(255, 200, 0, 0.08); outline: 1px solid rgba(255, 200, 0, 0.35); }
+.pred-partido__equipos { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; font-size: 13px; font-weight: 700; }
+.pred-partido__equipos > span { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.pred-partido__nombre { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.pred-partido__local { justify-content: flex-end; }
+.pred-partido__vs { color: #7e93bf; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.pred-1x2 { display: flex; gap: 2px; height: 24px; border-radius: 5px; overflow: hidden; font-size: 11px; font-weight: 800; }
+.pred-1x2 span { display: flex; align-items: center; justify-content: center; min-width: 34px; color: #ffffff; }
+.pred-1x2--1 { background: #3a74d9; }
+.pred-1x2--x { background: #4a5872; }
+.pred-1x2--2 { background: #b88a00; }
+
+.pred-faq { margin: 0 6px 14px; }
+.pred-faq h3 { margin: 0 0 4px; color: #ffffff; font-size: 15px; font-weight: 700; line-height: 1.35; }
+.pred-faq p { margin: 0; color: #a9bcdc; font-size: 14px; line-height: 1.6; }
+
+.pred-enlaces { display: flex; flex-wrap: wrap; gap: 12px; }
+.pred-enlaces a { color: #ffc800; text-decoration: none; font-weight: 700; font-size: 14px; padding: 10px 14px; border: 1px solid rgba(255, 200, 0, 0.35); border-radius: 10px; }
+.pred-enlaces a:hover { background: rgba(255, 200, 0, 0.1); }
+
+@media (max-width: 760px) {
+  .pred-contenedor { padding: 28px 16px 40px; }
+  .pred-rz__datos { grid-template-columns: 1fr 1fr; }
+  .pred-dato b { font-size: 44px; }
+  .pred-dato--grande { grid-column: 1 / -1; }
+  .pred-dato--grande b { font-size: 64px; }
+}
+
+/* En el móvil el mapa se desliza de lado: el nombre del equipo se queda fijo. */
+.pred-mapa th:first-child, .pred-mapa td.pred-tabla__equipo { position: sticky; left: 0; z-index: 1; background: #0a1730; }
+.pred-mapa tr.is-rz td.pred-tabla__equipo { background: #1d2a2f; }

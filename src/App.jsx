@@ -40,6 +40,8 @@ const Rival = lazy(() => import('./pages/Rival'))
 const Rivales = lazy(() => import('./pages/Rivales'))
 const Simulador = lazy(() => import('./pages/Simulador'))
 const Clasificacion = lazy(() => import('./pages/Clasificacion'))
+const Cantera = lazy(() => import('./pages/Cantera'))
+const Prediccion = lazy(() => import('./pages/Prediccion'))
 const Zaragozle = lazy(() => import('./pages/Zaragozle'))
 const Pizarra = lazy(() => import('./pages/Pizarra'))
 const GuiaAlcala = lazy(() => import('./pages/GuiaAlcala'))
@@ -105,6 +107,9 @@ export default function App() {
           <Route path="/home2" element={<Home />} />
           <Route path="/simulador" element={<Simulador />} />
           <Route path="/clasificacion" element={<Clasificacion />} />
+          <Route path="/cantera" element={<Navigate to="/cantera/deportivo-aragon" replace />} />
+          <Route path="/cantera/:equipo" element={<Cantera />} />
+          <Route path="/prediccion" element={<Prediccion />} />
           <Route path="/zaragozle" element={<Zaragozle />} />
           <Route path="/pizarra" element={<Pizarra />} />
           <Route path="/guia-alcala" element={<GuiaAlcala />} />

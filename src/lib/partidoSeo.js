@@ -74,7 +74,15 @@ export const fechaLarga = iso => new Date(iso).toLocaleDateString('es-ES', { wee
 export const fechaCorta = iso => new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', timeZone: 'Europe/Madrid' })
 export const horaMadrid = iso => new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' })
 
-export function seoPartido(p) {
+// % de victoria del Real Zaragoza según la predicción RZ Hub de ese partido
+// ({ local, p1, p2 } de prediccion_liga.partidos_rz), o null.
+export function victoriaZaragoza(prediccion) {
+  if (!prediccion) return null
+  const v = (prediccion.local || '').includes('Real Zaragoza') ? prediccion.p1 : prediccion.p2
+  return Number.isFinite(v) ? Math.round(v * 100) : null
+}
+
+export function seoPartido(p, { prediccion } = {}) {
   const { local, visitante } = nombresPartido(p)
   const marcador = p.finalizado ? marcadorPartido(p) : null
   const competicion = competicionCorta(p)
@@ -84,9 +92,13 @@ export function seoPartido(p) {
       description: `${local} ${marcador} ${visitante} (${competicion}, ${fechaLarga(p.kickoff)}): resultado, goleadores del Real Zaragoza, qué pronosticó la afición y las notas de los jugadores.`,
     }
   }
+  // Con predicción, el dato va delante: es lo que más llama en el buscador.
+  const victoria = victoriaZaragoza(prediccion)
   return {
     title: `Pronóstico ${local} - ${visitante} | ${competicion} | RZ Hub`,
-    description: `${local} - ${visitante} (${competicion}, ${fechaCorta(p.kickoff)}, ${horaMadrid(p.kickoff)}): haz tu pronóstico gratis y gana una camiseta oficial del Real Zaragoza. Previa y cara a cara.`,
+    description: victoria != null
+      ? `${local} - ${visitante} (${fechaCorta(p.kickoff)}, ${horaMadrid(p.kickoff)}): el Real Zaragoza tiene un ${victoria} % de opciones de ganar según la predicción RZ Hub. Haz tu pronóstico gratis.`
+      : `${local} - ${visitante} (${competicion}, ${fechaCorta(p.kickoff)}, ${horaMadrid(p.kickoff)}): haz tu pronóstico gratis y gana una camiseta oficial del Real Zaragoza. Previa y cara a cara.`,
   }
 }
 
@@ -129,12 +141,14 @@ function listaNatural(arr) {
 // /proximo-partido: siempre el siguiente partido (o el que se está jugando).
 // Compite por "próximo partido del Real Zaragoza", "cuándo juega el Real
 // Zaragoza" y "dónde ver el Real Zaragoza".
-export function seoProximoPartido(p) {
+export function seoProximoPartido(p, { prediccion } = {}) {
   const { local, visitante } = nombresPartido(p)
   const donde = p.tv ? ` Dónde verlo: ${p.tv}.` : ''
+  const victoria = victoriaZaragoza(prediccion)
+  const pronostico = victoria != null ? ` Predicción RZ Hub: ${victoria} % de victoria.` : ' Previa, pronóstico y porra con camiseta de premio.'
   return {
     title: `Próximo partido del Real Zaragoza: vs ${p.rival} (${fechaCorta(p.kickoff)})`,
-    description: `Cuándo juega el Real Zaragoza: ${local} - ${visitante}, ${fechaCorta(p.kickoff)} a las ${horaMadrid(p.kickoff)} (${competicionCorta(p)}).${donde} Previa, pronóstico y porra con camiseta de premio.`,
+    description: `Cuándo juega el Real Zaragoza: ${local} - ${visitante}, ${fechaCorta(p.kickoff)} a las ${horaMadrid(p.kickoff)} (${competicionCorta(p)}).${donde}${pronostico}`,
     h1: `Próximo partido del Real Zaragoza: ${local} vs ${visitante}`,
   }
 }

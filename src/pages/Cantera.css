@@ -1,0 +1,107 @@
+.cant-page { min-height: 100vh; background: #03101f; color: #ffffff; }
+.cant-contenedor { max-width: 1080px; margin: 0 auto; padding: 40px 32px 56px; display: flex; flex-direction: column; gap: 22px; }
+
+.cant-cabecera { display: flex; flex-direction: column; gap: 6px; }
+.cant-eyebrow { margin: 0; color: #ffc800; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.cant-titulo { margin: 14px 0 0; font-family: 'Humane', sans-serif; font-weight: 700; text-transform: uppercase; font-size: clamp(64px, 12vw, 120px); line-height: 0.85; }
+.cant-intro { margin: 6px 0 0; color: #a9bcdc; font-size: 15px; line-height: 1.55; max-width: 680px; }
+.cant-estado { color: #a9bcdc; text-align: center; padding: 40px 0; margin: 0; }
+
+.cant-pestanas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.cant-pestana {
+  text-decoration: none;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 12px 14px; cursor: pointer; text-align: left;
+  background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: #d6e0f2; font: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.cant-pestana:hover { border-color: rgba(255, 200, 0, 0.4); }
+.cant-pestana.is-activa { border-color: #ffc800; background: rgba(255, 200, 0, 0.08); }
+.cant-pestana__nombre { font-size: 16px; font-weight: 800; color: #ffffff; }
+.cant-pestana.is-activa .cant-pestana__nombre { color: #ffc800; }
+.cant-pestana__comp { font-size: 12px; color: #7e93bf; }
+
+.cant-equipo { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 18px 20px; background: linear-gradient(120deg, #0b2a6b, #0a1730); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; }
+.cant-equipo__nombre { margin: 0; font-size: 22px; font-weight: 800; }
+.cant-equipo__comp { margin: 2px 0 0; color: #a9bcdc; font-size: 13px; }
+.cant-equipo__datos { margin-left: auto; display: flex; gap: 18px; color: #a9bcdc; font-size: 13px; }
+.cant-equipo__datos b { display: block; color: #ffc800; font-size: 22px; font-weight: 800; line-height: 1.1; }
+
+.cant-escudo { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
+.cant-escudo--grande { width: 56px; height: 56px; }
+.cant-escudo--vacio { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255, 255, 255, 0.1); font-size: 11px; font-weight: 700; color: #d6e0f2; }
+
+.cant-destacados { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.cant-partido { background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+.cant-partido__cabecera { display: flex; justify-content: space-between; align-items: center; color: #ffc800; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.cant-partido__equipos { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cant-partido__equipo { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; font-size: 14px; font-weight: 700; color: #d6e0f2; min-width: 0; }
+.cant-partido__equipo.is-propio { color: #ffffff; }
+.cant-partido__marcador { flex: 0 0 auto; font-family: 'Humane', sans-serif; font-weight: 700; font-size: 64px; line-height: 1; color: #ffffff; }
+.cant-partido__pie { margin: 0; text-align: center; color: #a9bcdc; font-size: 13px; text-transform: capitalize; }
+
+.cant-res { padding: 3px 9px; border-radius: 999px; font-size: 11px; letter-spacing: 0.04em; }
+.cant-res--V { background: #22c55e; color: #03101f; }
+.cant-res--E { background: #7e93bf; color: #03101f; }
+.cant-res--D { background: #e11d2e; color: #ffffff; }
+
+.cant-columnas { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.cant-tarjeta { background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 14px 12px; min-width: 0; }
+.cant-tarjeta__titulo { margin: 2px 6px 10px; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #ffc800; }
+
+.cant-lista { list-style: none; margin: 0; padding: 0; }
+.cant-fila { display: grid; grid-template-columns: 34px 92px minmax(0, 1fr) 52px minmax(0, 1fr); align-items: center; gap: 8px; padding: 8px 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; color: #d6e0f2; }
+.cant-fila.is-proximo { background: rgba(255, 200, 0, 0.07); border-radius: 8px; }
+.cant-fila__j { color: #7e93bf; font-weight: 700; font-size: 12px; }
+.cant-fila__fecha { color: #a9bcdc; font-size: 12px; text-transform: capitalize; }
+.cant-fila__eq { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.cant-fila__nombre { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cant-fila__eq--local { justify-content: flex-end; text-align: right; }
+.cant-fila__eq.is-propio { color: #ffc800; font-weight: 800; }
+.cant-fila__marcador { text-align: center; font-weight: 800; font-variant-numeric: tabular-nums; border-radius: 6px; padding: 3px 0; background: rgba(255, 255, 255, 0.06); font-size: 12px; text-transform: capitalize; }
+.cant-fila__marcador--V { background: rgba(34, 197, 94, 0.22); color: #6ee79a; }
+.cant-fila__marcador--E { background: rgba(126, 147, 191, 0.22); }
+.cant-fila__marcador--D { background: rgba(225, 29, 46, 0.25); color: #ff8a93; }
+
+.cant-tabla { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.cant-tabla th { color: #7e93bf; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; text-align: center; padding: 8px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+.cant-tabla td { text-align: center; padding: 7px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #d6e0f2; }
+.cant-tabla .cant-tabla__equipo { text-align: left; }
+.cant-tabla__equipo span { display: inline-flex; align-items: center; gap: 8px; }
+.cant-tabla__pos { width: 30px; color: #7e93bf; font-weight: 700; }
+.cant-tabla__pts { font-weight: 800; color: #ffffff; }
+.cant-tabla__fila.is-propio { background: rgba(255, 200, 0, 0.12); }
+.cant-tabla__fila.is-propio td { color: #ffc800; font-weight: 800; }
+
+/* Zonas de la clasificación (marcas de BeSoccer). */
+.cant-tabla__fila.cant-zona--asc { box-shadow: inset 3px 0 0 #22c55e; }
+.cant-tabla__fila.cant-zona--play, .cant-tabla__fila.cant-zona--cprjuv { box-shadow: inset 3px 0 0 #3b82f6; }
+.cant-tabla__fila.cant-zona--possnext { box-shadow: inset 3px 0 0 #93b4f5; }
+.cant-tabla__fila.cant-zona--desc { box-shadow: inset 3px 0 0 #e11d2e; }
+.cant-leyenda { display: flex; flex-wrap: wrap; gap: 14px; padding: 12px 6px 0; color: #a9bcdc; font-size: 12px; }
+.cant-leyenda span { display: inline-flex; align-items: center; gap: 6px; }
+.cant-punto { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.cant-punto.cant-zona--asc { background: #22c55e; }
+.cant-punto.cant-zona--play, .cant-punto.cant-zona--cprjuv { background: #3b82f6; }
+.cant-punto.cant-zona--possnext { background: #93b4f5; }
+.cant-punto.cant-zona--desc { background: #e11d2e; }
+
+.cant-fuente { margin: 0; color: #7e93bf; font-size: 12px; }
+.cant-enlaces { display: flex; flex-wrap: wrap; gap: 12px; }
+.cant-enlaces a { color: #ffc800; text-decoration: none; font-weight: 700; font-size: 14px; padding: 10px 14px; border: 1px solid rgba(255, 200, 0, 0.35); border-radius: 10px; }
+.cant-enlaces a:hover { background: rgba(255, 200, 0, 0.1); }
+
+@media (max-width: 860px) {
+  .cant-columnas { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .cant-contenedor { padding: 28px 16px 40px; }
+  .cant-ocultable { display: none; }
+  .cant-pestanas { gap: 6px; }
+  .cant-pestana { padding: 10px; }
+  .cant-pestana__nombre { font-size: 14px; }
+  .cant-pestana__comp { font-size: 11px; }
+  .cant-equipo__datos { margin-left: 0; width: 100%; justify-content: space-between; }
+  .cant-fila { grid-template-columns: 28px minmax(0, 1fr) 46px minmax(0, 1fr); }
+  .cant-fila__fecha { display: none; }
+  .cant-partido__marcador { font-size: 52px; }
+}

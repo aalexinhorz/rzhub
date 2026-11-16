@@ -1,4 +1,6 @@
 .sim-page { min-height: 100vh; background: #03101f; }
+.sim-header__enlace { color: #ffc800; font-weight: 700; text-decoration: none; }
+.sim-header__enlace:hover { text-decoration: underline; }
 .sim-page__body { padding: 40px 0 0; }
 .sim-page__container {
   width: 100%;
