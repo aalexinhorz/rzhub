@@ -25,6 +25,7 @@ import GraficoRivalCopa from '../components/graficos/GraficoRivalCopa'
 import GraficoNotasPartido from '../components/graficos/GraficoNotasPartido'
 import GraficoMiPrediccion from '../components/graficos/GraficoMiPrediccion'
 import GraficoPorPartido from '../components/graficos/GraficoPorPartido'
+import GraficoCarrusel from '../components/graficos/GraficoCarrusel'
 import GraficoDato from '../components/graficos/GraficoDato'
 import GraficoConvocatoria from '../components/graficos/GraficoConvocatoria'
 import GraficoJugador from '../components/graficos/GraficoJugador'
@@ -60,6 +61,7 @@ const PLANTILLAS = [
   { id: 'jugador', label: 'Foto de jugador', ayuda: 'Foto a toda página con la tarjeta del jugador, su nombre en grande y una pastilla (la temporada u otro texto).' },
   { id: 'por-partido', label: 'Por partido', ayuda: 'Hasta 8 filas con el escudo del rival y un valor grande (minutos, goles, notas…). Los minutos de un jugador se rellenan solos con las alineaciones guardadas. La foto va a la izquierda.' },
   { id: 'dato', label: 'El dato', ayuda: 'Un número enorme con su etiqueta y una explicación (lo que va entre **asteriscos** sale en negrita). La foto va a la izquierda.' },
+  { id: 'carrusel', label: 'Carrusel', ayuda: 'Para explicar algo en varias diapositivas: portada con foto y título y detrás las que quieras con texto y un dato destacado. Descárgalas o compártelas todas de una vez.' },
   { id: 'mercado', label: 'Fichaje / salida', ayuda: 'Para anunciar fichajes y salidas. Elige si llega o se va, los dos clubes y la operación, escribe el nombre y sube la foto (arrástrala para encuadrarla).' },
   { id: 'noticia', label: 'Noticia', ayuda: 'Sube la foto (o rellénalo con una noticia de la web), escribe el titular y descárgalo. Arrastra la foto para encuadrarla.' },
 ]
@@ -137,6 +139,7 @@ export default function RedaccionGraficos() {
       {actual.id === 'porra' && <GraficoPorra logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'on-tour' && <GraficoOnTour logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'horario' && <GraficoHorario logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'carrusel' && <GraficoCarrusel logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'portada' && <GraficoPortada logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'finde' && <GraficoFinde logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'herramienta' && <GraficoHerramienta logo={logo} fuentesListas={fuentesListas} />}

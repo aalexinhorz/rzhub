@@ -57,6 +57,24 @@ export async function descargarCanvas(canvas, nombreArchivo) {
   setTimeout(() => URL.revokeObjectURL(url), 2000)
 }
 
+// Varias imágenes de golpe (p. ej. un carrusel): en el móvil se comparten
+// todas juntas; si el navegador no deja, se descargan una detrás de otra.
+export async function compartirVarios(canvases, nombres) {
+  const archivos = await Promise.all(canvases.map(async (c, i) => new File([await aBlob(c)], comoJpg(nombres[i]), { type: 'image/jpeg' })))
+  if (navigator.canShare?.({ files: archivos })) {
+    try { await navigator.share({ files: archivos }) } catch { /* cancelado */ }
+    return true
+  }
+  await descargarVarios(canvases, nombres)
+  return false
+}
+export async function descargarVarios(canvases, nombres) {
+  for (let i = 0; i < canvases.length; i++) {
+    await descargarCanvas(canvases[i], nombres[i])
+    await new Promise(r => setTimeout(r, 350))
+  }
+}
+
 // Menú de compartir del sistema (en el móvil: guardar en Fotos, Instagram…).
 // Devuelve false si el navegador no deja y se ha descargado en su lugar.
 export async function compartirCanvas(canvas, nombreArchivo) {

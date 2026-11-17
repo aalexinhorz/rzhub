@@ -4,6 +4,8 @@
 const ICONOS = {
   // Noticia: periódico.
   noticia: 'M4 5h12v14H6.5A2.5 2.5 0 0 1 4 16.5Z M16 9h4v8a2 2 0 0 1-4 0 M7.5 9h5 M7.5 12.5h5 M7.5 16h3',
+  // Seguir: persona con un +.
+  seguir: 'M14.5 20v-1.5a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4V20 M8.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M18.5 8v6 M15.5 11h6',
   // Última hora: rayo.
   rayo: 'M13 2.5 5 13.5h6l-1 8 8-11h-6Z',
   // Oficial: sello con un check.

@@ -53,10 +53,12 @@ export function CampoFoto({ foto, retoque, elegirFoto, ajuste, setAjuste, credit
         </label>
       )}
       {foto && retoque && <Retoque retoque={retoque} />}
-      <label className="graficos-campo">
-        Crédito de la foto
-        <input value={credito} onChange={e => onCredito(e.target.value)} placeholder="Foto: Nombre Apellido" />
-      </label>
+      {onCredito && (
+        <label className="graficos-campo">
+          Crédito de la foto
+          <input value={credito} onChange={e => onCredito(e.target.value)} placeholder="Foto: Nombre Apellido" />
+        </label>
+      )}
     </fieldset>
   )
 }
