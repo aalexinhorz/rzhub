@@ -9,6 +9,7 @@ import GraficoCalendario from '../components/graficos/GraficoCalendario'
 import GraficoRankingJugadores from '../components/graficos/GraficoRankingJugadores'
 import GraficoVersus from '../components/graficos/GraficoVersus'
 import GraficoRankingEquipos from '../components/graficos/GraficoRankingEquipos'
+import GraficoBarras from '../components/graficos/GraficoBarras'
 import GraficoCaraACara from '../components/graficos/GraficoCaraACara'
 import GraficoMercado from '../components/graficos/GraficoMercado'
 import GraficoResultado from '../components/graficos/GraficoResultado'
@@ -43,6 +44,7 @@ const PLANTILLAS = [
   { id: 'ranking-jugadores', label: 'Ránking jugadores', ayuda: 'Elige hasta 5 jugadores y su número. Sube una foto para la derecha y arrástrala para encuadrarla.' },
   { id: 'versus', label: 'Versus', ayuda: 'Dos jugadores frente a frente con sus estadísticas. Sube una foto para la derecha y arrástrala.' },
   { id: 'ranking-equipos', label: 'Ránking equipos', ayuda: 'Hasta 6 equipos con escudo y su número. Sube una foto para la derecha y arrástrala.' },
+  { id: 'barras', label: 'Barras', ayuda: 'Ránking de hasta 8 equipos a todo el ancho: la barra crece con el número. Elige cuál va en amarillo.' },
   { id: 'cara-a-cara', label: 'Cara a cara', ayuda: 'Elige el rival: los últimos resultados salen solos del historial de la web. La foto va abajo.' },
   { id: 'resultado', label: 'Final de partido', ayuda: 'Elige un partido jugado y se rellena solo (equipos, marcador, goleadores del Real Zaragoza, competición). Sube la foto y arrástrala.' },
   { id: 'notas-partido', label: 'Las notas', ayuda: 'Para abrir las notas de un partido jugado: el marcador y los escudos salen solos (la caja del rival coge el color de su escudo). Sube la foto y arrástrala.' },
@@ -130,6 +132,7 @@ export default function RedaccionGraficos() {
       {actual.id === 'ranking-jugadores' && <GraficoRankingJugadores logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'versus' && <GraficoVersus logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'ranking-equipos' && <GraficoRankingEquipos logo={logo} fuentesListas={fuentesListas} />}
+      {actual.id === 'barras' && <GraficoBarras logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'cara-a-cara' && <GraficoCaraACara logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'mercado' && <GraficoMercado logo={logo} fuentesListas={fuentesListas} />}
       {actual.id === 'resultado' && <GraficoResultado logo={logo} fuentesListas={fuentesListas} />}
