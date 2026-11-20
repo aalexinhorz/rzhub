@@ -77,7 +77,9 @@ export function useFotoArrastrable(zona, ajuste, setAjuste) {
     onPointerUp: () => { arrastre.current = null },
     onPointerCancel: () => { arrastre.current = null },
   }
-  return { foto, elegirFoto, handlers, retoque }
+  // Para poner una imagen ya cargada (p. ej. la captura guardada de una mejora).
+  const ponerFoto = img => { setOriginal(img); setAjuste({ zoom: 1, dx: 0, dy: 0 }) }
+  return { foto, elegirFoto, ponerFoto, handlers, retoque }
 }
 
 // Equipos (Real Zaragoza + rivales con plantilla), una sola carga.
