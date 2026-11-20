@@ -1,12 +1,69 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import SEO, { SITE_URL } from '../components/SEO'
 import { supabase } from '../hooks/useAuth'
 import useAuth from '../hooks/useAuth'
+import { formations } from '../lib/formations'
+import { drawLineupCanvas } from '../lib/lineupCanvas'
 import '../components/HeroSection.css'
 
 const DEFAULT_PHOTO = 'https://gqslryreaiqmvnyyhwzf.supabase.co/storage/v1/object/public/photoplayers/fallback-dark.png'
 
-function LineupCard({ lineup, onDelete, isOwner }) {
+// Alineación a pantalla completa, dibujada igual que la imagen que se
+// descarga en Line-up: misma formación y cada jugador donde lo colocaron.
+function LineupModal({ lineup, onClose }) {
+  const contenedorRef = useRef(null)
+  const [estado, setEstado] = useState('cargando')
+
+  useEffect(() => {
+    let activo = true
+    const formation = formations[lineup.formation] ? lineup.formation : '4-2-3-1'
+    drawLineupCanvas({
+      slotsLayout: formations[formation],
+      slots: lineup.slots || {},
+      subs: lineup.subs || {},
+      teamName: lineup.team_name || 'El XI del Real Zaragoza',
+      formation,
+    }).then(canvas => {
+      if (!activo || !contenedorRef.current) return
+      canvas.style.width = '100%'
+      canvas.style.height = 'auto'
+      canvas.style.display = 'block'
+      canvas.style.borderRadius = '12px'
+      contenedorRef.current.replaceChildren(canvas)
+      setEstado('listo')
+    }).catch(e => {
+      console.error('No se pudo dibujar la alineación:', e)
+      if (activo) setEstado('error')
+    })
+    return () => { activo = false }
+  }, [lineup])
+
+  useEffect(() => {
+    const alPulsar = e => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', alPulsar)
+    const overflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.removeEventListener('keydown', alPulsar); document.body.style.overflow = overflow }
+  }, [onClose])
+
+  return (
+    <div role="dialog" aria-modal="true" aria-label={lineup.team_name || 'Alineación'} onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(3,16,31,0.88)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', overflowY: 'auto', padding: '24px 16px' }}>
+      <div onClick={e => e.stopPropagation()} style={{ position: 'relative', width: '100%', maxWidth: '560px', margin: 'auto 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '10px' }}>
+          <span style={{ color: 'rgba(255,255,255,0.75)', fontFamily: 'Archivo, sans-serif', fontSize: '13px' }}>
+            {lineup.user_name || 'Usuario'} · {lineup.formation}
+          </span>
+          <button type="button" onClick={onClose} aria-label="Cerrar" style={{ background: 'rgba(255,255,255,0.12)', border: 'none', color: '#fff', width: '36px', height: '36px', borderRadius: '50%', cursor: 'pointer', fontSize: '18px', lineHeight: 1, flexShrink: 0 }}>✕</button>
+        </div>
+        {estado === 'cargando' && <p style={{ color: 'rgba(255,255,255,0.6)', fontFamily: 'Archivo, sans-serif', textAlign: 'center', padding: '80px 0', margin: 0 }}>Cargando alineación…</p>}
+        {estado === 'error' && <p style={{ color: '#f87171', fontFamily: 'Archivo, sans-serif', textAlign: 'center', padding: '80px 0', margin: 0 }}>No se ha podido cargar esta alineación.</p>}
+        <div ref={contenedorRef} />
+      </div>
+    </div>
+  )
+}
+
+function LineupCard({ lineup, onDelete, isOwner, onOpen }) {
   const slots = lineup.slots || {}
   const formation = lineup.formation
   const nombre = lineup.user_name || 'Usuario'
@@ -15,7 +72,7 @@ function LineupCard({ lineup, onDelete, isOwner }) {
   const jugadores = Object.values(slots).filter(Boolean)
 
   return (
-    <div style={{ background: '#09215F', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #FFC800' }}>
+    <div role="button" tabIndex={0} onClick={() => onOpen(lineup)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(lineup) } }} title="Ver la alineación" style={{ background: '#09215F', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #FFC800', cursor: 'pointer' }}>
       <div style={{ background: 'white', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <div style={{ color: '#09215F', fontFamily: 'Humane, sans-serif', fontSize: '28px', fontWeight: '700', textTransform: 'uppercase', lineHeight: '1.1' }}>
@@ -26,7 +83,7 @@ function LineupCard({ lineup, onDelete, isOwner }) {
           </div>
         </div>
         {isOwner && (
-          <button onClick={() => onDelete(lineup.id)} style={{ background: 'rgba(9,33,95,0.1)', border: 'none', color: '#09215F', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '13px' }}>🗑</button>
+          <button onClick={e => { e.stopPropagation(); onDelete(lineup.id) }} aria-label="Borrar alineación" style={{ background: 'rgba(9,33,95,0.1)', border: 'none', color: '#09215F', borderRadius: '6px', padding: '4px 10px', cursor: 'pointer', fontSize: '13px' }}>🗑</button>
         )}
       </div>
       <div style={{ padding: '12px 16px' }}>
@@ -47,7 +104,7 @@ function LineupCard({ lineup, onDelete, isOwner }) {
             </div>
             <span style={{ fontSize: '12px', fontFamily: 'sans-serif', color: 'rgba(255,255,255,0.7)' }}>{nombre}</span>
           </div>
-          <span style={{ fontSize: '11px', fontFamily: 'sans-serif', color: 'rgba(255,255,255,0.4)' }}>{fecha}</span>
+          <span style={{ fontSize: '11px', fontFamily: 'sans-serif', color: 'rgba(255,255,255,0.4)' }}>{fecha} · <span style={{ color: '#FFC800', fontWeight: 700 }}>Ver XI ›</span></span>
         </div>
       </div>
     </div>
@@ -110,6 +167,7 @@ export default function Comunidad() {
   const [lineups, setLineups] = useState([])
   const [tierlists, setTierlists] = useState([])
   const [loading, setLoading] = useState(true)
+  const [abierta, setAbierta] = useState(null)
 
   useEffect(() => { fetchAll() }, [])
 
@@ -177,7 +235,7 @@ export default function Comunidad() {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
             {tab === 'lineups' && lineups.map(l => (
-              <LineupCard key={l.id} lineup={l} onDelete={deleteLineup} isOwner={user?.id === l.user_id} />
+              <LineupCard key={l.id} lineup={l} onDelete={deleteLineup} isOwner={user?.id === l.user_id} onOpen={setAbierta} />
             ))}
             {tab === 'tierlists' && tierlists.map(t => (
               <TierlistCard key={t.id} tierlist={t} onDelete={deleteTierlist} isOwner={user?.id === t.user_id} />
@@ -191,6 +249,7 @@ export default function Comunidad() {
           </div>
         )}
       </div>
+      {abierta && <LineupModal lineup={abierta} onClose={() => setAbierta(null)} />}
     </div>
   )
 }
