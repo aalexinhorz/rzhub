@@ -254,3 +254,54 @@
 .graficos-recorte img { width: 44px; height: 54px; object-fit: contain; border-radius: 6px; background: repeating-conic-gradient(#1b2b48 0% 25%, #12203a 0% 50%) 50% / 12px 12px; flex: 0 0 auto; }
 .graficos-recorte .graficos-campo { flex: 1 1 auto; min-width: 0; }
 .graficos-recorte .graficos-mini-boton:disabled { opacity: 0.4; cursor: default; }
+
+/* ── Galería de plantillas ── */
+.graficos-galeria { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+.graficos-galeria__cabecera { display: flex; flex-direction: column; gap: 6px; }
+.graficos-galeria__eyebrow { margin: 0; color: #ffc800; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.graficos-galeria__cabecera h1 { margin: 10px 0 0; font-family: 'Humane', sans-serif; font-weight: 700; text-transform: uppercase; font-size: clamp(64px, 12vw, 110px); line-height: 0.85; color: #ffffff; }
+.graficos-galeria__cabecera p { margin: 6px 0 0; color: #a9bcdc; font-size: 15px; }
+
+.graficos-seccion h2 {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 18px; padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff; font-size: clamp(22px, 3vw, 30px); font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em;
+}
+.graficos-seccion h2 svg { color: #ffc800; flex-shrink: 0; }
+
+.graficos-tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 18px; }
+.graficos-tarjeta {
+  display: flex; flex-direction: column; overflow: hidden; border-radius: 14px;
+  background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.graficos-tarjeta:hover { transform: translateY(-3px); border-color: rgba(255, 200, 0, 0.45); box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35); }
+.graficos-tarjeta__miniatura { display: block; padding: 0; border: none; background: #011947; cursor: pointer; aspect-ratio: 4 / 5; overflow: hidden; border-bottom: 4px solid #0045bf; }
+.graficos-tarjeta__miniatura img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.25s ease; }
+.graficos-tarjeta:hover .graficos-tarjeta__miniatura img { transform: scale(1.03); }
+.graficos-tarjeta__cuerpo { display: flex; flex-direction: column; gap: 6px; padding: 16px 16px 18px; flex: 1; }
+.graficos-tarjeta__cuerpo h3 { margin: 0; color: #ffffff; font-size: 18px; font-weight: 800; }
+.graficos-tarjeta__cuerpo p { margin: 0 0 10px; color: #a9bcdc; font-size: 14px; line-height: 1.45; flex: 1; }
+.graficos-tarjeta__boton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 14px;
+  border: none; border-radius: 10px; cursor: pointer; background: #ffc800; color: #03101f;
+  font: inherit; font-size: 14px; font-weight: 800;
+  transition: filter 0.15s ease;
+}
+.graficos-tarjeta__boton:hover { filter: brightness(1.07); }
+
+.graficos-volver {
+  display: inline-flex; align-items: center; gap: 6px; margin: 0 0 14px; padding: 8px 14px 8px 10px;
+  border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.05);
+  color: #ffffff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.graficos-volver:hover { border-color: #ffc800; color: #ffc800; }
+
+@media (max-width: 560px) {
+  .graficos-tarjetas { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .graficos-tarjeta__cuerpo { padding: 12px; }
+  .graficos-tarjeta__cuerpo h3 { font-size: 15px; }
+  .graficos-tarjeta__cuerpo p { font-size: 12px; }
+  .graficos-tarjeta__boton { font-size: 12px; padding: 10px 8px; }
+  .graficos-tarjeta__boton svg { display: none; }
+}
