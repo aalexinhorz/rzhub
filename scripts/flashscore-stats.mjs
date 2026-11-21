@@ -98,7 +98,29 @@ const sinCasar = new Set()
 for (const p of partidos) {
   // /partido/<mid>/ redirige a la ficha del partido con su enlace completo.
   await pagina.goto(`https://www.flashscore.es/partido/${p.mid}/`, { waitUntil: 'domcontentloaded' })
-  const url = pagina.url().replace(/\/\?mid=/, '/resumen/alineaciones/?mid=')
+  const base = pagina.url()
+  // Goles y asistencias del Real Zaragoza: no están en la ficha del jugador,
+  // salen del resumen (cada gol cambia el marcador y lleva la asistencia
+  // entre paréntesis; los de penalti, "(Penalti)" sin enlace).
+  await pagina.goto(base.replace(/\/\?mid=/, '/resumen/?mid='), { waitUntil: 'networkidle' })
+  await pasarAvisos()
+  await pagina.locator('.smv__participantRow').first().waitFor({ timeout: 15000 }).catch(() => {})
+  const goles = await pagina.evaluate(lado => {
+    const out = []
+    document.querySelectorAll(`.smv__participantRow.smv__${lado}Participant`).forEach(fila => {
+      if (!fila.querySelector('[class*="incidentHomeScore"], [class*="incidentAwayScore"]')) return
+      if (fila.querySelector('[data-testid*="own"]')) return // en propia: no cuenta para nadie del equipo
+      const autor = fila.querySelector('.smv__playerName')?.innerText.trim()
+      const asistente = fila.querySelector('.smv__assist a')?.innerText.trim() || null
+      if (autor) out.push({ autor, asistente })
+    })
+    return out
+  }, p.zaragozaFuera ? 'away' : 'home')
+  const contar = campo => goles.reduce((m, g) => (g[campo] ? { ...m, [g[campo]]: (m[g[campo]] || 0) + 1 } : m), {})
+  const golesDe = contar('autor')
+  const asistDe = contar('asistente')
+
+  const url = base.replace(/\/\?mid=/, '/resumen/alineaciones/?mid=')
   await pagina.goto(url, { waitUntil: 'networkidle' })
   await pasarAvisos()
   const lado = p.zaragozaFuera ? 'right' : 'left'
@@ -154,7 +176,12 @@ for (const p of partidos) {
       goles_zaragoza: p.oficial.goles_zaragoza, goles_rival: p.oficial.goles_rival,
       player_id: jugador?.id ?? null, nombre_flashscore: ficha.nombre,
       dorsal: Number(textoFila[0]) || null, posicion: ficha.posicion, minutos: ficha.minutos, rating: ficha.rating,
-      stats: ficha.stats.filter(s => s.valor && s.valor !== '–'), actualizado: new Date().toISOString(),
+      stats: [
+        ...(golesDe[ficha.nombre] ? [{ seccion: 'Partido', etiqueta: golesDe[ficha.nombre] === 1 ? 'Gol' : 'Goles', valor: String(golesDe[ficha.nombre]) }] : []),
+        ...(asistDe[ficha.nombre] ? [{ seccion: 'Partido', etiqueta: asistDe[ficha.nombre] === 1 ? 'Asistencia' : 'Asistencias', valor: String(asistDe[ficha.nombre]) }] : []),
+        ...ficha.stats.filter(s => s.valor && s.valor !== '–'),
+      ],
+      actualizado: new Date().toISOString(),
     })
   }
   if (filasGuardar.length) {
