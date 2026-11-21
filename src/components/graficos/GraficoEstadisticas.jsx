@@ -4,6 +4,7 @@ import { colorDeEscudo } from '../../lib/colorEscudo'
 import { cargarProximoYUltimo } from '../../lib/partidoActual'
 import { cargarImagen, contextoGrafico, ESCALA, escudoDe, slug } from '../../lib/graficosComun'
 import { ANCHO, ALTO, PANEL_X, dibujarGraficoStats, encajeFoto } from '../../lib/graficoStats'
+import { supabase } from '../../hooks/useAuth'
 import AccionesGrafico from './AccionesGrafico'
 
 // Plantilla "Estadísticas de jugador": se sube la foto desde el móvil, se
@@ -31,6 +32,140 @@ const EQUIPOS = [...new Set(['Real Zaragoza', ...Object.keys(ESCUDOS_CLUBS)])].s
 
 function leerBorrador() {
   try { return JSON.parse(localStorage.getItem(CLAVE_BORRADOR)) || null } catch { return null }
+}
+
+// "4/6 (67%)" → "4/6" o "67%"; el resto tal cual.
+function valorStat(v, porcentaje) {
+  const m = String(v).match(/^(.+?)\s*\((\d+%)\)$/)
+  if (!m) return String(v)
+  return porcentaje ? m[2] : m[1]
+}
+const fechaCorta = f => `${f.slice(8, 10)}/${f.slice(5, 7)}`
+
+// Estadísticas individuales de Flashscore (tabla stats_jugador_partido):
+// se elige jugador y partido y se marcan hasta 4.
+function DesdeFlashscore({ onAplicar }) {
+  const [filas, setFilas] = useState(null)
+  const [nombres, setNombres] = useState({})
+  const [jugador, setJugador] = useState('')
+  const [partidoId, setPartidoId] = useState('')
+  const [marcadas, setMarcadas] = useState([])
+  const [porcentaje, setPorcentaje] = useState(false)
+
+  useEffect(() => {
+    Promise.all([
+      supabase.from('stats_jugador_partido').select('id, player_id, nombre_flashscore, fecha, rival, sede, goles_zaragoza, goles_rival, minutos, rating, posicion, stats').order('fecha', { ascending: false }),
+      supabase.from('players').select('id, name').eq('is_zaragoza', true),
+    ]).then(([{ data }, { data: js }]) => {
+      setFilas(data || [])
+      setNombres(Object.fromEntries((js || []).map(j => [j.id, j.name])))
+    })
+  }, [])
+
+  const claveDe = f => (f.player_id ? `p${f.player_id}` : `f${f.nombre_flashscore}`)
+  const nombreDe = f => nombres[f.player_id] || f.nombre_flashscore
+  const jugadores = useMemo(() => {
+    const vistos = new Map()
+    for (const f of filas || []) if (!vistos.has(claveDe(f))) vistos.set(claveDe(f), nombreDe(f))
+    return [...vistos].sort((a, b) => a[1].localeCompare(b[1], 'es'))
+  }, [filas, nombres]) // eslint-disable-line react-hooks/exhaustive-deps
+  const partidos = (filas || []).filter(f => claveDe(f) === jugador)
+  const fila = partidos.find(f => String(f.id) === partidoId)
+  const lista = fila ? [
+    ...(fila.rating ? [{ seccion: 'Partido', etiqueta: 'Rating Flashscore', valor: String(fila.rating) }] : []),
+    { seccion: 'Partido', etiqueta: 'Minutos jugados', valor: `${fila.minutos}'` },
+    ...(fila.stats || []),
+  ] : []
+  const clave = s => `${s.seccion}|${s.etiqueta}`
+
+  const aplicar = (f, claves, pct) => {
+    const elegidas = claves.map(k => [...(f.rating ? [{ seccion: 'Partido', etiqueta: 'Rating Flashscore', valor: String(f.rating) }] : []), { seccion: 'Partido', etiqueta: 'Minutos jugados', valor: `${f.minutos}'` }, ...(f.stats || [])].find(s => clave(s) === k)).filter(Boolean)
+    const nombre = nombreDe(f)
+    const partes = nombre.split(/\s+/)
+    onAplicar({
+      nombre: partes.length > 1 ? partes[0] : '',
+      apellido: partes.length > 1 ? partes.slice(1).join(' ') : nombre,
+      partido: f,
+      stats: elegidas.map(s => ({ valor: valorStat(s.valor, pct), etiqueta: s.etiqueta.replace(' (xG)', '').replace(' (xA)', '').replace(' (xGOT)', '') })),
+    })
+  }
+
+  const elegirPartido = id => {
+    setPartidoId(id)
+    setMarcadas([])
+    const f = partidos.find(x => String(x.id) === id)
+    if (f) aplicar(f, [], porcentaje)
+  }
+  const marcar = k => {
+    const nuevas = marcadas.includes(k) ? marcadas.filter(x => x !== k) : marcadas.length < 4 ? [...marcadas, k] : marcadas
+    setMarcadas(nuevas)
+    if (fila) aplicar(fila, nuevas, porcentaje)
+  }
+  const cambiarPorcentaje = v => {
+    setPorcentaje(v)
+    if (fila) aplicar(fila, marcadas, v)
+  }
+
+  if (filas && !filas.length) return null
+  const secciones = [...new Set(lista.map(s => s.seccion))]
+
+  return (
+    <fieldset>
+      <legend>Desde Flashscore</legend>
+      {!filas ? <p className="graficos-nota">Cargando…</p> : (
+        <>
+          <div className="graficos-fila">
+            <label className="graficos-campo">
+              Jugador
+              <select value={jugador} onChange={e => { setJugador(e.target.value); setPartidoId(''); setMarcadas([]) }}>
+                <option value="">— Elige —</option>
+                {jugadores.map(([k, n]) => <option key={k} value={k}>{n}</option>)}
+              </select>
+            </label>
+            <label className="graficos-campo">
+              Partido
+              <select value={partidoId} disabled={!jugador} onChange={e => elegirPartido(e.target.value)}>
+                <option value="">— Elige —</option>
+                {partidos.map(f => (
+                  <option key={f.id} value={f.id}>
+                    {`${fechaCorta(f.fecha)} · ${f.sede === 'local' ? `Real Zaragoza ${f.goles_zaragoza}-${f.goles_rival} ${f.rival}` : `${f.rival} ${f.goles_rival}-${f.goles_zaragoza} Real Zaragoza`} (${f.minutos}')`}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          {fila && (
+            <>
+              <p className="graficos-nota">Marca hasta 4 ({marcadas.length}/4): salen en el orden en que las marques. {fila.posicion ? `${fila.posicion} · ` : ''}{fila.minutos}' jugados.</p>
+              <label className="graficos-check">
+                <input type="checkbox" checked={porcentaje} onChange={e => cambiarPorcentaje(e.target.checked)} />
+                Poner el porcentaje en vez de «aciertos/intentos»
+              </label>
+              <div className="graficos-flashscore">
+                {secciones.map(sec => (
+                  <div key={sec} className="graficos-flashscore__seccion">
+                    <h4>{sec}</h4>
+                    {lista.filter(s => s.seccion === sec).map(s => {
+                      const k = clave(s)
+                      const orden = marcadas.indexOf(k)
+                      return (
+                        <label key={k} className={`graficos-flashscore__stat${orden >= 0 ? ' es-marcada' : ''}`}>
+                          <input type="checkbox" checked={orden >= 0} disabled={orden < 0 && marcadas.length >= 4} onChange={() => marcar(k)} />
+                          <span>{s.etiqueta}</span>
+                          <b>{s.valor}</b>
+                          {orden >= 0 && <i>{orden + 1}</i>}
+                        </label>
+                      )
+                    })}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </>
+      )}
+    </fieldset>
+  )
 }
 
 export default function GraficoEstadisticas({ logo, fuentesListas }) {
@@ -118,6 +253,17 @@ export default function GraficoEstadisticas({ logo, fuentesListas }) {
   }
   const soltar = () => { arrastre.current = null }
 
+  // Lo elegido en "Desde Flashscore": nombre, partido y estadísticas.
+  const aplicarFlashscore = ({ nombre, apellido, partido, stats }) => setDatos(d => ({
+    ...d, nombre, apellido,
+    mostrarPartido: true,
+    local: partido.sede === 'local' ? 'Real Zaragoza' : partido.rival,
+    visitante: partido.sede === 'local' ? partido.rival : 'Real Zaragoza',
+    colorLocal: partido.sede === 'local' ? COLOR_ZARAGOZA : null,
+    colorVisitante: partido.sede === 'local' ? null : COLOR_ZARAGOZA,
+    stats: [...stats.map(s => ({ ...STAT_VACIA, ...s })), STAT_VACIA, STAT_VACIA, STAT_VACIA, STAT_VACIA].slice(0, 4),
+  }))
+
   const nombreArchivo = `rzhub-${slug(datos.apellido)}.jpg`
 
   const empezarDeCero = () => {
@@ -138,6 +284,7 @@ export default function GraficoEstadisticas({ logo, fuentesListas }) {
         </div>
 
         <form className="graficos-form" onSubmit={e => e.preventDefault()}>
+          <DesdeFlashscore onAplicar={aplicarFlashscore} />
           <fieldset>
             <legend>Foto</legend>
             <label className="graficos-archivo">

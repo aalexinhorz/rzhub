@@ -26,6 +26,7 @@ import GraficoHerramienta from '../components/graficos/GraficoHerramienta'
 import GraficoRivalCopa from '../components/graficos/GraficoRivalCopa'
 import GraficoNotasPartido from '../components/graficos/GraficoNotasPartido'
 import GraficoMiPrediccion from '../components/graficos/GraficoMiPrediccion'
+import GraficoGanadoresPorra from '../components/graficos/GraficoGanadoresPorra'
 import GraficoPorPartido from '../components/graficos/GraficoPorPartido'
 import GraficoCarrusel from '../components/graficos/GraficoCarrusel'
 import GraficoDato from '../components/graficos/GraficoDato'
@@ -55,6 +56,7 @@ const PLANTILLAS = [
   { id: 'previa', seccion: 'partido', label: 'Previa del rival', boton: 'previa', desc: 'Posición, puntos, racha, goleadores y bajas del rival.', ayuda: 'Sale el rival del próximo partido con su posición, puntos, goles y racha. Elige sus goleadores, bajas y el jugador a seguir.' },
   { id: 'porra', seccion: 'partido', label: 'La Porra', boton: 'porra', desc: 'Anuncia la porra del próximo partido.', ayuda: 'Anuncia la porra del próximo partido. Sube una foto y arrástrala para encuadrarla.' },
   { id: 'mi-prediccion', seccion: 'partido', label: 'Mi predicción', boton: 'predicción', desc: 'Tu pronóstico de la Porra con tu usuario de la web.', ayuda: 'Tu pronóstico de la Porra con tu usuario de la web (foto, @usuario, puesto y puntos). Sale solo de lo que pronosticaste; si no, rellénalo.' },
+  { id: 'ganadores-porra', seccion: 'partido', label: 'Ganadores de la Porra', boton: 'ganadores', desc: 'Los que más puntos sacaron en la jornada que elijas.', ayuda: 'Elige una jornada ya cerrada: salen solos los que más puntos sacaron, con su foto, @usuario y pronóstico. Si nadie acertó el resultado exacto, sale cuántos acertaron el ganador.' },
   { id: 'on-tour', seccion: 'partido', label: 'On Tour', boton: 'desplazamiento', desc: 'Ciudad, estadio, km y mapa del próximo partido fuera.', ayuda: 'Para los desplazamientos: ciudad, estadio, km y mapa salen solos del partido fuera de casa. Sube una foto del estadio.' },
   { id: 'cara-a-cara', seccion: 'partido', label: 'Cara a cara', boton: 'cara a cara', desc: 'Los últimos resultados contra un rival, del historial de la web.', ayuda: 'Elige el rival: los últimos resultados salen solos del historial de la web. La foto va abajo.' },
   { id: 'rival-copa', seccion: 'partido', label: 'Rival en Copa', boton: 'rival de Copa', desc: 'El rival de la siguiente eliminatoria de Copa del Rey.', ayuda: 'El rival de la siguiente eliminatoria de Copa. Si el partido ya está en la web se rellena solo; si no, escribe el rival y sube su escudo. La foto va a la derecha.' },
@@ -79,7 +81,7 @@ const PLANTILLAS = [
 ]
 const EDITORES = {
   'resultado': GraficoResultado, 'notas-partido': GraficoNotasPartido, 'horario': GraficoHorario, 'partido': GraficoPartido,
-  'rival': GraficoRival, 'previa': GraficoPrevia, 'porra': GraficoPorra, 'mi-prediccion': GraficoMiPrediccion,
+  'rival': GraficoRival, 'previa': GraficoPrevia, 'porra': GraficoPorra, 'mi-prediccion': GraficoMiPrediccion, 'ganadores-porra': GraficoGanadoresPorra,
   'on-tour': GraficoOnTour, 'cara-a-cara': GraficoCaraACara, 'rival-copa': GraficoRivalCopa, 'convocatoria': GraficoConvocatoria,
   'finde': GraficoFinde, 'clasificacion': GraficoClasificacion, 'calendario': GraficoCalendario, 'estadisticas': GraficoEstadisticas,
   'barras': GraficoBarras, 'ranking-equipos': GraficoRankingEquipos, 'ranking-jugadores': GraficoRankingJugadores, 'versus': GraficoVersus,

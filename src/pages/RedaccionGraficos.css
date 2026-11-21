@@ -305,3 +305,16 @@
   .graficos-tarjeta__boton { font-size: 12px; padding: 10px 8px; }
   .graficos-tarjeta__boton svg { display: none; }
 }
+
+/* Estadísticas: lista de Flashscore para marcar */
+.graficos-flashscore { display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; padding-right: 4px; }
+.graficos-flashscore__seccion h4 { margin: 0 0 6px; color: #ffc800; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.graficos-flashscore__stat {
+  display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 10px;
+  padding: 7px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #d6e0f2;
+}
+.graficos-flashscore__stat:hover { background: rgba(255, 255, 255, 0.05); }
+.graficos-flashscore__stat.es-marcada { background: rgba(255, 200, 0, 0.12); color: #ffffff; }
+.graficos-flashscore__stat b { color: #ffffff; font-variant-numeric: tabular-nums; }
+.graficos-flashscore__stat i { font-style: normal; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #ffc800; color: #03101f; font-size: 11px; font-weight: 800; }
+.graficos-flashscore__stat:has(input:disabled) { opacity: 0.45; cursor: default; }
