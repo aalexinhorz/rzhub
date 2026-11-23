@@ -214,6 +214,15 @@ LOCATION:Estadio de Santo Domingo
 END:VEVENT
 
 BEGIN:VEVENT
+UID:rz-copa2-2026@rzhub.es
+SUMMARY:Real Zaragoza vs Burgos CF (Copa del Rey)
+DTSTART;TZID=Europe/Madrid:20261203T210000
+DTEND;TZID=Europe/Madrid:20261203T230000
+DESCRIPTION:2ª Eliminatoria - Copa del Rey 2026/2027
+LOCATION:Ibercaja Estadio
+END:VEVENT
+
+BEGIN:VEVENT
 UID:rz-j15-2026@rzhub.es
 SUMMARY:Real Zaragoza vs Aguilas FC (J15)
 DTSTART;TZID=Europe/Madrid:20261207T203000

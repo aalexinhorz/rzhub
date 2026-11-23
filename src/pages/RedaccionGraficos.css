@@ -319,18 +319,6 @@
 .graficos-flashscore__stat i { font-style: normal; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #ffc800; color: #03101f; font-size: 11px; font-weight: 800; }
 .graficos-flashscore__stat:has(input:disabled) { opacity: 0.45; cursor: default; }
 
-/* Generador de copys */
+/* Copy con ChatGPT */
+.copy-chatgpt { display: flex; flex-direction: column; gap: 8px; }
 .copy-abrir { width: 100%; }
-.copy-panel { display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: 12px; background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.1); }
-.copy-panel__cabecera { display: flex; align-items: center; justify-content: space-between; color: #ffffff; }
-.copy-bloque { display: flex; flex-direction: column; gap: 6px; }
-.copy-bloque__cabecera { display: flex; align-items: center; justify-content: space-between; color: #ffc800; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
-.copy-bloque__cabecera em { font-style: normal; color: #7e93bf; font-weight: 600; }
-.copy-bloque__cabecera em.es-largo { color: #f87171; }
-.copy-bloque textarea, .copy-refs textarea { width: 100%; box-sizing: border-box; resize: vertical; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.05); color: #ffffff; font: inherit; font-size: 14px; line-height: 1.45; }
-.copy-refs-toggle { align-self: flex-start; padding: 0; border: none; background: none; color: #a9bcdc; font: inherit; font-size: 13px; cursor: pointer; }
-.copy-refs { display: flex; flex-direction: column; gap: 10px; }
-.copy-ref { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); }
-.copy-ref pre { flex: 1; margin: 0; white-space: pre-wrap; font: inherit; font-size: 12px; color: #d6e0f2; max-height: 160px; overflow: auto; }
-.graficos-aviso--error { color: #f87171; }
-.graficos-vista:has(.copy-panel) { position: static; }
