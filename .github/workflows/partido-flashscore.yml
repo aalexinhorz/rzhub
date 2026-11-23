@@ -1,0 +1,84 @@
+# Al acabar un partido del Real Zaragoza: cierra la Porra con los datos de
+# Flashscore (marcador, goleadores, once y cambios, árbitro, notas y
+# siguiente porra) y guarda las estadísticas de cada jugador. Una hora
+# después vuelve a guardar las estadísticas con las notas definitivas.
+#
+# Lo lanza la función de Supabase "final-partido" (repository_dispatch) en
+# cuanto BeSoccer da el partido por terminado. También se puede lanzar a
+# mano desde la pestaña Actions con el id del partido de la porra.
+#
+# Secretos del repositorio necesarios: SUPABASE_URL y SUPABASE_SERVICE_KEY.
+
+name: Partido terminado (Flashscore)
+
+on:
+  repository_dispatch:
+    types: [partido-terminado]
+  workflow_dispatch:
+    inputs:
+      partido_id:
+        description: 'id del partido en porra_partidos'
+        required: true
+      gz:
+        description: 'Goles del Real Zaragoza según BeSoccer (opcional, para comprobar)'
+        required: false
+      gr:
+        description: 'Goles del rival según BeSoccer (opcional)'
+        required: false
+
+concurrency:
+  group: partido-${{ github.event.client_payload.partido_id || inputs.partido_id }}
+  cancel-in-progress: false
+
+env:
+  PARTIDO_ID: ${{ github.event.client_payload.partido_id || inputs.partido_id }}
+  GZ: ${{ github.event.client_payload.gz || inputs.gz }}
+  GR: ${{ github.event.client_payload.gr || inputs.gr }}
+  VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+  PLAYWRIGHT_DIR: /tmp/pw
+
+jobs:
+  cerrar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      mid: ${{ steps.cierre.outputs.mid }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Dependencias (solo supabase-js; Playwright aparte, fuera del proyecto)
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          mkdir -p /tmp/pw && cd /tmp/pw && npm init -y >/dev/null && npm install playwright
+          npx --prefix /tmp/pw playwright install --with-deps chromium
+      - name: Cerrar la porra con Flashscore
+        id: cierre
+        run: |
+          ARGS="--porra $PARTIDO_ID"
+          if [ -n "$GZ" ] && [ -n "$GR" ]; then ARGS="$ARGS --gz $GZ --gr $GR"; fi
+          node scripts/cerrar-partido-flashscore.mjs $ARGS
+      - name: Estadísticas de cada jugador
+        if: steps.cierre.outputs.mid != ''
+        run: node scripts/flashscore-stats.mjs --porra "$PARTIDO_ID" --mid "${{ steps.cierre.outputs.mid }}" --forzar
+
+  notas-definitivas:
+    needs: cerrar
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    steps:
+      - name: Esperar una hora (Flashscore retoca las notas tras el partido)
+        run: sleep 3600
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Dependencias
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          mkdir -p /tmp/pw && cd /tmp/pw && npm init -y >/dev/null && npm install playwright
+          npx --prefix /tmp/pw playwright install --with-deps chromium
+      - name: Estadísticas otra vez
+        run: node scripts/flashscore-stats.mjs --porra "$PARTIDO_ID" --mid "${{ needs.cerrar.outputs.mid }}" --forzar
