@@ -15,6 +15,12 @@
 //   --ultimos N    solo los N últimos partidos
 //   --forzar       vuelve a sacarlos aunque ya estén
 //   --mid <id>     solo ese partido (el ?mid= de su enlace de Flashscore)
+//   --porra <id>   con --mid: ese partido de la porra (lo usa GitHub Actions tras cerrar)
+//   --auto         para la tarea programada (cada 5 min): el partido que empezó
+//                  hace entre 1h35 y 8 h, en cuanto Flashscore lo da por
+//                  FINALIZADO (sin esperar a la porra); y otra vez una hora
+//                  después para coger las notas definitivas. Si no hay partido
+//                  en esa franja, sale sin abrir el navegador.
 
 import { createRequire } from 'node:module'
 import { createClient } from '@supabase/supabase-js'
@@ -26,7 +32,10 @@ const args = process.argv.slice(2)
 const opcion = n => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null }
 const ultimos = Number(opcion('--ultimos') || 0)
 const soloMid = opcion('--mid')
+const soloPorra = opcion('--porra') // con --mid: ese partido de la porra y ese id de Flashscore, sin mirar aupazaragoza
 const forzar = args.includes('--forzar')
+const auto = args.includes('--auto')
+const MIN = 60_000
 
 if (!process.env.VITE_SUPABASE_URL || !process.env.SUPABASE_SERVICE_KEY) {
   console.error('Faltan VITE_SUPABASE_URL / SUPABASE_SERVICE_KEY: ejecuta con --env-file=.env.local')
@@ -57,25 +66,25 @@ function jugadorDe(nombreFs, jugadores) {
   return candidatos.find(j => sinTildes(j.name).startsWith(inicial)) || null
 }
 
-const navegador = await playwright.chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {})
-const pagina = await navegador.newPage({ viewport: { width: 1300, height: 1000 }, locale: 'es-ES' })
-const pasarAvisos = async () => {
-  const aviso = pagina.getByText('SOY MAYOR DE 18', { exact: false }).first()
-  if (await aviso.count()) { await aviso.click().catch(() => {}); await pagina.waitForTimeout(600) }
-}
-
 // 1. Partidos oficiales ya cerrados en la porra, desde DESDE (no se sacan los
 //    de antes: el usuario lo quiere de aquí en adelante). El id de Flashscore
 //    lo publica aupazaragoza en su calendario (campo flashscore_id).
 // Con --mid no hace falta que la porra esté cerrada (el marcador sale entonces del calendario de aupazaragoza).
-let consulta = supabase.from('porra_partidos').select('id, fecha, rival, sede, goles_zaragoza, goles_rival').gte('fecha', DESDE).order('fecha', { ascending: false })
-if (!soloMid) consulta = consulta.eq('finalizado', true)
+let consulta = supabase.from('porra_partidos').select('id, fecha, kickoff, rival, sede, goles_zaragoza, goles_rival').gte('fecha', DESDE).order('fecha', { ascending: false })
+if (soloPorra) consulta = consulta.eq('id', soloPorra)
+else if (auto) {
+  const ahora = Date.now()
+  consulta = consulta.gte('kickoff', new Date(ahora - 8 * 60 * MIN).toISOString()).lte('kickoff', new Date(ahora - 95 * MIN).toISOString())
+} else if (!soloMid) consulta = consulta.eq('finalizado', true)
 const { data: oficiales } = await consulta
+if (auto && !oficiales?.length) process.exit(0) // ningún partido acabando: ni se abre el navegador
 const { data: jugadores } = await supabase.from('players').select('id, name, short_name').or('is_zaragoza.eq.true,is_cantera.eq.true')
 const { data: filasAlias } = await supabase.from('jugadores_alias').select('alias, player_id')
 const alias = Object.fromEntries((filasAlias || []).map(f => [sinTildes(f.alias), Number(f.player_id)]))
-const { data: guardados } = await supabase.from('stats_jugador_partido').select('porra_partido_id')
+const { data: guardados } = await supabase.from('stats_jugador_partido').select('porra_partido_id, actualizado')
 const yaGuardados = new Set((guardados || []).map(g => g.porra_partido_id))
+const ultimaVez = {}
+for (const g of guardados || []) ultimaVez[g.porra_partido_id] = Math.max(ultimaVez[g.porra_partido_id] || 0, Date.parse(g.actualizado))
 const calendario = await fetch(CALENDARIO).then(r => r.json()).catch(() => [])
 
 let partidos = (oficiales || []).map(o => {
@@ -84,21 +93,52 @@ let partidos = (oficiales || []).map(o => {
   const oficial = o.goles_zaragoza == null && entrada?.goles_local != null
     ? { ...o, goles_zaragoza: local ? entrada.goles_local : entrada.goles_visitante, goles_rival: local ? entrada.goles_visitante : entrada.goles_local }
     : o
-  return { oficial, fecha: o.fecha, mid: entrada?.flashscore_id || null, zaragozaFuera: !local }
+  return { oficial, fecha: o.fecha, mid: (soloPorra && soloMid) || entrada?.flashscore_id || null, zaragozaFuera: !local }
 })
 const sinId = partidos.filter(p => !p.mid)
 if (sinId.length) console.log(`Sin id de Flashscore en aupazaragoza: ${sinId.map(p => `${p.fecha} ${p.oficial.rival}`).join(', ')}`)
 partidos = partidos.filter(p => p.mid)
 if (soloMid) partidos = partidos.filter(p => p.mid === soloMid)
-if (!forzar) partidos = partidos.filter(p => !yaGuardados.has(p.oficial.id))
+if (auto) {
+  // Sin guardar: a por él. Guardado: una sola vez más, pasada una hora
+  // (cuando la última vez fue antes de las 3 h desde el saque).
+  partidos = partidos.filter(p => {
+    const u = ultimaVez[p.oficial.id]
+    if (!u) return true
+    return Date.now() - u >= 60 * MIN && u < Date.parse(p.oficial.kickoff) + 180 * MIN
+  })
+} else if (!forzar) partidos = partidos.filter(p => !yaGuardados.has(p.oficial.id))
 if (ultimos) partidos = partidos.slice(0, ultimos)
-console.log(`${partidos.length} partido(s) por sacar`)
+if (auto && !partidos.length) process.exit(0)
+console.log(`${new Date().toISOString()} · ${partidos.length} partido(s) por sacar`)
+
+const navegador = await playwright.chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {})
+const pagina = await navegador.newPage({ viewport: { width: 1300, height: 1000 }, locale: 'es-ES' })
+const pasarAvisos = async () => {
+  const aviso = pagina.getByText('SOY MAYOR DE 18', { exact: false }).first()
+  if (await aviso.count()) { await aviso.click().catch(() => {}); await pagina.waitForTimeout(600) }
+}
+
 
 const sinCasar = new Set()
 for (const p of partidos) {
   // /partido/<mid>/ redirige a la ficha del partido con su enlace completo.
   await pagina.goto(`https://www.flashscore.es/partido/${p.mid}/`, { waitUntil: 'domcontentloaded' })
   const base = pagina.url()
+  // ¿Ha terminado? (en --auto no se guarda nada a medias). Y el marcador, por
+  // si la porra aún no está cerrada.
+  await pasarAvisos()
+  await pagina.locator('[class*="detailScore__wrapper"]').first().waitFor({ timeout: 15000 }).catch(() => {})
+  const estado = await pagina.evaluate(() => ({
+    fin: /FINALIZADO|DESPUÉS DE PRÓRROGA|DESPUÉS DE PENALTIS/i.test(document.querySelector('[class*="detailScore__status"], [class*="fixedHeaderDuel__detailStatus"]')?.innerText || ''),
+    marcador: (document.querySelector('[class*="detailScore__wrapper"]')?.innerText || '').replace(/\s/g, ''),
+  }))
+  if (auto && !estado.fin) { console.log(`${p.fecha} ${p.oficial.rival}: aún no ha terminado`); continue }
+  const m = estado.marcador.match(/^(\d+)-(\d+)$/)
+  if (p.oficial.goles_zaragoza == null && m) {
+    const [gl, gv] = [Number(m[1]), Number(m[2])]
+    p.oficial = { ...p.oficial, goles_zaragoza: p.zaragozaFuera ? gv : gl, goles_rival: p.zaragozaFuera ? gl : gv }
+  }
   // Goles y asistencias del Real Zaragoza: no están en la ficha del jugador,
   // salen del resumen (cada gol cambia el marcador y lleva la asistencia
   // entre paréntesis; los de penalti, "(Penalti)" sin enlace).
