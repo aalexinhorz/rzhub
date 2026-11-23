@@ -2,7 +2,7 @@
 // con el logo, el título, la ronda, el escudo del rival en grande, su nombre
 // en una pastilla amarilla y las fechas; a la derecha, la foto a todo alto.
 
-import { encajeEn } from './graficosComun'
+import { encajeEn, siluetaBlanca } from './graficosComun'
 import { AMARILLO, AZUL_OSCURO, TEXTO, TITULOS, ajustar, hayImagen, imagen, logoRz, texto } from './graficosTexto'
 
 export const ANCHO = 1080
@@ -12,6 +12,7 @@ export const ZONA_FOTO = { x: PANEL, y: 0, w: ANCHO - PANEL, h: ALTO }
 
 /**
  * datos: { titulo, ronda, rival, fechas, credito, ajusteFoto }
+ * recursos: { foto, logo, escudo, logoCopa }
  * recursos: { foto, logo, escudo }
  */
 export function dibujarGraficoRivalCopa(g, datos, recursos) {
@@ -50,6 +51,14 @@ export function dibujarGraficoRivalCopa(g, datos, recursos) {
 
   const cx = PANEL / 2
   logoRz(g, recursos.logo, cx - 100, 70, 200)
+
+  // Logo de la Copa del Rey encima del título, pequeño y todo en blanco.
+  if (hayImagen(recursos.logoCopa)) {
+    const l = recursos.logoCopa
+    const alto = 62
+    const ancho = alto * l.naturalWidth / l.naturalHeight
+    g.drawImage(siluetaBlanca(l, Math.round(ancho * 2), alto * 2), cx - ancho / 2, 250 - alto / 2, ancho, alto)
+  }
 
   const titulo = (datos.titulo || '').toUpperCase()
   const tt = ajustar(g, titulo, n => `700 ${n}px ${TITULOS}`, 150, PANEL - 70, 70)

@@ -43,7 +43,9 @@ export default function GraficoRivalCopa({ logo }) { // al cargar las fuentes ca
   }, [nombreRival, equipos])
   const escudo = escudoManual || (escudoWeb.nombre === nombreRival ? escudoWeb.img : null)
 
-  const recursos = useMemo(() => ({ foto, logo, escudo }), [foto, logo, escudo])
+  const [logoCopa, setLogoCopa] = useState(null)
+  useEffect(() => { cargarImagen('/escudos/competiciones/copa-del-rey-blanco.svg').then(setLogoCopa) }, [])
+  const recursos = useMemo(() => ({ foto, logo, escudo, logoCopa }), [foto, logo, escudo, logoCopa])
   useEffect(() => {
     const c = canvasRef.current
     if (c) dibujarGraficoRivalCopa(contextoGrafico(c), { ...datos, ...final }, recursos)
