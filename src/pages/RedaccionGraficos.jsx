@@ -32,6 +32,7 @@ import GraficoCarrusel from '../components/graficos/GraficoCarrusel'
 import GraficoDato from '../components/graficos/GraficoDato'
 import GraficoConvocatoria from '../components/graficos/GraficoConvocatoria'
 import GraficoJugador from '../components/graficos/GraficoJugador'
+import GestionPartidos from '../components/graficos/GestionPartidos'
 import { cargarFuentes } from '../lib/graficoStats'
 import { cargarImagen } from '../lib/graficosComun'
 import './RedaccionGraficos.css'
@@ -122,16 +123,30 @@ export default function RedaccionGraficos() {
 
   if (loading || !user || !profile?.es_redactor) return <div className="graficos-page" />
   const actual = PLANTILLAS.find(p => p.id === params.get('plantilla'))
+  const vistaPartidos = params.get('vista') === 'partidos'
 
   return (
     <div className="graficos-page">
       <SEO title="Gráficos | RZ Hub" description="Herramienta interna de gráficos." path="/redaccion-graficos" noindex />
-      {!actual ? (
+      {vistaPartidos ? (
+        <>
+          <div className="graficos-cabecera">
+            <button type="button" className="graficos-volver" onClick={volver}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+              Gráficos
+            </button>
+            <h1>Partidos y horarios</h1>
+            <p>Añade partidos (por ejemplo, de Copa) y cambia el día y la hora cuando se confirmen. Se guarda en la porra y el calendario de la web se actualiza solo.</p>
+          </div>
+          <GestionPartidos />
+        </>
+      ) : !actual ? (
         <div className="graficos-galeria">
           <header className="graficos-galeria__cabecera">
             <p className="graficos-galeria__eyebrow">Redacción · RZ Hub</p>
             <h1>Gráficos</h1>
             <p>Elige una plantilla, rellénala y descárgala lista para redes (1080×1350).</p>
+            <button type="button" className="graficos-volver graficos-partidos-link" onClick={() => { setParams({ vista: 'partidos' }); window.scrollTo(0, 0) }}>📅 Partidos y horarios</button>
           </header>
           {SECCIONES.map(sec => (
             <section key={sec.id} className="graficos-seccion" aria-labelledby={`graficos-sec-${sec.id}`}>

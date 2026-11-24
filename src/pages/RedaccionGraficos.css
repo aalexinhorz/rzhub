@@ -322,3 +322,16 @@
 /* Copy con ChatGPT */
 .copy-chatgpt { display: flex; flex-direction: column; gap: 8px; }
 .copy-abrir { width: 100%; }
+
+/* Partidos y horarios */
+.graficos-partidos-link { align-self: flex-start; margin: 10px 0 0; }
+.partidos { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.partidos-nuevo { align-self: flex-start; }
+.partidos-aviso { color: #4ade80; }
+.partidos-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.partidos-lista li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 12px; background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08); }
+.partidos-lista li.es-abierto { border-color: rgba(255, 200, 0, 0.5); }
+.partidos-lista__info { display: flex; flex-direction: column; gap: 2px; min-width: 0; color: #d6e0f2; font-size: 13px; }
+.partidos-lista__info strong { color: #ffffff; font-size: 15px; }
+.partidos-lista__info em { color: #fbbf24; font-style: normal; }
+.partidos-lista__comp { color: #ffc800; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
