@@ -109,8 +109,9 @@ function base(g, datos, recursos, opciones = {}) {
   if (titulo) {
     ajustar(g, titulo, t => `700 ${t}px ${TITULOS}`, 150, LIMITE_IZQ - M + 10, 60)
     g.fillStyle = '#ffffff'
-    g.textAlign = 'left'
-    g.fillText(titulo, M - 4, 236)
+    // En el versus, centrado sobre el panel; en los ránkings, a la izquierda.
+    g.textAlign = opciones.tituloCentrado ? 'center' : 'left'
+    g.fillText(titulo, opciones.tituloCentrado ? centro : M - 4, 236)
   }
   if (datos.subtitulo) {
     const sub = datos.subtitulo.toUpperCase()
@@ -237,7 +238,7 @@ export function dibujarVersus(g, datos, recursos) {
   g.imageSmoothingEnabled = true
   g.imageSmoothingQuality = 'high' // logos y fotos reducidos sin dientes de sierra
   g.save()
-  base(g, { ...datos, titulo: datos.titulo || '' }, recursos, { logoAbajo: false })
+  base(g, { ...datos, titulo: datos.titulo || '' }, recursos, { logoAbajo: false, tituloCentrado: true })
   // Tarjetas + filas forman un bloque centrado en vertical entre la
   // cabecera y el pie (con pocas filas no queda un hueco abajo).
   const filas = (datos.filas || []).filter(f => f.etiqueta || f.a || f.b).slice(0, 5)
