@@ -8,8 +8,10 @@ import { escudoDe } from '../../lib/graficosComun'
 // gestionar-partido en la porra (y en el calendario de liga), y GitHub rehace
 // solo el calendario.ics de la web.
 
+// Dónde se ven siempre los partidos de liga (se puede cambiar en cada uno).
+const TV_DEFECTO = 'Movistar+, Orange, FootballClub y FanPlay TV'
 const RONDAS = ['1.ª Eliminatoria', '2.ª Eliminatoria', '3.ª Eliminatoria', 'Dieciseisavos de final', 'Octavos de final', 'Cuartos de final', 'Semifinales', 'Final']
-const VACIO = { id: null, tipo: 'copa', jornada: '', ronda: RONDAS[1], rival: '', sede: 'local', fecha: '', hora: '', sinHora: false, tv: '' }
+const VACIO = { id: null, tipo: 'copa', jornada: '', ronda: RONDAS[1], rival: '', sede: 'local', fecha: '', hora: '', sinHora: false, tv: TV_DEFECTO }
 
 const horaDe = iso => new Date(iso).toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit' })
 const fechaLarga = f => new Date(`${f}T12:00:00`).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })
@@ -18,7 +20,7 @@ function aFormulario(p) {
   const copa = !!p.competicion
   return {
     id: p.id, tipo: copa ? 'copa' : 'liga', jornada: p.jornada || '', ronda: copa ? p.competicion.split('·')[1]?.trim() || RONDAS[1] : RONDAS[1],
-    rival: p.rival, sede: p.sede, fecha: p.fecha, hora: p.hora_confirmada ? horaDe(p.kickoff) : '', sinHora: !p.hora_confirmada, tv: p.tv || '',
+    rival: p.rival, sede: p.sede, fecha: p.fecha, hora: p.hora_confirmada ? horaDe(p.kickoff) : '', sinHora: !p.hora_confirmada, tv: p.tv || TV_DEFECTO,
   }
 }
 
@@ -90,7 +92,7 @@ function Formulario({ inicial, rivales, onCancelar, onGuardado }) {
           <label className="graficos-campo graficos-campo--valor">Hora<input type="time" value={f.hora} disabled={f.sinHora} onChange={e => cambiar({ hora: e.target.value })} /></label>
         </div>
         <label className="graficos-check"><input type="checkbox" checked={f.sinHora} onChange={e => cambiar({ sinHora: e.target.checked })} /> Aún sin hora oficial (sale como «todo el día» en el calendario)</label>
-        <label className="graficos-campo">Televisión (opcional)<input value={f.tv} onChange={e => cambiar({ tv: e.target.value })} placeholder="Aragón TV, DAZN…" /></label>
+        <label className="graficos-campo">Televisión (opcional)<input value={f.tv} onChange={e => cambiar({ tv: e.target.value })} placeholder={TV_DEFECTO} /></label>
         {estado.error && <p className="graficos-aviso graficos-aviso--error">{estado.error}</p>}
         <div className="graficos-acciones">
           <button type="submit" className="rz-btn rz-btn--primary" disabled={estado.cargando || !f.fecha || (!f.sinHora && !f.hora)}>{estado.cargando ? 'Guardando…' : 'Guardar'}</button>
