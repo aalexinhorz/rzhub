@@ -1,0 +1,49 @@
+# Rehace public/calendario.ics con los partidos de la porra y lo sube a main
+# (Vercel publica la web sola). Lo lanza la función de Supabase
+# "gestionar-partido" cada vez que se guarda un partido desde la página de
+# Partidos de la redacción. También se puede lanzar a mano desde Actions.
+#
+# Secretos del repositorio: SUPABASE_URL y SUPABASE_SERVICE_KEY.
+
+name: Actualizar calendario
+
+on:
+  repository_dispatch:
+    types: [calendario]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: calendario
+  cancel-in-progress: false
+
+jobs:
+  calendario:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Dependencias
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Rehacer calendario.ics
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: node scripts/generar-ics.mjs
+      - name: Subir si ha cambiado
+        run: |
+          if git diff --quiet public/calendario.ics; then
+            echo "Sin cambios"
+            exit 0
+          fi
+          git config user.name "RZ Hub (calendario)"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/calendario.ics
+          git commit -m "Calendario actualizado desde la redacción"
+          git pull --rebase origin main
+          git push origin HEAD:main
