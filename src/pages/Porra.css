@@ -980,6 +980,178 @@
   color: #a9bcdc;
   margin: 0;
 }
+/* Control segmentado (cristal amarillo) */
+.porra-seg {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.porra-seg__indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc((100% - 8px) / 2);
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(255, 200, 0, 0.35), rgba(255, 200, 0, 0.12));
+  border: 1px solid rgba(255, 200, 0, 0.55);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(255, 200, 0, 0.15), 0 0 16px rgba(255, 200, 0, 0.25);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transform: translateX(0);
+  transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.5, 1);
+  pointer-events: none;
+}
+.porra-seg[data-active='predicciones'] .porra-seg__indicator {
+  transform: translateX(100%);
+}
+.porra-seg__indicator::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 50%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: translateX(-120%);
+  animation: porra-seg-sheen 4.5s ease-in-out infinite;
+}
+@keyframes porra-seg-sheen {
+  0%, 55% { transform: translateX(-120%); }
+  100% { transform: translateX(260%); }
+}
+.porra-seg__btn {
+  position: relative;
+  z-index: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-family: 'Archivo', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #a9bcdc;
+  transition: color 0.25s ease;
+}
+.porra-seg__btn:hover { color: #fff; }
+.porra-seg__btn.is-active { color: #ffc800; }
+.porra-seg__btn:focus-visible { outline: 2px solid #ffc800; outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) {
+  .porra-seg__indicator { transition: none; }
+  .porra-seg__indicator::after { animation: none; display: none; }
+  .porra-seg__btn { transition: none; }
+}
+
+.porra-team__eyebrow {
+  font-family: 'Archivo', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffc800;
+  margin: 0;
+  padding: 4px 20px 6px;
+}
+.porra-team__row { grid-template-columns: 1fr auto; }
+.porra-team__info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+  gap: 2px;
+}
+.porra-team__scorers {
+  font-family: 'Archivo', sans-serif;
+  font-size: 11.5px;
+  color: #a9bcdc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.porra-team__pred {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.porra-team__pts {
+  font-family: 'Archivo', sans-serif;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #ffc800;
+}
+.porra-team__none {
+  font-family: 'Archivo', sans-serif;
+  font-size: 12.5px;
+  color: rgba(169, 188, 220, 0.6);
+  white-space: nowrap;
+}
+
+/* Tarjetas de predicciones del equipo */
+.porra-ranking__rows--scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 12px 14px;
+}
+.porra-ranking__rows--scroll .porra-team__eyebrow { padding: 4px 4px 0; }
+.porra-eq {
+  background: rgba(1, 25, 71, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px;
+  flex-shrink: 0;
+}
+.porra-eq__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.porra-eq__user { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1 1 auto; }
+.porra-eq__avatar {
+  width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+  background: #0d4491; display: flex; align-items: center; justify-content: center;
+  font-family: 'Archivo', sans-serif; font-size: 12px; font-weight: 700; color: #fff;
+}
+.porra-eq__name {
+  font-family: 'Archivo', sans-serif; font-weight: 600; font-size: 15px; color: #fff;
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.porra-eq__result { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+.porra-eq__score { display: flex; align-items: center; gap: 6px; }
+.porra-eq__goals { font-family: 'Humane', sans-serif; font-weight: 700; font-size: 40px; line-height: 1; color: #ffc800; }
+.porra-eq__crest { width: 28px; height: 28px; object-fit: contain; }
+.porra-eq__vs { font-family: 'Archivo', sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #a9bcdc; }
+.porra-eq__scorers { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.porra-eq__label {
+  font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 11px; letter-spacing: 1.2px;
+  text-transform: uppercase; color: #a9bcdc; margin: 0 0 8px;
+}
+.porra-eq__grid { display: flex; flex-wrap: wrap; gap: 10px; }
+/* Cartita de goleador: la misma que al elegir goleador (.porra-goleador-card), sin hover. */
+.porra-eq__player { width: 68px; cursor: default; }
+.porra-eq__player:hover { transform: none; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); }
+.porra-eq__initials { display: flex; align-items: center; justify-content: center; font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 16px; color: #fff; }
+@media (max-width: 400px) {
+  .porra-eq { padding: 12px; }
+  .porra-eq__goals { font-size: 34px; }
+  .porra-eq__player { width: 62px; }
+  .porra-eq__crest { width: 22px; height: 22px; }
+  .porra-eq__score { gap: 4px; }
+  .porra-eq__avatar { width: 32px; height: 32px; }
+  .porra-eq__name { font-size: 14px; }
+}
+
 /* El enlace inferior ("Ver clasificación completa") ya cubre esta
    función en cualquier ancho de pantalla — el "Ver todo" de aquí arriba
    es redundante. */
@@ -1398,6 +1570,9 @@
     min-height: 0;
     overflow: hidden;
   }
+  .porra-ranking__rows--scroll {
+    overflow-y: auto;
+  }
 }
 
 /* -------- Mobile -------- */
@@ -1632,3 +1807,15 @@
 @media (max-width: 768px) {
   .porra-container .porra-faq { margin-bottom: 48px; }
 }
+
+/* Límite de goleadores: tantos como goles del Real Zaragoza */
+.porra-goleadores-limite {
+  margin: 10px 0 0;
+  font-family: 'Archivo', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #a9bcdc;
+  text-align: center;
+}
+.porra-goleador-card.is-disabled { opacity: 0.35; cursor: not-allowed; }
+.porra-goleador-card.is-disabled:hover { transform: none; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); }

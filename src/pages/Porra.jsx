@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { EQUIPO_RZHUB } from '../lib/equipoRzhub'
 import { createRoot } from 'react-dom/client'
 import { Link } from 'react-router-dom'
 import html2canvas from 'html2canvas'
@@ -142,6 +143,7 @@ function getPartidoActivo(partidos) {
   const pasados = [...partidos].reverse()
   return pasados[0] || null
 }
+
 
 const inicialesDe = nombre => (nombre || 'U').trim().split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 
@@ -489,6 +491,10 @@ export default function Porra() {
   const sidebarRef = useRef(null)
   const seasonRef = useRef(null)
   const premioRef = useRef(null)
+  const [panelTab, setPanelTab] = useState('clasificacion')
+  const [equipoPerfiles, setEquipoPerfiles] = useState({})
+  const [equipoPreds, setEquipoPreds] = useState({})
+  const [equipoPredsId, setEquipoPredsId] = useState(null)
   const rankingHeaderRef = useRef(null)
   const rankingFooterRef = useRef(null)
   const modalRankingRef = useRef(null)
@@ -595,7 +601,36 @@ export default function Porra() {
       ro.disconnect()
       mq.removeEventListener('change', recompute)
     }
-  }, [loading, partidoActivo, user])
+  }, [loading, partidoActivo, user, panelTab])
+
+  // Perfiles del equipo (una vez) y sus predicciones del partido activo
+  useEffect(() => {
+    let cancel = false
+    supabase.from('profiles').select('id, name, username, avatar_url').in('id', EQUIPO_RZHUB)
+      .then(({ data }) => {
+        if (cancel) return
+        setEquipoPerfiles(Object.fromEntries((data || []).map(p => [p.id, p])))
+      })
+    return () => { cancel = true }
+  }, [])
+
+  const partidoActivoId = partidoActivo?.id
+  useEffect(() => {
+    if (!partidoActivoId) return
+    let cancel = false
+    supabase.from('porra_predicciones')
+      .select('user_id, goles_zaragoza, goles_rival, goleadores, puntos')
+      .eq('partido_id', partidoActivoId)
+      .in('user_id', EQUIPO_RZHUB)
+      .then(({ data }) => {
+        if (cancel) return
+        setEquipoPreds(Object.fromEntries((data || []).map(r => [r.user_id, r])))
+        setEquipoPredsId(partidoActivoId)
+      })
+    return () => { cancel = true }
+  }, [partidoActivoId])
+
+  const equipoCargando = equipoPredsId !== partidoActivoId
 
   useModalA11y(modalRankingAbierto, modalRankingRef, modalRankingTriggerRef, () => setModalRankingAbierto(false))
   useModalA11y(modalComoSeJuegaAbierto, modalComoSeJuegaRef, modalComoSeJuegaTriggerRef, () => setModalComoSeJuegaAbierto(false))
@@ -643,7 +678,7 @@ export default function Porra() {
       partido_id: partidoActivo.id,
       goles_zaragoza: form.goles_zaragoza,
       goles_rival: form.goles_rival,
-      goleadores: form.goleadores,
+      goleadores: form.goleadores.slice(0, form.goles_zaragoza),
     }
     const existing = predicciones[partidoActivo.id]
     if (existing) {
@@ -730,7 +765,12 @@ export default function Porra() {
   const proximasJornadas = proximasJornadasTodas.slice(0, 3)
 
   function ajustarMarcador(campo, delta) {
-    setForm(f => ({ ...f, [campo]: Math.max(0, Math.min(20, f[campo] + delta)) }))
+    setForm(f => {
+      const valor = Math.max(0, Math.min(20, f[campo] + delta))
+      // No puede haber más goleadores que goles del Real Zaragoza.
+      const goleadores = campo === 'goles_zaragoza' ? f.goleadores.slice(0, valor) : f.goleadores
+      return { ...f, [campo]: valor, goleadores }
+    })
   }
 
   // Solo hay que acertar QUIÉN marca, no cuántas veces — así que cada
@@ -740,7 +780,7 @@ export default function Porra() {
       ...f,
       goleadores: f.goleadores.includes(nombre)
         ? f.goleadores.filter(n => n !== nombre)
-        : [...f.goleadores, nombre],
+        : f.goleadores.length < f.goles_zaragoza ? [...f.goleadores, nombre] : f.goleadores,
     }))
   }
 
@@ -1164,14 +1204,22 @@ export default function Porra() {
                     <span className="porra-goleadores__pts">+3 pts · Opcional</span>
                   </div>
                   {mostrarGoleadores && (
+                    <>
+                    <p className="porra-goleadores-limite" onClick={e => e.stopPropagation()}>
+                      {form.goles_zaragoza === 0
+                        ? 'Pon al menos un gol del Real Zaragoza para elegir goleadores.'
+                        : `Elige hasta ${form.goles_zaragoza} ${form.goles_zaragoza === 1 ? 'goleador' : 'goleadores'} (${form.goleadores.length}/${form.goles_zaragoza})`}
+                    </p>
                     <div className="porra-goleadores-grid" onClick={e => e.stopPropagation()}>
                       {jugadoresZaragoza.map(jugador => {
                         const seleccionado = form.goleadores.includes(jugador.name)
+                        const lleno = !seleccionado && form.goleadores.length >= form.goles_zaragoza
                         return (
                           <button
                             type="button"
                             key={jugador.id}
-                            className={`porra-goleador-card${seleccionado ? ' is-selected' : ''}`}
+                            className={`porra-goleador-card${seleccionado ? ' is-selected' : ''}${lleno ? ' is-disabled' : ''}`}
+                            disabled={lleno}
                             onClick={() => toggleGoleador(jugador.name)}
                           >
                             <img className="porra-goleador-card__foto" src={jugador.photo} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />
@@ -1180,6 +1228,7 @@ export default function Porra() {
                         )
                       })}
                     </div>
+                    </>
                   )}
 
                   <button
@@ -1304,10 +1353,93 @@ export default function Porra() {
 
               <div className="porra-ranking">
                 <div className="porra-ranking__header" ref={rankingHeaderRef}>
-                  <p className="porra-ranking__title">Clasificación</p>
+                  <div className="porra-seg" role="tablist" aria-label="Clasificación o predicciones" data-active={panelTab}>
+                    <span className="porra-seg__indicator" aria-hidden="true" />
+                    {[['clasificacion', 'Clasificación'], ['predicciones', 'Predicciones']].map(([id, label]) => (
+                      <button
+                        key={id}
+                        type="button"
+                        role="tab"
+                        id={`porra-tab-${id}`}
+                        aria-selected={panelTab === id}
+                        aria-controls="porra-panel-tab"
+                        className={`porra-seg__btn${panelTab === id ? ' is-active' : ''}`}
+                        onClick={() => setPanelTab(id)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="porra-ranking__rows">
+                {panelTab === 'predicciones' ? (
+                  <div className="porra-ranking__rows porra-ranking__rows--scroll" id="porra-panel-tab" role="tabpanel" aria-labelledby="porra-tab-predicciones">
+                    <p className="porra-team__eyebrow">Equipo RZ HUB</p>
+                    {EQUIPO_RZHUB.map(uid => {
+                      const perfil = equipoPerfiles[uid]
+                      const nombre = perfil?.name || perfil?.username || '…'
+                      const r = equipoPreds[uid]
+                      const marcador = r ? (esLocal ? [r.goles_zaragoza, r.goles_rival] : [r.goles_rival, r.goles_zaragoza]) : null
+                      const goleadores = Array.isArray(r?.goleadores) ? r.goleadores.filter(Boolean) : []
+                      const crestL = esLocal ? ESCUDO_ZARAGOZA : escudoRival
+                      const crestV = esLocal ? escudoRival : ESCUDO_ZARAGOZA
+                      return (
+                        <div key={uid} className="porra-eq">
+                          <div className="porra-eq__head">
+                            <div className="porra-eq__user">
+                              {perfil?.avatar_url ? (
+                                <img className="porra-eq__avatar" src={perfil.avatar_url} alt="" />
+                              ) : (
+                                <span className="porra-eq__avatar">{inicialesDe(nombre)}</span>
+                              )}
+                              <span className="porra-eq__name">{nombre}</span>
+                            </div>
+                            {marcador ? (
+                              <div className="porra-eq__result">
+                                <div className="porra-eq__score">
+                                  <span className="porra-eq__goals">{marcador[0]}</span>
+                                  {crestL && <img className="porra-eq__crest" src={crestL} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />}
+                                  <span className="porra-eq__vs">vs</span>
+                                  {crestV && <img className="porra-eq__crest" src={crestV} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />}
+                                  <span className="porra-eq__goals">{marcador[1]}</span>
+                                </div>
+                                {partidoActivo?.finalizado && r.puntos > 0 && (
+                                  <span className="porra-team__pts">+{r.puntos} pts</span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="porra-team__none">{equipoCargando ? '…' : 'Aún sin porra'}</span>
+                            )}
+                          </div>
+                          {marcador && (
+                            <div className="porra-eq__scorers">
+                              <p className="porra-eq__label">Goleadores</p>
+                              {goleadores.length === 0 ? (
+                                <span className="porra-team__none">Sin goleadores</span>
+                              ) : (
+                                <div className="porra-eq__grid">
+                                  {goleadores.map((g, i) => {
+                                    const j = players.find(p => p.name === g)
+                                    return (
+                                      <div key={`${g}-${i}`} className="porra-goleador-card porra-eq__player" title={g}>
+                                        {j?.photo
+                                          ? <img className="porra-goleador-card__foto" src={j.photo} alt="" onError={e => { e.target.style.visibility = 'hidden' }} />
+                                          : <span className="porra-goleador-card__foto porra-eq__initials">{inicialesDe(g)}</span>}
+                                        <span className="porra-goleador-card__nombre">{j?.shortName || g.split(' ').slice(-1)[0]}</span>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                <>
+                <div className="porra-ranking__rows" id="porra-panel-tab" role="tabpanel" aria-labelledby="porra-tab-clasificacion">
                   {ranking.length === 0 && <p className="porra-ranking__empty">Aún no hay puntuaciones.</p>}
 
                   {rankingVisible.map((entry, i) => {
@@ -1341,6 +1473,8 @@ export default function Porra() {
                       <IconChevronRight className="porra-icon-mobile" />
                     </button>
                   </div>
+                )}
+                </>
                 )}
               </div>
             </div>

@@ -7,11 +7,12 @@ import { leerLocal, useGuardarLocal } from '../../lib/graficosHooks'
 import { colorEquipo, oscurecer } from '../../lib/colorEscudo'
 import { ESTADIO_ZARAGOZA, horaMadrid, limpiarEstadio, nombresPartido } from '../../lib/partidoSeo'
 import AccionesGrafico from './AccionesGrafico'
+import { EQUIPO_RZHUB } from '../../lib/equipoRzhub'
 
 // Plantilla "Mi predicción": tu pronóstico de la Porra con tu usuario de la
 // web (foto, @usuario, puesto y puntos). Sale solo de lo que pronosticaste
 // en la Porra; si aún no lo has hecho, se rellena a mano.
-const INICIAL = { partidoId: '', titulo: 'Mi predicción', golesZaragoza: '', golesRival: '', goleadores: '', colorRival: '', cta: '¿Y tú? Haz tu pronóstico en rzhub.es/porra' }
+const INICIAL = { cuentaId: '', partidoId: '', titulo: 'Mi predicción', golesZaragoza: '', golesRival: '', goleadores: '', colorRival: '', cta: '¿Y tú? Haz tu pronóstico en rzhub.es/porra' }
 
 const corto = n => {
   const p = (n || '').trim().split(/\s+/)
@@ -20,20 +21,31 @@ const corto = n => {
 
 export default function GraficoMiPrediccion({ logo }) { // al cargar las fuentes cambia la prop fuentesListas y se vuelve a dibujar
   const canvasRef = useRef(null)
-  const { user, profile } = useAuth()
+  const { user, profile: miPerfil } = useAuth()
   const [datos, setDatos] = useState(() => leerLocal('redaccion_grafico_mi_prediccion', INICIAL))
   useGuardarLocal('redaccion_grafico_mi_prediccion', datos)
   const cambiar = c => setDatos(d => ({ ...d, ...c }))
   const [carga, setCarga] = useState({ partidos: [], mias: {}, ranking: [], estadios: {} })
 
+  // Cuenta del gráfico: la tuya o, si eres del equipo RZ HUB, cualquiera de las tres.
+  const [equipo, setEquipo] = useState([])
+  const soyEquipo = !!user && EQUIPO_RZHUB.includes(user.id)
   useEffect(() => {
-    if (!user) return
+    if (!soyEquipo) return
+    supabase.from('profiles').select('id, name, username, avatar_url').in('id', EQUIPO_RZHUB)
+      .then(({ data }) => setEquipo(EQUIPO_RZHUB.map(id => (data || []).find(p => p.id === id)).filter(Boolean)))
+  }, [soyEquipo])
+  const cuentaId = soyEquipo && EQUIPO_RZHUB.includes(datos.cuentaId) ? datos.cuentaId : user?.id
+  const profile = cuentaId === user?.id ? miPerfil : equipo.find(p => p.id === cuentaId) || null
+
+  useEffect(() => {
+    if (!cuentaId) return
     let activo = true
     const desde = new Date(Date.now() - 45 * 86400_000).toISOString()
     Promise.all([
       supabase.from('porra_partidos').select('id, rival, sede, jornada, competicion, kickoff, abierto, finalizado')
         .gte('kickoff', desde).order('kickoff').limit(20),
-      supabase.from('porra_predicciones').select('partido_id, goles_zaragoza, goles_rival, goleadores').eq('user_id', user.id),
+      supabase.from('porra_predicciones').select('partido_id, goles_zaragoza, goles_rival, goleadores').eq('user_id', cuentaId),
       supabase.from('porra_puntos').select('user_id, puntos_total').order('puntos_total', { ascending: false }),
       supabase.from('rivales').select('nombre, estadio'),
     ]).then(([p, m, r, e]) => {
@@ -46,7 +58,7 @@ export default function GraficoMiPrediccion({ logo }) { // al cargar las fuentes
       })
     })
     return () => { activo = false }
-  }, [user])
+  }, [cuentaId])
 
   const { partidos, mias, ranking, estadios } = carga
   // Por defecto, la porra abierta (o el próximo partido).
@@ -85,6 +97,7 @@ export default function GraficoMiPrediccion({ logo }) { // al cargar las fuentes
   useEffect(() => {
     let activo = true
     if (profile?.avatar_url) cargarImagen(urlParaCanvas(profile.avatar_url), { cors: true }).then(img => { if (activo) setAvatar(img) })
+    else Promise.resolve().then(() => { if (activo) setAvatar(null) })
     return () => { activo = false }
   }, [profile?.avatar_url])
 
@@ -92,8 +105,8 @@ export default function GraficoMiPrediccion({ logo }) { // al cargar las fuentes
   const colorAuto = useMemo(() => (escudoRival ? colorEquipo(escudoRival) : null), [escudoRival])
   const colorRival = datos.colorRival || colorAuto
 
-  const puesto = user ? ranking.findIndex(r => r.user_id === user.id) + 1 : 0
-  const puntos = ranking.find(r => r.user_id === user?.id)?.puntos_total
+  const puesto = cuentaId ? ranking.findIndex(r => r.user_id === cuentaId) + 1 : 0
+  const puntos = ranking.find(r => r.user_id === cuentaId)?.puntos_total
   const estadio = partido ? (zaragozaLocal ? ESTADIO_ZARAGOZA : limpiarEstadio(estadios[partido.rival])) : ''
   const ronda = partido ? (partido.competicion ? partido.competicion.split(' · ').slice(1).join(' · ') : `Jornada ${partido.jornada}`) : ''
   const hora = partido?.kickoff ? horaMadrid(partido.kickoff) : ''
@@ -125,6 +138,17 @@ export default function GraficoMiPrediccion({ logo }) { // al cargar las fuentes
         <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-mi-prediccion-${slug(`${local} ${visitante}`)}.jpg`} />
       </div>
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
+        {soyEquipo && equipo.length > 0 && (
+          <fieldset>
+            <legend>Cuenta</legend>
+            <label className="graficos-campo">
+              Predicción de
+              <select value={cuentaId} onChange={e => cambiar({ cuentaId: e.target.value, golesZaragoza: '', golesRival: '', goleadores: '' })}>
+                {equipo.map(p => <option key={p.id} value={p.id}>{p.name || p.username}{p.username ? ` (@${p.username})` : ''}</option>)}
+              </select>
+            </label>
+          </fieldset>
+        )}
         <fieldset>
           <legend>Partido</legend>
           <label className="graficos-campo">
