@@ -207,7 +207,7 @@
   display: grid;
   /* minmax(0, 1fr) en vez de 1fr a secas: el mismo patrón de siempre
      — sin esto, la pista de grid toma como mínimo el min-content de
-     "Puntos en juego" y desborda el ancho disponible en móviles
+     "Cierra en" y desborda el ancho disponible en móviles
      pequeños. */
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
@@ -269,6 +269,38 @@
   overflow-wrap: anywhere;
 }
 
+/* Cuenta atrás urgente (< 24 h): amarillo de marca con brillo suave */
+.prediction-card__metric--urgent {
+  background: rgba(255, 200, 0, 0.08);
+  box-shadow: 0 0 0 1px rgba(255, 200, 0, 0.25);
+  animation: prediction-card-urgent 2.4s ease-in-out infinite;
+}
+.prediction-card__metric--urgent .prediction-card__metric-value {
+  color: #ffc800;
+}
+@keyframes prediction-card-urgent {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255, 200, 0, 0.25), 0 0 0 rgba(255, 200, 0, 0); }
+  50% { box-shadow: 0 0 0 1px rgba(255, 200, 0, 0.5), 0 0 14px rgba(255, 200, 0, 0.3); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prediction-card__metric--urgent { animation: none; }
+}
+
+/* Línea de reglas de puntuación bajo las métricas */
+.prediction-card__rules {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  overflow-wrap: anywhere;
+}
+.prediction-card__rules strong {
+  color: #ffc800;
+  font-weight: 700;
+}
+
 @media (max-width: 359px) {
   .prediction-card__metrics {
     gap: 8px;
@@ -288,6 +320,37 @@
   .prediction-card__metric svg {
     width: 24px;
     height: 24px;
+  }
+}
+
+/* Móvil: valores sin partirse, etiquetas sin cortar palabras y subtítulo a dos líneas */
+@media (max-width: 640px) {
+  .prediction-card__subtitle {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+  .prediction-card__metrics {
+    gap: 8px;
+  }
+  .prediction-card__metric {
+    gap: 8px;
+    padding: 10px 8px;
+  }
+  .prediction-card__metric svg {
+    width: 18px;
+    height: 18px;
+  }
+  .prediction-card__metric-value {
+    font-size: 18px;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+  .prediction-card__metric-label {
+    font-size: 11px;
+    overflow-wrap: normal;
+    word-break: normal;
+    white-space: nowrap;
   }
 }
 

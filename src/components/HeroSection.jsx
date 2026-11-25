@@ -8,8 +8,6 @@ import PredictionCard from './PredictionCard'
 import LineupCard from './LineupCard'
 import './HeroSection.css'
 
-const PORRA_REWARD_POINTS = 250
-
 const CHECKS = [
   'Crea tu alineación y compártela con la comunidad',
   'Sigue la última hora del mercado de fichajes',
@@ -120,7 +118,7 @@ function PorraCard({ navigate, loading, partido, participants, prediction }) {
         awayTeam={esLocal ? rival : zaragoza}
         prediction={prediction}
         participants={participants}
-        rewardPoints={PORRA_REWARD_POINTS}
+        kickoff={partido.kickoff}
         state={isClosed ? 'closed' : 'open'}
         onPlay={() => navigate('/porra')}
       />

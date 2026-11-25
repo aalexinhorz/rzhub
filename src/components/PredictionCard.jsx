@@ -1,4 +1,19 @@
+import { useEffect, useState } from 'react'
 import './PredictionCard.css'
+
+const HORA_MS = 3600 * 1000
+const DIA_MS = 24 * HORA_MS
+
+/** Texto de cuenta atrás: "2 d 14 h", "5 h 32 min" o "32 min". */
+function formatearCuentaAtras(ms) {
+  const totalMin = Math.max(1, Math.ceil(ms / 60000))
+  const dias = Math.floor(totalMin / 1440)
+  const horas = Math.floor((totalMin % 1440) / 60)
+  const min = totalMin % 60
+  if (dias >= 1) return `${dias} d ${horas} h`
+  if (horas >= 1) return `${horas} h ${min} min`
+  return `${min} min`
+}
 
 /**
  * PredictionCard — bloque de conversión para "La Porra". Estado
@@ -15,11 +30,19 @@ export default function PredictionCard({
   awayTeam,
   prediction,
   participants,
-  rewardPoints,
+  kickoff,
   state = 'open',
   onPlay,
 }) {
-  const isClosed = state === 'closed'
+  // La porra cierra al empezar el partido: cuenta atrás viva, refresco cada 30 s.
+  const [ahora, setAhora] = useState(() => Date.now())
+  useEffect(() => {
+    const id = setInterval(() => setAhora(Date.now()), 30000)
+    return () => clearInterval(id)
+  }, [])
+  const restante = kickoff ? new Date(kickoff).getTime() - ahora : null
+  const isClosed = state === 'closed' || (restante !== null && restante <= 0)
+  const isUrgent = !isClosed && restante !== null && restante < DIA_MS
   const home = prediction?.home ?? null
   const away = prediction?.away ?? null
 
@@ -31,7 +54,7 @@ export default function PredictionCard({
         </span>
         <div className="prediction-card__heading">
           <h3 className="prediction-card__title">La Porra</h3>
-          <p className="prediction-card__subtitle">Compite con la comunidad y gana premios</p>
+          <p className="prediction-card__subtitle">Juégate la camiseta oficial del Real Zaragoza</p>
         </div>
       </div>
 
@@ -77,16 +100,23 @@ export default function PredictionCard({
             <span className="prediction-card__metric-label">Participantes</span>
           </span>
         </div>
-        <div className="prediction-card__metric">
+        <div className={`prediction-card__metric${isUrgent ? ' prediction-card__metric--urgent' : ''}`}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <polygon points="12 2 15.09 8.63 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.63 12 2" />
+            <circle cx="12" cy="12" r="9" />
+            <polyline points="12 7 12 12 15.5 14" />
           </svg>
           <span className="prediction-card__metric-text">
-            <span className="prediction-card__metric-value">{rewardPoints}</span>
-            <span className="prediction-card__metric-label">Puntos en juego</span>
+            <span className="prediction-card__metric-value">
+              {isClosed ? 'Cerrada' : restante !== null ? formatearCuentaAtras(restante) : '–'}
+            </span>
+            <span className="prediction-card__metric-label">{isClosed ? 'Porra' : 'Cierra en'}</span>
           </span>
         </div>
       </div>
+
+      <p className="prediction-card__rules">
+        Hasta <strong>8 puntos</strong> por partido: <strong>5</strong> por el resultado exacto y <strong>3</strong> más si clavas los goleadores
+      </p>
 
       <button
         type="button"
