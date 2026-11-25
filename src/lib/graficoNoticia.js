@@ -1,4 +1,4 @@
-// Gráfico de noticia para redes (1080×1350, 4:5), con el estilo de las
+// Gráfico de noticia para redes (1080×1350, 4:5, o stories 1080×1920), con el estilo de las
 // otras plantillas de RZ Hub: foto arriba, etiqueta amarilla, titular
 // grande (las *palabras entre asteriscos* van en amarillo), entradilla,
 // fuente y pie con la web. Lo usa /redaccion-graficos.
@@ -13,16 +13,23 @@ const AMARILLO = '#ffd500'
 const AZUL_OSCURO = '#011947'
 const TITULOS = "Humane, 'Arial Narrow', sans-serif"
 const TEXTO = 'Archivo, sans-serif'
-const LIMITE_TEXTO = 1236 // lo escrito no puede bajar de aquí (pie)
+
+// Medidas de cada formato. En stories, Instagram tapa algo arriba y abajo,
+// así que el logo y el pie se meten un poco hacia dentro.
+const FORMATOS = {
+  post: { alto: ALTO, altoFoto: ALTO_FOTO, yLogo: 44, yLineaPie: 1262, yPie: 1312, maxLineas: 3 },
+  stories: { alto: 1920, altoFoto: 1200, yLogo: 150, yLineaPie: 1772, yPie: 1822, maxLineas: 4 },
+}
+export const medidasNoticia = formato => FORMATOS[formato] || FORMATOS.post
 
 // Ajuste "cover" de la foto en la zona de arriba, con zoom y desplazamiento.
-export function encajeFoto(foto, zoom = 1, dx = 0, dy = 0) {
-  const base = Math.max(ANCHO / foto.naturalWidth, ALTO_FOTO / foto.naturalHeight)
+export function encajeFoto(foto, zoom = 1, dx = 0, dy = 0, altoFoto = ALTO_FOTO) {
+  const base = Math.max(ANCHO / foto.naturalWidth, altoFoto / foto.naturalHeight)
   const s = base * zoom
   const w = foto.naturalWidth * s
   const h = foto.naturalHeight * s
   const x = Math.min(0, Math.max(ANCHO - w, (ANCHO - w) / 2 + dx))
-  const y = Math.min(0, Math.max(ALTO_FOTO - h, (ALTO_FOTO - h) / 2 + dy))
+  const y = Math.min(0, Math.max(altoFoto - h, (altoFoto - h) / 2 + dy))
   return { x, y, w, h }
 }
 
@@ -54,7 +61,7 @@ function partirTexto(g, texto, anchoMax) {
 
 
 /**
- * datos: { etiqueta, titular, entradilla, fuente, ajusteFoto: { zoom, dx, dy } }
+ * datos: { formato: 'post' | 'stories', etiqueta, titular, entradilla, fuente, ajusteFoto: { zoom, dx, dy } }
  * recursos: { foto, logo }
  */
 export function dibujarGraficoNoticia(g, datos, recursos) {
@@ -63,6 +70,8 @@ export function dibujarGraficoNoticia(g, datos, recursos) {
   g.save()
   g.textBaseline = 'alphabetic'
   g.textAlign = 'left'
+  const F = medidasNoticia(datos.formato)
+  const ALTO = F.alto, ALTO_FOTO = F.altoFoto, LIMITE_TEXTO = F.yLineaPie - 26 // lo escrito no puede bajar de aquí (pie)
 
   // Fondo y foto.
   const fondo = g.createLinearGradient(0, 0, 0, ALTO)
@@ -74,7 +83,7 @@ export function dibujarGraficoNoticia(g, datos, recursos) {
   const { foto, logo } = recursos
   if (foto?.complete && foto.naturalWidth) {
     const { zoom = 1, dx = 0, dy = 0 } = datos.ajusteFoto || {}
-    const e = encajeFoto(foto, zoom, dx, dy)
+    const e = encajeFoto(foto, zoom, dx, dy, ALTO_FOTO)
     g.save()
     g.beginPath()
     g.rect(0, 0, ANCHO, ALTO_FOTO)
@@ -89,12 +98,12 @@ export function dibujarGraficoNoticia(g, datos, recursos) {
   fundido.addColorStop(1, 'rgba(0,34,97,1)')
   g.fillStyle = fundido
   g.fillRect(0, 0, ANCHO, ALTO_FOTO + 1)
-  const arriba = g.createLinearGradient(0, 0, 0, 200)
+  const arriba = g.createLinearGradient(0, 0, 0, F.yLogo + 156)
   arriba.addColorStop(0, 'rgba(1,25,71,0.55)')
   arriba.addColorStop(1, 'rgba(1,25,71,0)')
   g.fillStyle = arriba
-  g.fillRect(0, 0, ANCHO, 200)
-  if (logo?.complete && logo.naturalWidth) g.drawImage(logo, M, 44, 128, 128 * logo.naturalHeight / logo.naturalWidth)
+  g.fillRect(0, 0, ANCHO, F.yLogo + 156)
+  if (logo?.complete && logo.naturalWidth) g.drawImage(logo, M, F.yLogo, 128, 128 * logo.naturalHeight / logo.naturalWidth)
 
   // Etiqueta.
   const etiqueta = (datos.etiqueta || 'NOTICIA').toUpperCase()
@@ -122,7 +131,7 @@ export function dibujarGraficoNoticia(g, datos, recursos) {
   for (; tam >= 64; tam -= 4) {
     g.font = `700 ${tam}px ${TITULOS}`
     lineas = partir(g, items, ancho, tam * 0.1)
-    if (lineas.length > 3) continue
+    if (lineas.length > F.maxLineas) continue
     const alturaCap = g.measureText('H').actualBoundingBoxAscent || tam * 0.75
     const interlinea = alturaCap * 1.28
     const y = yEtiqueta + 58 + 44 + alturaCap // primera línea
@@ -164,15 +173,15 @@ export function dibujarGraficoNoticia(g, datos, recursos) {
 
   // Pie: línea, la web y el logo.
   g.fillStyle = 'rgba(255,213,0,0.6)'
-  g.fillRect(M, 1262, ANCHO - M * 2, 2)
+  g.fillRect(M, F.yLineaPie, ANCHO - M * 2, 2)
   g.font = `800 22px ${TEXTO}`
   g.fillStyle = AMARILLO
   if ('letterSpacing' in g) g.letterSpacing = '1px'
-  g.fillText('rzhub.es', M, 1312)
+  g.fillText('rzhub.es', M, F.yPie)
   if ('letterSpacing' in g) g.letterSpacing = '0px'
   if (logo?.complete && logo.naturalWidth) {
     const w = 96
-    g.drawImage(logo, ANCHO - M - w, 1312 - 32, w, w * logo.naturalHeight / logo.naturalWidth)
+    g.drawImage(logo, ANCHO - M - w, F.yPie - 32, w, w * logo.naturalHeight / logo.naturalWidth)
   }
   g.restore()
 }

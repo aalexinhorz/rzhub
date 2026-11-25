@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../../hooks/useAuth'
-import { cargarImagen, contextoGrafico, ESCALA, slug } from '../../lib/graficosComun'
-import { ANCHO, ALTO, ALTO_FOTO, dibujarGraficoNoticia, encajeFoto } from '../../lib/graficoNoticia'
+import { cargarImagen, contextoGrafico, descargarVarios, ESCALA, slug } from '../../lib/graficosComun'
+import { ANCHO, dibujarGraficoNoticia, encajeFoto, medidasNoticia } from '../../lib/graficoNoticia'
 import AccionesGrafico from './AccionesGrafico'
 
 // Plantilla "Noticia": foto, etiqueta, titular (con *palabras* en
@@ -9,7 +9,7 @@ import AccionesGrafico from './AccionesGrafico'
 // publicada en la web. El borrador (sin la foto) se guarda en el navegador.
 
 const CLAVE_BORRADOR = 'redaccion_grafico_noticia'
-const INICIAL = { etiqueta: 'Noticia', titular: '', entradilla: '', fuente: '', ajusteFoto: { zoom: 1, dx: 0, dy: 0 } }
+const INICIAL = { formato: 'post', etiqueta: 'Noticia', titular: '', entradilla: '', fuente: '', ajusteFoto: { zoom: 1, dx: 0, dy: 0 } }
 const ETIQUETAS = ['Noticia', 'Última hora', 'Oficial', 'Mercado', 'Rumor', 'Crónica', 'Previa', 'Comunicado']
 
 function leerBorrador() {
@@ -41,6 +41,7 @@ export default function GraficoNoticia({ logo, fuentesListas }) {
   }, [datos, recursos, fuentesListas])
 
   const cambiar = cambios => setDatos(d => ({ ...d, ...cambios }))
+  const { alto: ALTO, altoFoto: ALTO_FOTO } = medidasNoticia(datos.formato)
 
   const elegirFoto = e => {
     const archivo = e.target.files?.[0]
@@ -70,25 +71,45 @@ export default function GraficoNoticia({ logo, fuentesListas }) {
     const a = arrastre.current
     if (!a || !foto) return
     const escala = ANCHO / e.currentTarget.clientWidth
-    const ef = encajeFoto(foto, a.zoom, a.dx + (e.clientX - a.x) * escala, a.dy + (e.clientY - a.y) * escala)
+    const ef = encajeFoto(foto, a.zoom, a.dx + (e.clientX - a.x) * escala, a.dy + (e.clientY - a.y) * escala, ALTO_FOTO)
     cambiar({ ajusteFoto: { zoom: a.zoom, dx: ef.x - (ANCHO - ef.w) / 2, dy: ef.y - (ALTO_FOTO - ef.h) / 2 } })
   }
   const soltar = () => { arrastre.current = null }
 
+  // Las dos a la vez: se dibuja cada formato en un canvas aparte con el
+  // mismo texto y foto, y se descargan seguidas.
+  const [bajandoDos, setBajandoDos] = useState(false)
+  const descargarAmbas = async () => {
+    setBajandoDos(true)
+    const base = slug(datos.titular).slice(0, 40)
+    const canvases = ['post', 'stories'].map(formato => {
+      const c = document.createElement('canvas')
+      c.width = ANCHO * ESCALA
+      c.height = medidasNoticia(formato).alto * ESCALA
+      dibujarGraficoNoticia(contextoGrafico(c), { ...datos, formato }, recursos)
+      return c
+    })
+    await descargarVarios(canvases, [`rzhub-noticia-${base}.jpg`, `rzhub-noticia-stories-${base}.jpg`])
+    setBajandoDos(false)
+  }
+
   const empezarDeCero = () => {
     if (!window.confirm('¿Vaciar todos los campos?')) return
     setFoto(null)
-    setDatos(INICIAL)
+    setDatos(d => ({ ...INICIAL, formato: d.formato }))
   }
 
   return (
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas
-          ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas"
+          ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className={`graficos-canvas${datos.formato === 'stories' ? ' graficos-canvas--stories' : ''}`}
           onPointerDown={empezarArrastre} onPointerMove={arrastrar} onPointerUp={soltar} onPointerCancel={soltar}
         />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-noticia-${slug(datos.titular).slice(0, 40)}.jpg`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-noticia-${datos.formato === 'stories' ? 'stories-' : ''}${slug(datos.titular).slice(0, 40)}.jpg`} />
+        <button type="button" className="rz-btn rz-btn--ghost graficos-ambas" onClick={descargarAmbas} disabled={bajandoDos}>
+          {bajandoDos ? 'Descargando…' : '⬇ Descargar las dos (post + stories)'}
+        </button>
       </div>
 
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
@@ -105,6 +126,14 @@ export default function GraficoNoticia({ logo, fuentesListas }) {
             {aviso && <p className="graficos-nota graficos-nota--aviso">{aviso}</p>}
           </fieldset>
         )}
+
+        <fieldset>
+          <legend>Formato</legend>
+          <div className="graficos-fila">
+            <label className="graficos-check"><input type="radio" name="noticia-formato" checked={datos.formato !== 'stories'} onChange={() => cambiar({ formato: 'post', ajusteFoto: { zoom: 1, dx: 0, dy: 0 } })} /> Post (1080×1350)</label>
+            <label className="graficos-check"><input type="radio" name="noticia-formato" checked={datos.formato === 'stories'} onChange={() => cambiar({ formato: 'stories', ajusteFoto: { zoom: 1, dx: 0, dy: 0 } })} /> Stories (1080×1920)</label>
+          </div>
+        </fieldset>
 
         <fieldset>
           <legend>Foto</legend>

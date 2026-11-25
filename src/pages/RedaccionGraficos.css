@@ -335,3 +335,6 @@
 .partidos-lista__info strong { color: #ffffff; font-size: 15px; }
 .partidos-lista__info em { color: #fbbf24; font-style: normal; }
 .partidos-lista__comp { color: #ffc800; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+/* Formato stories (1080×1920): más estrecho para que quepa en pantalla */
+.graficos-canvas--stories { aspect-ratio: 1080 / 1920; max-width: 440px; margin: 0 auto; display: block; }
+.graficos-ambas { width: 100%; margin-top: 10px; }
