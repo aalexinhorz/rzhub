@@ -100,6 +100,22 @@
 .mc-pred__nota a { color: #ffc800; text-decoration: none; font-weight: 700; white-space: nowrap; }
 
 /* -------- Clasificación (Previa) -------- */
+.mc-forma { background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+.mc-forma .mc-subtitulo { margin-top: 0; }
+.mc-forma__equipo + .mc-forma__equipo { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.07); }
+.mc-forma__cabeza { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: #fff; font-size: 15px; }
+.mc-forma__pts { margin-left: auto; color: #9fb0cf; font-size: 13px; font-weight: 600; }
+.mc-forma__lista { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.mc-forma__partido { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 8px 2px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); border-top: 3px solid; }
+.mc-forma__partido--V { border-color: #22c55e; }
+.mc-forma__partido--E { border-color: #7e93bf; }
+.mc-forma__partido--D { border-color: #e11d2e; }
+.mc-forma__letra { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: #fff; }
+.mc-forma__partido--V .mc-forma__letra { background: #22c55e; }
+.mc-forma__partido--E .mc-forma__letra { background: #7e93bf; }
+.mc-forma__partido--D .mc-forma__letra { background: #e11d2e; }
+.mc-forma__marcador { color: #d6e0f2; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mc-forma__nota { margin: 12px 0 0; color: #7f90b0; font-size: 12px; }
 .mc-tabla { background: #0a1730; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 16px 16px 14px; }
 .mc-tabla__cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .mc-tabla__cabecera .mc-subtitulo { margin-bottom: 4px; }

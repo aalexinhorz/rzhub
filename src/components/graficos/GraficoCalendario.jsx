@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { extractRival, isAway } from '../../lib/ics'
 import { cargarImagen, contextoGrafico, ESCALA, escudoDe } from '../../lib/graficosComun'
-import { ANCHO, ALTO, dibujarGraficoCalendario, finDe } from '../../lib/graficoCalendario'
+import { ANCHO, ALTO, dibujarGraficoCalendario, finDe, rangoMes } from '../../lib/graficoCalendario'
 import AccionesGrafico from './AccionesGrafico'
 
 // Plantilla "Calendario": los partidos salen de /calendario.ics (el mismo
@@ -51,8 +51,10 @@ function leerAjustes() {
 export default function GraficoCalendario({ logo, fuentesListas }) {
   const canvasRef = useRef(null)
   const [partidos, setPartidos] = useState(null)
-  const [ajustes, setAjustes] = useState(() => ({ semanas: 5, titulo: 'Calendario', subtitulo: 'Todos los partidos del Real Zaragoza', ...leerAjustes() }))
+  const [ajustes, setAjustes] = useState(() => ({ semanas: 5, modo: 'mes', titulo: 'Calendario', subtitulo: 'Todos los partidos del Real Zaragoza', ...leerAjustes() }))
   const [desde, setDesde] = useState(hoyMadrid)
+  const [mes, setMes] = useState(() => hoyMadrid().slice(0, 7))
+  const porMes = ajustes.modo !== 'semanas'
   const [escudos, setEscudos] = useState({})
 
   useEffect(() => {
@@ -63,8 +65,8 @@ export default function GraficoCalendario({ logo, fuentesListas }) {
     try { localStorage.setItem(CLAVE_AJUSTES, JSON.stringify(ajustes)) } catch { /* privado */ }
   }, [ajustes])
 
-  const hasta = finDe(desde, ajustes.semanas)
-  const enRango = useMemo(() => (partidos || []).filter(p => p.fecha >= desde && p.fecha <= hasta), [partidos, desde, hasta])
+  const rango = porMes ? rangoMes(mes) : { desde, hasta: finDe(desde, ajustes.semanas) }
+  const enRango = useMemo(() => (partidos || []).filter(p => p.fecha >= rango.desde && p.fecha <= rango.hasta), [partidos, rango.desde, rango.hasta])
   const clave = [...new Set(enRango.map(p => p.rival))].join('|')
 
   useEffect(() => {
@@ -78,8 +80,8 @@ export default function GraficoCalendario({ logo, fuentesListas }) {
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (canvas) dibujarGraficoCalendario(contextoGrafico(canvas), { ...ajustes, desde, partidos: enRango }, { logo, escudos })
-  }, [ajustes, desde, enRango, logo, escudos, fuentesListas])
+    if (canvas) dibujarGraficoCalendario(contextoGrafico(canvas), { ...ajustes, desde, mes: porMes ? mes : null, partidos: enRango }, { logo, escudos })
+  }, [ajustes, desde, mes, porMes, enRango, logo, escudos, fuentesListas])
 
   const cambiar = cambios => setAjustes(a => ({ ...a, ...cambios }))
 
@@ -87,24 +89,38 @@ export default function GraficoCalendario({ logo, fuentesListas }) {
     <div className="graficos-cuerpo">
       <div className="graficos-vista">
         <canvas ref={canvasRef} width={ANCHO * ESCALA} height={ALTO * ESCALA} className="graficos-canvas graficos-canvas--fijo" />
-        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-calendario-${desde}.jpg`} />
+        <AccionesGrafico canvasRef={canvasRef} nombreArchivo={`rzhub-calendario-${porMes ? mes : desde}.jpg`} />
       </div>
 
       <form className="graficos-form" onSubmit={e => e.preventDefault()}>
         <fieldset>
           <legend>Fechas</legend>
-          <div className="graficos-fila">
+          <label className="graficos-campo">
+            Ver
+            <select value={porMes ? 'mes' : 'semanas'} onChange={e => cambiar({ modo: e.target.value })}>
+              <option value="mes">Un mes entero</option>
+              <option value="semanas">Por semanas</option>
+            </select>
+          </label>
+          {porMes ? (
             <label className="graficos-campo">
-              Desde
-              <input type="date" value={desde} onChange={e => e.target.value && setDesde(e.target.value)} />
+              Mes
+              <input type="month" value={mes} onChange={e => e.target.value && setMes(e.target.value)} />
             </label>
-            <label className="graficos-campo">
-              Semanas
-              <select value={ajustes.semanas} onChange={e => cambiar({ semanas: Number(e.target.value) })}>
-                {[4, 5, 6].map(n => <option key={n} value={n}>{n}</option>)}
-              </select>
-            </label>
-          </div>
+          ) : (
+            <div className="graficos-fila">
+              <label className="graficos-campo">
+                Desde
+                <input type="date" value={desde} onChange={e => e.target.value && setDesde(e.target.value)} />
+              </label>
+              <label className="graficos-campo">
+                Semanas
+                <select value={ajustes.semanas} onChange={e => cambiar({ semanas: Number(e.target.value) })}>
+                  {[4, 5, 6].map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
+              </label>
+            </div>
+          )}
           {partidos && (
             <p className="graficos-nota">
               {enRango.length ? `${enRango.length} ${enRango.length === 1 ? 'partido' : 'partidos'} en estas fechas` : 'No hay partidos en estas fechas.'}

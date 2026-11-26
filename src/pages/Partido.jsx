@@ -70,7 +70,7 @@ async function cargarPartido(slug) {
   // previa de un partido ya jugado no enseña la tabla de hoy).
   const tablaLiga = liga?.length ? calcularClasificacion(liga) : null
   const jugadas = (liga || []).filter(f => f.goles_local !== null).map(f => f.jornada)
-  const clasificacion = tablaLiga && jugadas.length ? { tabla: tablaLiga, jornada: Math.max(...jugadas) } : null
+  const clasificacion = tablaLiga && jugadas.length ? { tabla: tablaLiga, jornada: Math.max(...jugadas), liga } : null
 
   // Cara a cara: histórico manual (rivales_enfrentamientos) + partidos de
   // la porra ya cerrados que no estén en el manual.
@@ -266,6 +266,56 @@ function EscudoTabla({ nombre }) {
   return src ? <img src={src} alt="" className="mc-tabla__escudo" /> : <span className="mc-tabla__escudo mc-tabla__escudo--vacio">{nombre[0]}</span>
 }
 
+// Cómo llegan: los últimos 5 partidos de liga de cada equipo (del más
+// antiguo al más reciente), con el rival y el marcador de cada uno.
+function ultimosDe(liga, nombre) {
+  return liga
+    .filter(f => f.goles_local !== null && (sinComillas(f.equipo_local) === nombre || sinComillas(f.equipo_visitante) === nombre))
+    .sort((a, b) => a.jornada - b.jornada)
+    .slice(-5)
+    .map(f => {
+      const enCasa = sinComillas(f.equipo_local) === nombre
+      const suyos = enCasa ? f.goles_local : f.goles_visitante
+      const ajenos = enCasa ? f.goles_visitante : f.goles_local
+      return {
+        jornada: f.jornada, enCasa, rival: sinComillas(enCasa ? f.equipo_visitante : f.equipo_local),
+        marcador: `${f.goles_local}-${f.goles_visitante}`, r: suyos > ajenos ? 'V' : suyos < ajenos ? 'D' : 'E',
+      }
+    })
+}
+
+function ComoLlegan({ liga, nombres }) {
+  const equipos = nombres.map(n => ({ nombre: n, partidos: ultimosDe(liga || [], n) })).filter(e => e.partidos.length)
+  if (equipos.length < 2) return null
+  return (
+    <div className="mc-forma">
+      <h3 className="mc-subtitulo">Cómo llegan</h3>
+      {equipos.map(e => {
+        const pts = e.partidos.reduce((t, x) => t + (x.r === 'V' ? 3 : x.r === 'E' ? 1 : 0), 0)
+        return (
+          <div key={e.nombre} className="mc-forma__equipo">
+            <div className="mc-forma__cabeza">
+              <EscudoTabla nombre={e.nombre} />
+              <strong>{e.nombre}</strong>
+              <span className="mc-forma__pts">{pts} de {e.partidos.length * 3} pts</span>
+            </div>
+            <ol className="mc-forma__lista">
+              {e.partidos.map(x => (
+                <li key={x.jornada} className={`mc-forma__partido mc-forma__partido--${x.r}`} title={`J${x.jornada} · ${x.enCasa ? 'vs' : 'en'} ${x.rival} · ${x.marcador}`}>
+                  <span className="mc-forma__letra">{x.r}</span>
+                  <EscudoTabla nombre={x.rival} />
+                  <span className="mc-forma__marcador">{x.marcador}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )
+      })}
+      <p className="mc-forma__nota">Últimos 5 partidos de liga, del más antiguo al más reciente.</p>
+    </div>
+  )
+}
+
 // Los dos equipos del partido con el de arriba y el de abajo de cada uno;
 // "Ver tabla completa" despliega las 20 filas.
 function ClasificacionPrevia({ clasificacion, local, visitante }) {
@@ -392,6 +442,7 @@ function TabPrevia({ p, previa, porraAbierta, onceProbable, clasificacion, predi
         </Link>
       )}
       {prediccion && <PrediccionPartido prediccion={prediccion} p={p} />}
+      {clasificacion && <ComoLlegan liga={clasificacion.liga} nombres={[local, visitante].map(sinComillas)} />}
       {clasificacion && <ClasificacionPrevia clasificacion={clasificacion} local={local} visitante={visitante} />}
       {onceProbable && <OnceProbable lineup={onceProbable} />}
       <OpinionAficion partido={p} titulo={p.finalizado ? 'Qué pronosticó la afición' : 'Pronóstico de la afición'} minimo={1} />

@@ -1,6 +1,6 @@
 // "El rival" para redes (1080×1350, 4:5): a un lado, el escudo y el nombre
-// del rival, su historia (la de su ficha en la web) y los últimos
-// enfrentamientos con el Real Zaragoza; al otro, una foto a toda altura.
+// del rival, su historia (la de su ficha en la web) y sus últimos 5
+// partidos de liga (contra quien sea); al otro, una foto a toda altura.
 
 import { encajeEn } from './graficosComun'
 import { AMARILLO, AZUL, AZUL_OSCURO, TEXTO, TITULOS, ajustar, hayImagen, imagen, logoRz, partir, texto } from './graficosTexto'
@@ -32,8 +32,8 @@ export function casilla(g, escudo, x, y, lado, esZaragoza) {
 
 /**
  * datos: { antetitulo, rival, historia, fotoIzquierda, credito, ajusteFoto,
- *          partidos: [{ fecha, competicion, jornada, sede, goles_zaragoza, goles_rival }] }
- * recursos: { foto, logo, escudoRival, escudoZaragoza }
+ *          partidos: [{ fecha, jornada, local, visitante, goles_local, goles_visitante, rivalEnCasa }] }
+ * recursos: { foto, logo, escudoRival, escudos: { [equipo]: Image } }
  */
 export function dibujarGraficoRival(g, datos, recursos) {
   g.imageSmoothingEnabled = true
@@ -97,15 +97,16 @@ export function dibujarGraficoRival(g, datos, recursos) {
   }
   lineas.forEach((l, i) => texto(g, l, M, 286 + i * tam * 1.02, `400 ${tam}px ${TEXTO}`, 'rgba(255,255,255,0.92)', 'left', '-0.3px'))
 
-  // ── Últimos enfrentamientos ──
+  // ── Últimos partidos del rival (los más recientes, contra cualquiera) ──
   if (partidos.length) {
-    texto(g, 'ÚLTIMOS ENFRENTAMIENTOS', M, yLista, `700 21px ${TEXTO}`, '#ffffff', 'left', '-0.2px')
+    texto(g, 'ÚLTIMOS PARTIDOS', M, yLista, `700 21px ${TEXTO}`, '#ffffff', 'left', '-0.2px')
     const lado = 84
     partidos.forEach((p, i) => {
       const y = yLista + 22 + i * 138
-      // Pastilla: TEMPORADA 67-68 | COPA DEL REY · 1/16 [VTA]
-      const ligero = 'TEMPORADA '
-      const negrita = `${temporadaDe(p.fecha)} | ${[p.competicion, p.jornada].filter(Boolean).join(' · ')}`.toUpperCase()
+      // Pastilla: JORNADA 14 | 22 NOV
+      const ligero = 'JORNADA '
+      const fecha = new Date(`${p.fecha}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '')
+      const negrita = `${p.jornada ?? ''} | ${fecha}`.toUpperCase()
       g.font = `400 13px ${TEXTO}`
       const w1 = g.measureText(ligero).width
       g.font = `700 13px ${TEXTO}`
@@ -117,15 +118,15 @@ export function dibujarGraficoRival(g, datos, recursos) {
       texto(g, ligero, M + 11, y + 16, `400 13px ${TEXTO}`, AZUL_OSCURO)
       texto(g, negrita, M + 11 + w1, y + 16, `700 13px ${TEXTO}`, AZUL_OSCURO)
 
-      // Local a la izquierda, visitante a la derecha.
-      const local = p.sede === 'local'
+      // Local a la izquierda, visitante a la derecha; en azul, el Real Zaragoza.
       const yFila = y + 30
-      casilla(g, local ? recursos.escudoZaragoza : recursos.escudoRival, M, yFila, lado, local)
-      casilla(g, local ? recursos.escudoRival : recursos.escudoZaragoza, M + 186, yFila, lado, !local)
-      const gl = local ? p.goles_zaragoza : p.goles_rival
-      const gv = local ? p.goles_rival : p.goles_zaragoza
-      const color = p.goles_zaragoza > p.goles_rival ? VERDE : p.goles_zaragoza < p.goles_rival ? ROJO : AMARILLO
-      texto(g, `${gl}-${gv}`, M + lado + 51, yFila + lado - 6, `700 96px ${TITULOS}`, color, 'center', '4px')
+      casilla(g, recursos.escudos?.[p.local], M, yFila, lado, p.local === 'Real Zaragoza')
+      casilla(g, recursos.escudos?.[p.visitante], M + 186, yFila, lado, p.visitante === 'Real Zaragoza')
+      const suyos = p.rivalEnCasa ? p.goles_local : p.goles_visitante
+      const ajenos = p.rivalEnCasa ? p.goles_visitante : p.goles_local
+      // Color desde el punto de vista del rival: verde si ganó, rojo si perdió.
+      const color = suyos > ajenos ? VERDE : suyos < ajenos ? ROJO : AMARILLO
+      texto(g, `${p.goles_local}-${p.goles_visitante}`, M + lado + 51, yFila + lado - 6, `700 96px ${TITULOS}`, color, 'center', '4px')
     })
   }
 

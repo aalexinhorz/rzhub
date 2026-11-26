@@ -4,6 +4,7 @@ import useAuth from '../hooks/useAuth'
 import SEO from '../components/SEO'
 import GraficoEstadisticas from '../components/graficos/GraficoEstadisticas'
 import GraficoClasificacion from '../components/graficos/GraficoClasificacion'
+import GraficoSuperordenador from '../components/graficos/GraficoSuperordenador'
 import GraficoNoticia from '../components/graficos/GraficoNoticia'
 import GraficoCalendario from '../components/graficos/GraficoCalendario'
 import GraficoRankingJugadores from '../components/graficos/GraficoRankingJugadores'
@@ -53,7 +54,7 @@ const PLANTILLAS = [
   { id: 'notas-partido', seccion: 'partido', label: 'Las notas', boton: 'notas', desc: 'Para abrir la votación de las notas de un partido.', ayuda: 'Para abrir las notas de un partido jugado: el marcador y los escudos salen solos (la caja del rival coge el color de su escudo). Sube la foto y arrástrala.' },
   { id: 'horario', seccion: 'partido', label: 'Horario', boton: 'horario', desc: 'Día y hora confirmados del próximo partido, en casa o fuera.', ayuda: 'Horario confirmado del partido: día y hora en grande. Sale solo la versión en casa (estadio y lema) o fuera (km y ruta desde Zaragoza). Sube una foto y arrástrala.' },
   { id: 'partido', seccion: 'partido', label: 'Partido', boton: 'partido', desc: 'El lema entre los dos escudos con los datos del próximo partido.', ayuda: 'El lema entre los dos escudos con los datos del próximo partido. Sube una foto ancha (p. ej. un jugador de cada equipo) y arrástrala.' },
-  { id: 'rival', seccion: 'partido', label: 'El rival', boton: 'rival', desc: 'La ficha del próximo rival y los últimos enfrentamientos.', ayuda: 'Sale el rival del próximo partido con el texto de su ficha y los últimos 5 enfrentamientos. Sube una foto y arrástrala para encuadrarla.' },
+  { id: 'rival', seccion: 'partido', label: 'El rival', boton: 'rival', desc: 'La ficha del próximo rival y sus últimos partidos.', ayuda: 'Sale el rival del próximo partido con el texto de su ficha y sus últimos 5 partidos de liga. Sube una foto y arrástrala para encuadrarla.' },
   { id: 'previa', seccion: 'partido', label: 'Previa del rival', boton: 'previa', desc: 'Posición, puntos, racha, goleadores y bajas del rival.', ayuda: 'Sale el rival del próximo partido con su posición, puntos, goles y racha. Elige sus goleadores, bajas y el jugador a seguir.' },
   { id: 'porra', seccion: 'partido', label: 'La Porra', boton: 'porra', desc: 'Anuncia la porra del próximo partido.', ayuda: 'Anuncia la porra del próximo partido. Sube una foto y arrástrala para encuadrarla.' },
   { id: 'mi-prediccion', seccion: 'partido', label: 'Mi predicción', boton: 'predicción', desc: 'Tu pronóstico de la Porra con tu usuario de la web.', ayuda: 'Tu pronóstico de la Porra con tu usuario de la web (foto, @usuario, puesto y puntos). Sale solo de lo que pronosticaste; si no, rellénalo.' },
@@ -64,7 +65,8 @@ const PLANTILLAS = [
   { id: 'convocatoria', seccion: 'partido', label: 'Convocatoria', boton: 'convocatoria', desc: 'Los convocados con sus tarjetas, ordenados por posición.', ayuda: 'Marca los convocados: salen sus tarjetas del Lineup ordenadas por posición. Puedes subir una foto (p. ej. el entrenador).' },
   { id: 'finde', seccion: 'partido', label: 'Fin de semana', boton: 'fin de semana', desc: 'Los partidos del primer equipo, filial, juvenil y femenino.', ayuda: 'Los partidos de los próximos días del primer equipo, el filial, el juvenil y el femenino en un solo gráfico, sin foto. Salen solos; desmarca los que no quieras.' },
   { id: 'clasificacion', seccion: 'datos', label: 'Clasificación', boton: 'clasificación', desc: 'La tabla del grupo tras la jornada que elijas.', ayuda: 'La tabla sale sola con los resultados de la web. Elige la jornada y descárgalo.' },
-  { id: 'calendario', seccion: 'datos', label: 'Calendario', boton: 'calendario', desc: 'Los próximos partidos del Real Zaragoza en un calendario.', ayuda: 'Los partidos salen solos del calendario de la web. Elige desde qué día y cuántas semanas.' },
+  { id: 'superordenador', seccion: 'datos', label: 'El Superordenador', boton: 'superordenador', desc: 'Las opciones de subir, play-off o descenso según nuestras simulaciones.', ayuda: 'Sale sola la última predicción de la web: % de subir directo, play-off y descenso, y la probabilidad de cada puesto. Elige el equipo (por defecto, el Real Zaragoza).' },
+  { id: 'calendario', seccion: 'datos', label: 'Calendario', boton: 'calendario', desc: 'Los próximos partidos del Real Zaragoza en un calendario.', ayuda: 'Los partidos salen solos del calendario de la web. Elige un mes entero o desde qué día y cuántas semanas.' },
   { id: 'estadisticas', seccion: 'datos', label: 'Estadísticas', boton: 'estadísticas', desc: 'Ficha de números de un jugador sobre su foto.', ayuda: 'Sube la foto, rellena los datos y descárgalo. Arrastra la foto en la vista previa para encuadrarla.' },
   { id: 'barras', seccion: 'datos', label: 'Barras', boton: 'barras', desc: 'Ránking de hasta 8 equipos con barras por una métrica.', ayuda: 'Ránking de hasta 8 equipos a todo el ancho: la barra crece con el número. Elige cuál va en amarillo.' },
   { id: 'ranking-equipos', seccion: 'datos', label: 'Ránking equipos', boton: 'ránking', desc: 'Hasta 6 equipos con escudo y su número, con foto.', ayuda: 'Hasta 6 equipos con escudo y su número. Sube una foto para la derecha y arrástrala.' },
@@ -84,7 +86,7 @@ const EDITORES = {
   'resultado': GraficoResultado, 'notas-partido': GraficoNotasPartido, 'horario': GraficoHorario, 'partido': GraficoPartido,
   'rival': GraficoRival, 'previa': GraficoPrevia, 'porra': GraficoPorra, 'mi-prediccion': GraficoMiPrediccion, 'ganadores-porra': GraficoGanadoresPorra,
   'on-tour': GraficoOnTour, 'cara-a-cara': GraficoCaraACara, 'rival-copa': GraficoRivalCopa, 'convocatoria': GraficoConvocatoria,
-  'finde': GraficoFinde, 'clasificacion': GraficoClasificacion, 'calendario': GraficoCalendario, 'estadisticas': GraficoEstadisticas,
+  'finde': GraficoFinde, 'clasificacion': GraficoClasificacion, 'superordenador': GraficoSuperordenador, 'calendario': GraficoCalendario, 'estadisticas': GraficoEstadisticas,
   'barras': GraficoBarras, 'ranking-equipos': GraficoRankingEquipos, 'ranking-jugadores': GraficoRankingJugadores, 'versus': GraficoVersus,
   'por-partido': GraficoPorPartido, 'dato': GraficoDato, 'jugador': GraficoJugador, 'noticia': GraficoNoticia,
   'mercado': GraficoMercado, 'portada': GraficoPortada, 'carrusel': GraficoCarrusel, 'herramienta': GraficoHerramienta,

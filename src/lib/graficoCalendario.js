@@ -1,6 +1,6 @@
 // Gráfico del calendario del Real Zaragoza para redes (1080×1350, 4:5):
-// cuadrícula de semanas (L–D) con los partidos del rango elegido (en casa
-// en amarillo, fuera en azul). Mismo estilo que las demás plantillas de
+// cuadrícula (L–D) de un mes entero o de N semanas con sus partidos (en
+// casa en azul, fuera en amarillo). Mismo estilo que las demás plantillas de
 // /redaccion-graficos.
 
 export const ANCHO = 1080
@@ -28,6 +28,15 @@ export const lunesDe = ymd => {
 // semanas sean siempre N filas de la rejilla (los días anteriores al de
 // inicio salen apagados).
 export const finDe = (desde, semanas) => sumarDias(lunesDe(desde), semanas * 7 - 1)
+// Un mes entero: del día 1 al último, y cuántas semanas (filas) ocupa.
+const MESES_LARGOS = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE']
+export function rangoMes(ym) {
+  const [a, m] = ym.split('-').map(Number)
+  const desde = `${ym}-01`
+  const hasta = new Date(Date.UTC(a, m, 0)).toISOString().slice(0, 10)
+  const dias = (Date.parse(`${hasta}T12:00:00Z`) - Date.parse(`${lunesDe(desde)}T12:00:00Z`)) / 864e5 + 1
+  return { desde, hasta, semanas: Math.ceil(dias / 7) }
+}
 const etiquetaFecha = ymd => `${Number(ymd.slice(8, 10))} ${MESES[Number(ymd.slice(5, 7)) - 1]}`
 
 function casa(g, x, y, s, color) {
@@ -106,16 +115,18 @@ export function dibujarGraficoCalendario(g, datos, recursos) {
   g.fillStyle = brillo
   g.fillRect(0, 0, ANCHO, ALTO)
 
-  const semanas = Math.min(6, Math.max(3, datos.semanas || 5))
-  const desde = datos.desde
-  const hasta = finDe(desde, semanas)
+  // Por mes ({ mes: 'YYYY-MM' }) o por semanas ({ desde, semanas }).
+  const mes = datos.mes ? rangoMes(datos.mes) : null
+  const semanas = mes ? mes.semanas : Math.min(6, Math.max(3, datos.semanas || 5))
+  const desde = mes ? mes.desde : datos.desde
+  const hasta = mes ? mes.hasta : finDe(desde, semanas)
   const inicioRejilla = lunesDe(desde)
   const filas = semanas
 
   // Cabecera.
   const { logo } = recursos
   if (logo?.complete && logo.naturalWidth) g.drawImage(logo, M, 46, 128, 128 * logo.naturalHeight / logo.naturalWidth)
-  const rango = `${etiquetaFecha(desde)} – ${etiquetaFecha(hasta)}`
+  const rango = mes ? `${MESES_LARGOS[Number(datos.mes.slice(5, 7)) - 1]} ${datos.mes.slice(0, 4)}` : `${etiquetaFecha(desde)} – ${etiquetaFecha(hasta)}`
   g.font = `800 24px ${TEXTO}`
   if ('letterSpacing' in g) g.letterSpacing = '1px'
   const anchoRango = g.measureText(rango).width + 40
@@ -125,8 +136,8 @@ export function dibujarGraficoCalendario(g, datos, recursos) {
   g.roundRect(ANCHO - M - anchoRango, 44, anchoRango, 50, 25)
   g.fill()
   texto(g, rango, ANCHO - M - anchoRango / 2, 78, `800 24px ${TEXTO}`, AZUL_OSCURO, 'center', '1px')
-  texto(g, (datos.titulo || 'Calendario').toUpperCase(), M - 4, 250, `700 176px ${TITULOS}`, '#ffffff')
-  texto(g, (datos.subtitulo || 'Todos los partidos del Real Zaragoza').toUpperCase(), M, 292, `600 22px ${TEXTO}`, AMARILLO, 'left', '2px')
+  texto(g, (datos.titulo || 'Calendario').toUpperCase(), ANCHO / 2, 250, `700 176px ${TITULOS}`, '#ffffff', 'center')
+  texto(g, (datos.subtitulo || 'Todos los partidos del Real Zaragoza').toUpperCase(), ANCHO / 2, 292, `600 22px ${TEXTO}`, AMARILLO, 'center', '2px')
 
   // Rejilla.
   const hueco = 12
@@ -151,16 +162,18 @@ export function dibujarGraficoCalendario(g, datos, recursos) {
     g.roundRect(x, y, anchoCelda, altoCelda, 16)
     if (p) {
       const fondoCelda = g.createLinearGradient(x, y, x + anchoCelda, y + altoCelda)
-      if (p.enCasa) { fondoCelda.addColorStop(0, '#ffe14d'); fondoCelda.addColorStop(1, '#f5b800') } else { fondoCelda.addColorStop(0, '#1d5fe0'); fondoCelda.addColorStop(1, '#0a3a9e') }
+      if (!p.enCasa) { fondoCelda.addColorStop(0, '#ffe14d'); fondoCelda.addColorStop(1, '#f5b800') } else { fondoCelda.addColorStop(0, '#1d5fe0'); fondoCelda.addColorStop(1, '#0a3a9e') }
       g.fillStyle = fondoCelda
       g.fill()
       g.clip()
-      // Franja diagonal de brillo.
-      g.fillStyle = 'rgba(255,255,255,0.14)'
-      g.beginPath()
-      g.moveTo(x + anchoCelda * 0.45, y); g.lineTo(x + anchoCelda * 0.75, y); g.lineTo(x + anchoCelda * 0.2, y + altoCelda); g.lineTo(x - anchoCelda * 0.1, y + altoCelda)
-      g.fill()
-      const tinta = p.enCasa ? AZUL_OSCURO : '#ffffff'
+      // Franja diagonal de brillo (solo en las amarillas: en las azules queda como una línea blanca).
+      if (!p.enCasa) {
+        g.fillStyle = 'rgba(255,255,255,0.14)'
+        g.beginPath()
+        g.moveTo(x + anchoCelda * 0.45, y); g.lineTo(x + anchoCelda * 0.75, y); g.lineTo(x + anchoCelda * 0.2, y + altoCelda); g.lineTo(x - anchoCelda * 0.1, y + altoCelda)
+        g.fill()
+      }
+      const tinta = p.enCasa ? '#ffffff' : AZUL_OSCURO
       texto(g, numero, x + anchoCelda - 12, y + 30, `800 20px ${TEXTO}`, tinta, 'right')
       if (p.etiqueta) texto(g, p.etiqueta, x + 12, y + 30, `800 17px ${TEXTO}`, tinta, 'left', '0.5px')
       const caja = Math.min(anchoCelda * 0.62, altoCelda * 0.5)
@@ -191,14 +204,14 @@ export function dibujarGraficoCalendario(g, datos, recursos) {
 
   // Leyenda y web.
   const yLey = 1302
-  g.fillStyle = AMARILLO
+  g.fillStyle = AZUL
   g.beginPath(); g.roundRect(M, yLey - 22, 30, 30, 7); g.fill()
-  casa(g, M + 15, yLey - 8, 18, AZUL_OSCURO)
+  casa(g, M + 15, yLey - 8, 18, '#ffffff')
   texto(g, 'EN CASA', M + 42, yLey, `700 18px ${TEXTO}`, 'rgba(255,255,255,0.88)', 'left', '1px')
   const x2 = M + 42 + 120
-  g.fillStyle = AZUL
+  g.fillStyle = AMARILLO
   g.beginPath(); g.roundRect(x2, yLey - 22, 30, 30, 7); g.fill()
-  avion(g, x2 + 15, yLey - 8, 18, '#ffffff')
+  avion(g, x2 + 15, yLey - 8, 18, AZUL_OSCURO)
   texto(g, 'FUERA', x2 + 42, yLey, `700 18px ${TEXTO}`, 'rgba(255,255,255,0.88)', 'left', '1px')
   texto(g, 'rzhub.es', ANCHO - M, yLey, `700 18px ${TEXTO}`, 'rgba(255,255,255,0.85)', 'right', '1px')
   g.restore()
